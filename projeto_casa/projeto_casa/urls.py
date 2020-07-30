@@ -1,4 +1,4 @@
-"""gerador_de_teste URL Configuration
+"""projeto_casa URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/3.0/topics/http/urls/
@@ -15,9 +15,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from core import views
+from core.pages.gerador_testes import views as gt
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('cadastrar/', views.Cadastrar)
+
+    #gerador de teste
+    path('', gt.ListarCasas),
+    path('listar/', gt.ListarCasas),    
+    path('cadastrar/', gt.Cadastrar)
 ]

@@ -1,0 +1,12 @@
+{% extends "model-page.html" %}
+
+{% block content %}
+<h2>Casas</h2>
+<label>Vou listar as casas cadastradas</label>
+
+<ul>
+    {% for casa in casas %}
+        <li>{{casa.nome}}</li>
+    {% endfor %} 
+</ul>
+{% endblock %}

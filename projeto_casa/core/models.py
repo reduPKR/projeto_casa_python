@@ -3,26 +3,34 @@ from django.db import models
 # Create your models here.
 
 #define se é agua, energia ou ambos
-class Tipo(models.Model):
+class TipoConsumo(models.Model):
     nome = models.CharField(max_length=30)
 
     class Meta:
-        db_table = 'tipo'
+        db_table = 'tipo_consumo'
 
 #é a categoria, torneira, tomada
 class Saida(models.Model):
-    tipo = models.ForeignKey(Tipo,on_delete=models.CASCADE)
+    tipo_consumo = models.ForeignKey(TipoConsumo,on_delete=models.CASCADE)
     nome = models.CharField(max_length=30)
 
     class Meta:
         db_table = 'saida'
+
+#O tipo de quipamento é usado para o algoritmo de regrasao linear
+class TipoEquipamento(models.Model):
+    nome = models.CharField(max_length=30)
+    essencial = models.BooleanField()
+
+    class Meta:
+        db_table = 'tipo_equipamento'
     
 class Equipamento(models.Model):
-    tipo = models.ForeignKey(Tipo,on_delete=models.CASCADE)
+    tipo_consumo = models.ForeignKey(TipoConsumo,on_delete=models.CASCADE)
+    tipo_equipamnto = models.ForeignKey(TipoEquipamento,on_delete=models.CASCADE)
     nome = models.CharField(max_length=30)
     consumo_agua = models.FloatField()
     consumo_energia = models.FloatField()
-    essencial = models.BooleanField()
 
     class Meta:
         db_table = 'equipamento'
