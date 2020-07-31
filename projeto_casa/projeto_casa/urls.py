@@ -26,8 +26,8 @@ urlpatterns = [
     path('', RedirectView.as_view(url='/home/')),
     path('home/', views.Home),
     path('login/', views.Login),
-    path('login/submit',views.submitLogin),
-    path('logout/',views.logout),
+    path('login/submit',views.SubmitLogin),
+    path('logout/',views.Logout),
 
     #Gerador de teste
     path('listar/', gt.ListarCasas),    

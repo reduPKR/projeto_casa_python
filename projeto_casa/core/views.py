@@ -8,7 +8,7 @@ from django.contrib import messages
 def Login(request):
     return render(request, 'login.html', {'titulo':'Login'})
 
-def submitLogin(request):
+def SubmitLogin(request):
     if request.POST:
         user = request.POST.get('user')
         password = request.POST.get('pass')
@@ -22,7 +22,7 @@ def submitLogin(request):
 
     return redirect('/login/')
 
-def logout(request):
+def Logout(request):
     logout(request) 
     return redirect('/')
 
