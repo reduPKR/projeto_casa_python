@@ -3,7 +3,7 @@ from core.models import *
 
 def ListarCasas(request):
     casas = Casa.objects.all()
-    dados = {'casas':casas}
+    dados = {'titulo':'Lista de casas', 'casas':casas}
     return render(request, 'gerador_testes/listar.html', dados)
 
 def Cadastrar(request):

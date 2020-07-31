@@ -15,13 +15,21 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.views.generic import RedirectView
+from core import views
 from core.pages.gerador_testes import views as gt
 
 urlpatterns = [
     path('admin/', admin.site.urls),
 
-    #gerador de teste
-    path('', gt.ListarCasas),
+    #Pagina inicial
+    path('', RedirectView.as_view(url='/home/')),
+    path('home/', views.Home),
+    path('login/', views.Login),
+    path('login/submit',views.submitLogin),
+    path('logout/',views.logout),
+
+    #Gerador de teste
     path('listar/', gt.ListarCasas),    
     path('cadastrar/', gt.Cadastrar)
 ]

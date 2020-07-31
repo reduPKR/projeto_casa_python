@@ -1,0 +1,19 @@
+{% extends  "model-page.html" %}
+
+{% block content %}
+    <div align="center">
+        <h1>Login</h1>
+        <form action="submit" method="POST"> {% csrf_token %}
+            <label>Usuario</label>
+            <input type="text" name="user"><br><br>                  
+            <label>Senha</label>
+            <input type="password" name="pass"><br><br>
+            <button type="submit">Loggar</button>
+        </form>
+    </div>
+    {% for message in messages %}
+        <div align='center'>
+            <strong>Erro</strong>{{ message }}
+        </div>
+    {% endfor %}
+{% endblock %}
