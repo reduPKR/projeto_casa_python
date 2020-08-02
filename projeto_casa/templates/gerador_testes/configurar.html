@@ -1,31 +1,56 @@
 {% extends "model-page.html" %}
 
 {% block content %}
-<div align='center'>
+<div align='center' class="linha">
     <h2><i class="fa fa-gears"></i> Configuração</h2>
     <div class="box">
-        <h3><i class="fa fa-wrench"></i> Categorias</h3>
-        <form action="submit" method="POST"> {% csrf_token %}
+        <h3><i class="fa fa-wrench"></i> Categorias de consumo</h3>
+        <form action="categorias/submit" method="POST"> {% csrf_token %}
             <label>Nome: </label>
-            <input type="text" name="nome"/> <br><br>
+            <input type="text" name="nome" maxlength="30"/> <br><br>
             <button class="button" type="submit">Salvar</button>
         </form>
+        <br><br>
+        {% for item in categorias %}
+        <ul>
+            <li>
+                {{item.nome}}
+            </li>
+        </ul>
+        {% endfor %}
     </div>
     <div class="box">
-        <h3><i class="fa fa-wrench"></i> Categoria de consumo</h3>
-        <form action="submit" method="POST"> {% csrf_token %}
+        <h3><i class="fa fa-wrench"></i> Recurso consumido</h3>
+        <form action="recursos/submit" method="POST"> {% csrf_token %}
             <label>Nome: </label>
-            <input type="text" name="nome"/> <br><br>
-            <button class="button" type="submit">Salvar</button>
+            <input type="text" name="nome" maxlength="30"/> <br><br>
+            <button class="button" type="recursos/submit">Salvar</button>
         </form>
+        <br><br>
+        {% for item in consumos %}
+        <ul>
+            <li>
+                {{item.nome}}
+            </li>
+        </ul>
+        {% endfor %}
     </div>
     <div class="box">
         <h3><i class="fa fa-wrench"></i> Categoria de equipamento</h3>
-        <form action="submit" method="POST"> {% csrf_token %}
+        <form action="categoria/equipamento/submit" method="POST"> {% csrf_token %}
             <label>Nome: </label>
-            <input type="text" name="nome"/> <br><br>
+            <input type="text" name="nome" maxlength="30"/> <br><br>
+            <label>Essencial? </label>
+            <input type="checkbox" name="essencial"><br><br>
             <button class="button" type="submit">Salvar</button>
         </form>
+        {% for item in equipamentos %}
+        <ul>
+            <li>
+                {{item.nome}}-{{item.get_essencial}}
+            </li>
+        </ul>
+        {% endfor %}
     </div>
 </div>
 {% endblock %}

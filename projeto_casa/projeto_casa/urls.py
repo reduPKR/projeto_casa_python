@@ -33,6 +33,8 @@ urlpatterns = [
     path('listar/', gt.ListarCasas),  
     path('configurar/', gt.Configurar),
     path('configurar/categorias/submit', gt.SaveCategorias),
+    path('configurar/recursos/submit', gt.SaveRecursos),
+    path('configurar/categoria/equipamento/submit', gt.SaveCategoriaEquipamento),
     path('equipamentos/', gt.Equipamentos),
     path('cadastrar/', gt.Cadastrar),
 ]

@@ -25,10 +25,16 @@ class TipoEquipamento(models.Model):
     class Meta:
         db_table = 'tipo_equipamento'
     
+    def get_essencial(self):
+        if self.essencial == True:
+            return 'Essencial'
+        else:
+            return 'Não essencial'
 class Equipamento(models.Model):
     tipo_consumo = models.ForeignKey(TipoConsumo,on_delete=models.CASCADE)
     tipo_equipamnto = models.ForeignKey(TipoEquipamento,on_delete=models.CASCADE)
-    nome = models.CharField(max_length=30)
+    nome = models.CharField(max_length=50)
+    descricao = models.CharField(max_length=500)
     consumo_agua = models.FloatField()
     consumo_energia = models.FloatField()
 

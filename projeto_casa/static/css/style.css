@@ -41,8 +41,7 @@
     border-radius: 4px;
     width: 20%;
     min-width: 50px;
-    height: 50%;
     min-height: 200px;
-    display: inline-block;
+    display: inline-grid;
     background-image: linear-gradient(to bottom right, #444444, #AAAAAA );
 }
