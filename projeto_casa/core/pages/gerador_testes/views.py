@@ -7,7 +7,13 @@ def ListarCasas(request):
     return render(request, 'gerador_testes/listar.html', dados)
 
 def Configurar(request):
-    return render(request, 'gerador_testes/configurar.html')
+    dados = {'titulo':'Configurações'}
+    return render(request, 'gerador_testes/configurar.html', dados)
+
+def Equipamentos(request):
+    dados = {'titulo':'Cadastro de equipamentos'}
+    return render(request, 'gerador_testes/equipamento.html', dados)
 
 def Cadastrar(request):
-    return render(request, 'gerador_testes/cadastrar.html')
+    dados = {'titulo':'Cadastrar nova casa'}
+    return render(request, 'gerador_testes/cadastrar.html', dados)

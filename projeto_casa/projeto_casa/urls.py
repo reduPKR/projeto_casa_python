@@ -31,6 +31,8 @@ urlpatterns = [
 
     #Gerador de teste
     path('listar/', gt.ListarCasas),  
-    path('configurar/', gt.Configurar),  
+    path('configurar/', gt.Configurar),
+    path('configurar/categorias/submit', gt.SaveCategorias),
+    path('equipamentos/', gt.Equipamentos),
     path('cadastrar/', gt.Cadastrar),
 ]

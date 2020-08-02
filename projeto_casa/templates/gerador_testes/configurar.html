@@ -3,5 +3,29 @@
 {% block content %}
 <div align='center'>
     <h2><i class="fa fa-gears"></i> Configuração</h2>
+    <div class="box">
+        <h3><i class="fa fa-wrench"></i> Categorias</h3>
+        <form action="submit" method="POST"> {% csrf_token %}
+            <label>Nome: </label>
+            <input type="text" name="nome"/> <br><br>
+            <button class="button" type="submit">Salvar</button>
+        </form>
+    </div>
+    <div class="box">
+        <h3><i class="fa fa-wrench"></i> Categoria de consumo</h3>
+        <form action="submit" method="POST"> {% csrf_token %}
+            <label>Nome: </label>
+            <input type="text" name="nome"/> <br><br>
+            <button class="button" type="submit">Salvar</button>
+        </form>
+    </div>
+    <div class="box">
+        <h3><i class="fa fa-wrench"></i> Categoria de equipamento</h3>
+        <form action="submit" method="POST"> {% csrf_token %}
+            <label>Nome: </label>
+            <input type="text" name="nome"/> <br><br>
+            <button class="button" type="submit">Salvar</button>
+        </form>
+    </div>
 </div>
 {% endblock %}
