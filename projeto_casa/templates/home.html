@@ -2,31 +2,45 @@
 
 {% block content %}
 <div align="center">
-    <h2>Casas</h2>
-    <table>
+    <h2><i class="fa fa-home"></i> Office</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th style="padding-bottom: 10px;" colspan="2">Gerador de teste</th>
+            </tr>
+        </thead>
         <tr>
-            <th>
-                <button class="button button-gray">
+            <td>
+                <a class="button button-gray">
                     Cadastrar casa
-                </button>
-            </th>
-            <th>
-                <button class="button button-gray">
+                </a>
+            </td>
+            <td>
+                <a class="button button-gray" href="/listar/">
                     Visualizar casas
-                </button>
-            </th>
+                </a>
+            </td>
         </tr>
         <tr>
-            <th>
-                <button class="button button-gray">
+            <td>
+                <a class="button button-gray">
                     Gerar teste
-                </button>
-            </th>
-            <th>
-                <button class="button button-gray">
+                </a>
+            </td>
+            <td>
+                <a class="button button-gray">
                     Simular teste
-                </button>
-            </th>
+                </a>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <a class="button button-alert" href="/configurar/">
+                    <i class="fa fa-exclamation-triangle"></i>
+                        Configurar
+                    <i class="fa fa-exclamation-triangle"></i>
+                </a>
+            </td>
         </tr>
     </table>
 </div>

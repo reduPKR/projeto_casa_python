@@ -30,6 +30,7 @@ urlpatterns = [
     path('logout/',views.Logout),
 
     #Gerador de teste
-    path('listar/', gt.ListarCasas),    
-    path('cadastrar/', gt.Cadastrar)
+    path('listar/', gt.ListarCasas),  
+    path('configurar/', gt.Configurar),  
+    path('cadastrar/', gt.Cadastrar),
 ]
