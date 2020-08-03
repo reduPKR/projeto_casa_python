@@ -34,9 +34,11 @@ class Equipamento(models.Model):
     tipo_consumo = models.ForeignKey(TipoConsumo,on_delete=models.CASCADE)
     tipo_equipamnto = models.ForeignKey(TipoEquipamento,on_delete=models.CASCADE)
     nome = models.CharField(max_length=50)
-    descricao = models.CharField(max_length=500)
+    descricao = models.CharField(max_length=500, null=True)
     consumo_agua = models.FloatField()
     consumo_energia = models.FloatField()
+    tempo_uso_min = models.IntegerField();
+    tempo_uso_max = models.IntegerField();
 
     class Meta:
         db_table = 'equipamento'

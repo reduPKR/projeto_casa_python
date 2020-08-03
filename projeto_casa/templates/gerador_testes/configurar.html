@@ -44,7 +44,7 @@
             <input type="checkbox" name="essencial"><br><br>
             <button class="button" type="submit">Salvar</button>
         </form>
-        {% for item in equipamentos %}
+        {% for item in tipoEquipamentos %}
         <ul>
             <li>
                 {{item.nome}}-{{item.get_essencial}}

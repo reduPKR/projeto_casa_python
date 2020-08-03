@@ -3,11 +3,51 @@
 {% block content %}
 <div align='center'>
     <h2><i class="fa fa-laptop"></i>Equipamentos</h2>
-    <div class="box">
-        <form action="submit" method="POST">
-            
+    <div class="box-form">
+        <h3><i class="fa fa-television"></i> Novo dispositivo</h3>
+        <form action="submit" method="POST"> {% csrf_token %}
+            <label >Nome: </label>
+            <input type="text" name="nome" maxlength="50" size="35" /><br><br>
+            <label>Energia por hora</label> 
+            <input type="number" name="energia" min="0" step="5" value="0"/> Kwh<br><br>
+            <label>Água por hora</label>
+            <input type="number" name="agua" min="0" step="5" value="0"/> Litros<br><br>
+            <label>Tempo em minutos: </label> 
+            <label>Min. </label> 
+            <input type="number" name="tempo_min" min="0" min="1" max="1440" step="5" value="0"/>
+            <label>Max. </label> 
+            <input type="number" name="tempo_max" min="0" min="1" max="1440" step="5" value="0"/><br><br>
+            <label>O que é consumido: </label> 
+            <select name='consumo' value='1'>
+                {% for item in consumos %}
+                    <option values= {{ item.id }}> {{ item.nome }} </option>
+                {% endfor %}
+            </select><br><br>
+            <label>Qual a categoria: </label> 
+            <select name='tipoEquipamento' value='1'>
+                {% for item in tipoEquipamentos %}
+                    <option values= {{ item.id }}> {{ item.nome }} </option>
+                {% endfor %}
+            </select>
+            <textarea name="descricao" rows="10" cols="50" maxlength="500" placeholder="Descrição"></textarea>            
+            <br><br><br>
+            <button class="button" type="submit">Salvar</button>
         </form>
     </div>
+    {% if equipamentos %}
+    <div class="box">
+        <h3><i class="fa fa-television"></i> Lista de dipositivos</h3>
+        <div>
+            {% for item in equipamentos %}
+            <ul>
+                <li>
+                    {{item.nome}}
+                </li>
+            </ul>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
 </div>
 
 {% endblock %}

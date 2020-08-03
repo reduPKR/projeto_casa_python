@@ -45,3 +45,24 @@
     display: inline-grid;
     background-image: linear-gradient(to bottom right, #444444, #AAAAAA );
 }
+
+.box-form {
+    align-content: flex-start;
+    justify-content: start;
+    border-radius: 4px;
+    width: 35%;
+    min-width: 400px;
+    min-height: 150px;
+    display: inline-grid;
+    background-image: linear-gradient(to bottom right, #444444, #AAAAAA );
+}
+
+input {
+    border-radius: 7px;
+}
+
+textarea {    
+    position: relative;
+    left: 10px;
+    top: 20px;
+}
