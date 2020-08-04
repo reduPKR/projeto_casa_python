@@ -20,16 +20,10 @@ class Saida(models.Model):
 #O tipo de quipamento é usado para o algoritmo de regrasao linear
 class TipoEquipamento(models.Model):
     nome = models.CharField(max_length=30)
-    essencial = models.BooleanField()
 
     class Meta:
         db_table = 'tipo_equipamento'
     
-    def get_essencial(self):
-        if self.essencial == True:
-            return 'Essencial'
-        else:
-            return 'Não essencial'
 class Equipamento(models.Model):
     tipo_consumo = models.ForeignKey(TipoConsumo,on_delete=models.CASCADE)
     tipo_equipamnto = models.ForeignKey(TipoEquipamento,on_delete=models.CASCADE)
@@ -60,9 +54,16 @@ class ComodoSaida(models.Model):
     comodo = models.ForeignKey(Comodo, on_delete=models.CASCADE)
     saida = models.ForeignKey(Saida, on_delete=models.CASCADE)
     equipamento = models.ForeignKey(Equipamento, on_delete=models.CASCADE)
+    essencial = models.BooleanField()
 
     class Meta:
         db_table = 'comodo_saida'
+
+    def get_essencial(self):
+        if self.essencial == True:
+            return 'Essencial'
+        else:
+            return 'Não essencial'
 
 class Categoria(models.Model):
     nome = models.CharField(max_length=30)

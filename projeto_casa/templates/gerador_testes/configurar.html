@@ -40,14 +40,12 @@
         <form action="categoria/equipamento/submit" method="POST"> {% csrf_token %}
             <label>Nome: </label>
             <input type="text" name="nome" maxlength="30"/> <br><br>
-            <label>Essencial? </label>
-            <input type="checkbox" name="essencial"><br><br>
             <button class="button" type="submit">Salvar</button>
         </form>
         {% for item in tipoEquipamentos %}
         <ul>
             <li>
-                {{item.nome}}-{{item.get_essencial}}
+                {{item.nome}}
             </li>
         </ul>
         {% endfor %}

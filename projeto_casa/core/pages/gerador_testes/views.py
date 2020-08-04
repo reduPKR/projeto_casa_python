@@ -63,6 +63,7 @@ def Equipamentos(request):
         'consumos': consumos,
         'tipoEquipamentos': tipoEquipamentos
     }
+    
     return render(request, 'gerador_testes/equipamento.html', dados)
 
 def SaveEquipamentos(request):
