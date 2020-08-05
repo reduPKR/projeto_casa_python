@@ -57,9 +57,14 @@ def Equipamentos(request):
     consumos = TipoConsumo.objects.all() 
     tipoEquipamentos = TipoEquipamento.objects.all()
 
+    id = request.GET.get('id')
+    equipamento = None
+    if id:
+        equipamento = Equipamento.objects.get(id=id)
     dados = {
         'titulo':'Cadastro de equipamentos',
         'equipamentos': equipamentos,
+        'equipamento': equipamento,
         'consumos': consumos,
         'tipoEquipamentos': tipoEquipamentos
     }

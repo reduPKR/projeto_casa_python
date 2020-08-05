@@ -6,25 +6,47 @@
     <div class="box-form">
         <h3><i class="fa fa-television"></i> Novo dispositivo</h3>
         <form action="submit" method="POST"> {% csrf_token %}
-            <label >Nome: </label>
-            <input type="text" name="nome" maxlength="50" size="35" /><br><br>
-            <label>Energia por hora</label> 
-            <input type="number" name="energia" min="0" step="5" value="0"/> Kwh<br><br>
-            <label>Água por hora</label>
-            <input type="number" name="agua" min="0" step="5" value="0"/> Litros<br><br>
-            <label>O que é consumido: </label> 
-            <select name="consumo" value='1'>
-                {% for item in consumos %}
-                    <option value={{ item.id }}> {{ item.nome }} </option>
-                {% endfor %}
-            </select><br><br>
-            <label>Qual a categoria: </label> 
-            <select name='tipoEquipamento' value='1'>
-                {% for item in tipoEquipamentos %}
-                    <option value= {{ item.id }}> {{ item.nome }} </option>
-                {% endfor %}
-            </select>
-            <textarea name="descricao" rows="10" cols="50" maxlength="500" placeholder="Descrição"></textarea>            
+            {% if equipamento is None %}
+                <label >Nome: </label>
+                <input type="text" name="nome" maxlength="50" size="35" /><br><br>
+                <label>Energia por hora</label> 
+                <input type="number" name="energia" min="0" step="5" value="0"/> Kwh<br><br>
+                <label>Água por hora</label>
+                <input type="number" name="agua" min="0" step="5" value="0"/> Litros<br><br>
+                <label>O que é consumido: </label> 
+                <select name="consumo" value='1'>
+                    {% for item in consumos %}
+                        <option value={{ item.id }}> {{ item.nome }} </option>
+                    {% endfor %}
+                </select><br><br>
+                <label>Qual a categoria: </label> 
+                <select name='tipoEquipamento' value='1'>
+                    {% for item in tipoEquipamentos %}
+                        <option value= {{ item.id }}> {{ item.nome }} </option>
+                    {% endfor %}
+                </select>
+                <textarea name="descricao" rows="10" cols="50" maxlength="500" placeholder="Descrição"></textarea>            
+            {% else %}
+                <label >Nome: </label>
+                <input type="text" name="nome" maxlength="50" size="35" value="{{equipamento.nome}}"/><br><br>
+                <label>Energia por hora</label> 
+                <input type="number" name="energia" min="0" step="5" value="{{equipamento.consumo_energia}}"/> Kwh<br><br>
+                <label>Água por hora</label>
+                <input type="number" name="agua" min="0" step="5" value="{{equipamento.consumo_agua}}"/> Litros<br><br>
+                <label>O que é consumido: </label>  
+                <select name="consumo" value='{{equipamento.tipo_consumo.id}}'>
+                    {% for item in consumos %}
+                        <option value={{ item.id }}> {{ item.nome }} </option>
+                    {% endfor %}
+                </select><br><br>
+                <label>Qual a categoria: </label> 
+                <select name='tipoEquipamento' value='{{equipamento.tipo_equipamento.id}}'>
+                    {% for item in tipoEquipamentos %}
+                        <option value= {{ item.id }}> {{ item.nome }} </option>
+                    {% endfor %}
+                </select>
+                <textarea name="descricao" rows="10" cols="50" maxlength="500" placeholder="Descrição"></textarea>            
+            {% endif %}
             <br><br><br>
             <button class="button" type="submit">Salvar</button>
         </form>
@@ -37,7 +59,7 @@
             <ul>
                 <li>
                     {{ item.nome }}
-                    <button > Editar</button>
+                    <a href="?id={{item.id}}"> Editar</a>
                 </li>
             </ul>
             {% endfor %}
