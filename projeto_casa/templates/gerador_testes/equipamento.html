@@ -34,15 +34,23 @@
                 <label>Água por hora</label>
                 <input type="number" name="agua" min="0" step="5" value="{{equipamento.consumo_agua}}"/> Litros<br><br>
                 <label>O que é consumido: </label>  
-                <select name="consumo" value='{{equipamento.tipo_consumo.id}}'>
+                <select name="consumo">
                     {% for item in consumos %}
-                        <option value={{ item.id }}> {{ item.nome }} </option>
+                        {% if item.id is equipamento.tipo_consumo.id %}
+                            <option value= {{ item.id }} selected> {{ item.nome }} </option>
+                        {% else %}
+                            <option value= {{ item.id }}> {{ item.nome }} </option>
+                        {% endif %}
                     {% endfor %}
                 </select><br><br>
                 <label>Qual a categoria: </label> 
-                <select name='tipoEquipamento' value='{{equipamento.tipo_equipamento.id}}'>
+                <select name='tipoEquipamento'>
                     {% for item in tipoEquipamentos %}
-                        <option value= {{ item.id }}> {{ item.nome }} </option>
+                        {% if item.id is equipamento.tipo_equipamento.id %}
+                            <option value= {{ item.id }} selected> {{ item.nome }} </option>
+                        {% else %}
+                            <option value= {{ item.id }}> {{ item.nome }} </option>
+                        {% endif %}
                     {% endfor %}
                 </select>
                 <textarea name="descricao" rows="10" cols="50" maxlength="500" placeholder="Descrição"></textarea>            

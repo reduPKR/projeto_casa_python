@@ -84,14 +84,25 @@ def SaveEquipamentos(request):
         tipo_equipamento = TipoEquipamento.objects.filter(id=equipamento_id).first()
         
         if nome:
-            Equipamento.objects.create(
-                nome = nome,
-                consumo_energia = consumo_energia,
-                consumo_agua = consumo_agua,
-                descricao = descricao,
-                tipo_consumo = tipo_consumo,
-                tipo_equipamento = tipo_equipamento
-            )
+            id = request.POST.get('id')
+            if id:
+                Equipamento.objects.update(
+                    nome = nome,
+                    consumo_energia = consumo_energia,
+                    consumo_agua = consumo_agua,
+                    descricao = descricao,
+                    tipo_consumo = tipo_consumo,
+                    tipo_equipamento = tipo_equipamento
+                )
+            else:
+                Equipamento.objects.create(
+                    nome = nome,
+                    consumo_energia = consumo_energia,
+                    consumo_agua = consumo_agua,
+                    descricao = descricao,
+                    tipo_consumo = tipo_consumo,
+                    tipo_equipamento = tipo_equipamento
+                )
     
     return redirect('/equipamentos/')
 
