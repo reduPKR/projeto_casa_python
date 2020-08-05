@@ -26,13 +26,11 @@ class TipoEquipamento(models.Model):
     
 class Equipamento(models.Model):
     tipo_consumo = models.ForeignKey(TipoConsumo,on_delete=models.CASCADE)
-    tipo_equipamnto = models.ForeignKey(TipoEquipamento,on_delete=models.CASCADE)
+    tipo_equipamento = models.ForeignKey(TipoEquipamento,on_delete=models.CASCADE)
     nome = models.CharField(max_length=50)
     descricao = models.CharField(max_length=500, null=True)
     consumo_agua = models.FloatField()
     consumo_energia = models.FloatField()
-    tempo_uso_min = models.IntegerField();
-    tempo_uso_max = models.IntegerField();
 
     class Meta:
         db_table = 'equipamento'
@@ -55,6 +53,11 @@ class ComodoSaida(models.Model):
     saida = models.ForeignKey(Saida, on_delete=models.CASCADE)
     equipamento = models.ForeignKey(Equipamento, on_delete=models.CASCADE)
     essencial = models.BooleanField()
+    
+    tempo_min_semana = models.IntegerField()
+    tempo_max_semana = models.IntegerField()
+    tempo_min_feriado = models.IntegerField()
+    tempo_max_feriado = models.IntegerField()
 
     class Meta:
         db_table = 'comodo_saida'

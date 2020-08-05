@@ -53,7 +53,7 @@ def SaveCategoriaEquipamento(request):
     return redirect('/configurar/')
 
 def Equipamentos(request):
-    equipamentos = Equipamento.objects.all()
+    equipamentos = Equipamento.objects.all().order_by('nome')
     consumos = TipoConsumo.objects.all() 
     tipoEquipamentos = TipoEquipamento.objects.all()
 
@@ -71,22 +71,21 @@ def SaveEquipamentos(request):
         nome = request.POST.get('nome')
         consumo_energia = request.POST.get('energia')
         consumo_agua = request.POST.get('agua')
-        tempo_uso_min = request.POST.get('tempo_min')
-        tempo_uso_max = request.POST.get('tempo_max')
         descricao = request.POST.get('descricao')
-        tipo_consumo = request.POST.get('consumo')
-        tipo_equipamnto = request.POST.get('tipoEquipamento')
-
+        
+        consumo_id = request.POST.get('consumo')
+        tipo_consumo = TipoConsumo.objects.filter(id=consumo_id).first()
+        equipamento_id = request.POST.get('tipoEquipamento')
+        tipo_equipamento = TipoEquipamento.objects.filter(id=equipamento_id).first()
+        
         if nome:
             Equipamento.objects.create(
                 nome = nome,
                 consumo_energia = consumo_energia,
                 consumo_agua = consumo_agua,
-                tempo_uso_min = tempo_uso_min,
-                tempo_uso_max = tempo_uso_max,
                 descricao = descricao,
                 tipo_consumo = tipo_consumo,
-                tipo_equipamnto = tipo_equipamnto
+                tipo_equipamento = tipo_equipamento
             )
     
     return redirect('/equipamentos/')
