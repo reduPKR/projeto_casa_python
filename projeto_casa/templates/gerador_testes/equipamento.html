@@ -27,6 +27,7 @@
                 </select>
                 <textarea name="descricao" rows="10" cols="50" maxlength="500" placeholder="Descrição"></textarea>            
             {% else %}
+                <input name="id" value='{{equipamento.id}}' hidden>
                 <label >Nome: </label>
                 <input type="text" name="nome" maxlength="50" size="35" value="{{equipamento.nome}}"/><br><br>
                 <label>Energia por hora</label> 
@@ -68,6 +69,7 @@
                 <li>
                     {{ item.nome }}
                     <a href="?id={{item.id}}"> Editar</a>
+                    <a href="excluir/{{item.id}}/">excluir</a>
                 </li>
             </ul>
             {% endfor %}

@@ -52,6 +52,27 @@ def SaveCategoriaEquipamento(request):
     
     return redirect('/configurar/')
 
+def DeleteCategorias(request,id):
+    if id:
+        item = Categoria.objects.get(id=id)
+        if item:
+            item.delete()
+    return redirect('/configurar/')
+
+def DeleteRecursos(request,id):
+    if id:
+        item = TipoConsumo.objects.get(id=id)
+        if item:
+            item.delete()
+    return redirect('/configurar/')
+
+def DeleteCategoriaEquipamento(request,id):
+    if id:
+        item = TipoEquipamento.objects.get(id=id)
+        if item:
+            item.delete()
+    return redirect('/configurar/')
+
 def Equipamentos(request):
     equipamentos = Equipamento.objects.all().order_by('nome')
     consumos = TipoConsumo.objects.all() 
@@ -86,7 +107,7 @@ def SaveEquipamentos(request):
         if nome:
             id = request.POST.get('id')
             if id:
-                Equipamento.objects.update(
+                Equipamento.objects.filter(id=id).update(
                     nome = nome,
                     consumo_energia = consumo_energia,
                     consumo_agua = consumo_agua,
@@ -104,6 +125,13 @@ def SaveEquipamentos(request):
                     tipo_equipamento = tipo_equipamento
                 )
     
+    return redirect('/equipamentos/')
+
+def DeleteEquipamentos(request,id):
+    if id:
+        item = Equipamento.objects.get(id=id)
+        if item:
+            item.delete()
     return redirect('/equipamentos/')
 
 def Cadastrar(request):

@@ -35,7 +35,11 @@ urlpatterns = [
     path('configurar/categorias/submit', gt.SaveCategorias),
     path('configurar/recursos/submit', gt.SaveRecursos),
     path('configurar/categoria/equipamento/submit', gt.SaveCategoriaEquipamento),
+    path('configurar/categorias/excluir/<int:id>/', gt.DeleteCategorias),
+    path('configurar/recursos/excluir/<int:id>/', gt.DeleteRecursos),
+    path('configurar/categoria/equipamento/excluir/<int:id>/', gt.DeleteCategoriaEquipamento),
     path('equipamentos/', gt.Equipamentos),
     path('equipamentos/submit', gt.SaveEquipamentos),
+    path('equipamentos/excluir/<int:id>/', gt.DeleteEquipamentos),
     path('cadastrar/', gt.Cadastrar),
 ]
