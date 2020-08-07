@@ -18,6 +18,7 @@ from django.urls import path
 from django.views.generic import RedirectView
 from core import views
 from core.pages.gerador_testes import views as gt
+from core.pages.casa import views as Cadastro
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -42,8 +43,8 @@ urlpatterns = [
     path('equipamentos/excluir/<int:id>/', gt.DeleteEquipamentos),
 
     #Casa
-    path('listar/', gt.ListarCasas),  
-    path('cadastrar/', gt.Cadastrar),
-    path('cadastrar/avancar/<int:etapa>/', gt.AvancarEtapa),
-    path('cadastrar/voltar/<int:etapa>/', gt.VoltarEtapa),
+    path('listar/', Cadastro.ListarCasas),  
+    path('cadastrar/', Cadastro.Cadastrar),
+    path('cadastrar/avancar/', Cadastro.AvancarEtapa),
+    path('cadastrar/voltar/', Cadastro.VoltarEtapa),
 ]

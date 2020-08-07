@@ -1,11 +1,6 @@
 from django.shortcuts import render, redirect
 from core.models import *
 
-def ListarCasas(request):
-    casas = Casa.objects.all()
-    dados = {'titulo':'Lista de casas', 'casas':casas}
-    return render(request, 'gerador_testes/listar.html', dados)
-
 def Configurar(request):
     categorias = Categoria.objects.all()
     consumos = TipoConsumo.objects.all() 
@@ -133,29 +128,3 @@ def DeleteEquipamentos(request,id):
         if item:
             item.delete()
     return redirect('/equipamentos/')
-
-#Cadastrar casa
-def Cadastrar(request):
-    dados = {
-        'titulo':'Cadastrar nova casa',
-        'etapa': 0
-    }
-    return render(request, 'gerador_testes/cadastrar.html', dados)
-
-def AvancarEtapa(request,etapa):
-    etapa = etapa+1
-    dados = {
-        'titulo':'Cadastrar nova casa',
-        'etapa': etapa
-    }
-
-    return render(request, 'gerador_testes/cadastrar.html', dados)
-
-def VoltarEtapa(request,etapa):
-    etapa = etapa-1
-    dados = {
-        'titulo':'Cadastrar nova casa',
-        'etapa': etapa
-    }
-
-    return render(request, 'gerador_testes/cadastrar.html', dados)
