@@ -1,6 +1,25 @@
 {% extends "model-page.html" %}
 
 {% block content %}
-<h2>Cadastro</h2>
-<label>Aqui ja esta tudo pronto para comecar a trabalhar</label>
+<div align='center'>
+    <h2><i class='fa fa-home'></i> Cadastro da casa</h2>
+    <div class="box-form">
+        <br>
+        <form action="submit" method="POST"> {% csrf_token %}
+            {% if etapa == 0 %}
+                <p class="tab">
+                    <label>Nome da casa: </label>
+                    <input type="text" name="nome" maxlength="50" size="30"/>
+                </p>
+            {% endif %}
+            <br><br>
+            <a type="button" style="margin-left: 40px;" href="/cadastrar/voltar/{{etapa}}">
+                Voltar
+            </a>
+            <a type="button" style="margin-left: 400px;" href="/cadastrar/avancar/{{etapa}}">
+                Avançar
+            </a>
+        </form>
+    </div>
+</div>
 {% endblock %}

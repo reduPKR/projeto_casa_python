@@ -134,6 +134,28 @@ def DeleteEquipamentos(request,id):
             item.delete()
     return redirect('/equipamentos/')
 
+#Cadastrar casa
 def Cadastrar(request):
-    dados = {'titulo':'Cadastrar nova casa'}
+    dados = {
+        'titulo':'Cadastrar nova casa',
+        'etapa': 0
+    }
+    return render(request, 'gerador_testes/cadastrar.html', dados)
+
+def AvancarEtapa(request,etapa):
+    etapa = etapa+1
+    dados = {
+        'titulo':'Cadastrar nova casa',
+        'etapa': etapa
+    }
+
+    return render(request, 'gerador_testes/cadastrar.html', dados)
+
+def VoltarEtapa(request,etapa):
+    etapa = etapa-1
+    dados = {
+        'titulo':'Cadastrar nova casa',
+        'etapa': etapa
+    }
+
     return render(request, 'gerador_testes/cadastrar.html', dados)

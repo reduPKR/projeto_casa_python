@@ -5,6 +5,13 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link type="text/css" href="{% static 'css/style.css' %}" rel="stylesheet"/>
     <title>{{titulo}}</title>
+    
+    {% if request.get_full_path != '/home/' %}
+        <div align="left">
+            <a href="/home/">Home</a>
+        </div>
+    {% endif %}
+
     {% if titulo != 'Login' %}
         <div align="right">
             <a href="/logout">logout</a>

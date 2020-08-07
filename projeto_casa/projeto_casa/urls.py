@@ -29,8 +29,7 @@ urlpatterns = [
     path('login/submit',views.SubmitLogin),
     path('logout/',views.Logout),
 
-    #Gerador de teste
-    path('listar/', gt.ListarCasas),  
+    #configurar
     path('configurar/', gt.Configurar),
     path('configurar/categorias/submit', gt.SaveCategorias),
     path('configurar/recursos/submit', gt.SaveRecursos),
@@ -41,5 +40,10 @@ urlpatterns = [
     path('equipamentos/', gt.Equipamentos),
     path('equipamentos/submit', gt.SaveEquipamentos),
     path('equipamentos/excluir/<int:id>/', gt.DeleteEquipamentos),
+
+    #Casa
+    path('listar/', gt.ListarCasas),  
     path('cadastrar/', gt.Cadastrar),
+    path('cadastrar/avancar/<int:etapa>/', gt.AvancarEtapa),
+    path('cadastrar/voltar/<int:etapa>/', gt.VoltarEtapa),
 ]
