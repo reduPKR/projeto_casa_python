@@ -5,13 +5,12 @@
     <h2><i class='fa fa-home'></i> Cadastro da casa</h2>
     <div class="container">
         <div class="row">
-            <div class="col col-6 col-sm-6 col-md-4 col-lg-3 col-xs-4 container box-gray">
+            <div class="col col-6 col-sm-6 col-md-4 col-lg-5 col-xs-4 container box-gray">
                 <form action="submit" method="POST"> {% csrf_token %}
                     {% if etapa == 0 %}
-                        <p class="tab">
-                            <label>Nome da casa: </label>
-                            <input type="text" name="nome" maxlength="50" size="30"/>
-                        </p>
+                        <br>
+                        <label>Nome da casa: </label>
+                        <input type="text" name="nome" maxlength="50" size="30"/>
                     {% endif %}
                     <br><br>
                 </form>
@@ -21,7 +20,7 @@
                             Voltar
                         </a>
                     {% endif %}
-                    {% if etapa < 3 %}
+                    {% if etapa < 1 %}
                         <a type="button" class="btn btn-success" style="position: absolute; right: 10px;" href="/cadastrar/avancar">
                             Avançar
                         </a>
