@@ -3,18 +3,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {% load static %}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
     <link type="text/css" href="{% static 'css/style.css' %}" rel="stylesheet"/>
     <title>{{titulo}}</title>
     
     {% if request.get_full_path != '/home/' %}
-        <div align="left">
-            <a href="/home/">Home</a>
-        </div>
+        <a href="/home/">Home</a>
     {% endif %}
 
     {% if titulo != 'Login' %}
-        <div align="right">
-            <a href="/logout">logout</a>
-        </div>
+        <a style="position: fixed; right: 20px;" href="/logout">logout</a>
     {% endif %}
 </head>

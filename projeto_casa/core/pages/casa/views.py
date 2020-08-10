@@ -7,7 +7,16 @@ def ListarCasas(request):
     return render(request, 'casas/listar.html', dados)
 
 etapa = 0
+ctr = False
 def Cadastrar(request):
+    global etapa
+    global ctr
+
+    if ctr is False:
+        etapa = 0
+    else:
+        ctr = False
+
     dados = {
         'titulo':'Cadastrar nova casa',
         'etapa': etapa
@@ -17,11 +26,18 @@ def Cadastrar(request):
 
 def AvancarEtapa(request):
     global etapa
+    global ctr
+
     etapa = etapa + 1
+    ctr = True
+
     return redirect('/cadastrar/')
 
 def VoltarEtapa(request):
     global etapa
+    global ctr
+
     etapa = etapa-1
+    ctr = True
 
     return redirect('/cadastrar/')

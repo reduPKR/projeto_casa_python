@@ -1,13 +1,14 @@
 {% extends "model-page.html" %}
 
 {% block content %}
-<div align='center'>
+<div align='center' class="container">
     <h2><i class="fa fa-laptop"></i>Equipamentos</h2>
-    <div class="box-form">
-        <h3><i class="fa fa-television"></i> Novo dispositivo</h3>
-        <form action="submit" method="POST"> {% csrf_token %}
-            {% if equipamento is None %}
-                <p>
+    <div class="container">
+        <div class="row">
+            <div class="container col col-12 col-sm-12 col-md-5 col-lg-5 col-xs-5 box-gray">
+            <h3><i class="fa fa-television"></i> Novo dispositivo</h3>
+            <form action="submit" method="POST"> {% csrf_token %}
+                {% if equipamento is None %}
                     <label >Nome: </label>
                     <input type="text" name="nome" maxlength="50" size="35" /><br><br>
                     <label>Energia por hora</label> 
@@ -25,11 +26,9 @@
                         {% for item in tipoEquipamentos %}
                             <option value= {{ item.id }}> {{ item.nome }} </option>
                         {% endfor %}
-                    </select>
+                    </select><br><br>
                     <textarea name="descricao" rows="10" cols="50" maxlength="500" placeholder="Descrição"></textarea>            
-                </p>
-            {% else %}
-                <p>  
+                {% else %}
                     <input name="id" value='{{equipamento.id}}' hidden>
                     <label >Nome: </label>
                     <input type="text" name="nome" maxlength="50" size="35" value="{{equipamento.nome}}"/><br><br>
@@ -58,28 +57,30 @@
                         {% endfor %}
                     </select>
                     <textarea name="descricao" rows="10" cols="50" maxlength="500" placeholder="Descrição"></textarea>            
-                </p>
+                {% endif %}
+                <br><br><br>
+                <button class="btn btn-secondary" style="width: 300px;" type="submit">Salvar</button>
+                <br><br>
+            </form>
+            </div>
+            {% if equipamentos %}
+            <div class="container col col-12 col-sm-12 col-md-5 col-lg-5 col-xs-5 box-gray">
+                <h3><i class="fa fa-television"></i> Lista de dipositivos</h3>
+                <div>
+                    {% for item in equipamentos %}
+                    <ul>
+                        <li>
+                            {{ item.nome }}
+                            <a href="?id={{item.id}}"> Editar</a>
+                            <a href="excluir/{{item.id}}/">excluir</a>
+                        </li>
+                    </ul>
+                    {% endfor %}
+                </div>
+            </div>
             {% endif %}
-            <br><br><br>
-            <button class="button" type="submit">Salvar</button>
-        </form>
-    </div>
-    {% if equipamentos %}
-    <div class="box">
-        <h3><i class="fa fa-television"></i> Lista de dipositivos</h3>
-        <div>
-            {% for item in equipamentos %}
-            <ul>
-                <li>
-                    {{ item.nome }}
-                    <a href="?id={{item.id}}"> Editar</a>
-                    <a href="excluir/{{item.id}}/">excluir</a>
-                </li>
-            </ul>
-            {% endfor %}
         </div>
     </div>
-    {% endif %}
 </div>
 
 {% endblock %}

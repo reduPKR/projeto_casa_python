@@ -3,52 +3,65 @@
 {% block content %}
 <div align="center">
     <h2><i class="fa fa-home"></i> Office</h2>
-    <div class="box-button">
-        <table>
-            <thead>
-                <tr>
-                    <th colspan="2">Gerador de teste</th>
-                </tr>
-            </thead>
-            <tr>
-                <td>
-                    <a class="button button-gray" href="/cadastrar/">
-                        Cadastrar casa
-                    </a>
-                </td>
-                <td>
-                    <a class="button button-gray" href="/listar/">
-                        Visualizar casas
-                    </a>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <a class="button button-gray">
-                        Gerar teste
-                    </a>
-                </td>
-                <td>
-                    <a class="button button-gray">
-                        Simular teste
-                    </a>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <a class="button button-alert" href="/configurar/">
-                        <i class="fa fa-exclamation-triangle"></i>
-                            Configurar
-                        <i class="fa fa-exclamation-triangle"></i>
-                    </a>
-                </td>
-                <td>
-                    <a class="button button-alert" href="/equipamentos/">
-                        Equipamentos
-                    </a>
-                </td>
-            </tr>
-        </table>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+
+            </div>
+            <div class="col col-12 col-sm-12 col-md-5 col-lg-5 col-xs-5 box-gray">
+                <table>
+                    <thead  align="center">
+                        <tr>
+                            <th colspan="2">Menu</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <a type="button" class="btn btn-secondary" style="margin-right: 50px; width:150px;" href="/cadastrar/">
+                                    Cadastrar casa
+                                </a>
+                            </td>
+                            <td>
+                                <a type="button" class="btn btn-secondary" style="width:150px;"  href="/listar/">
+                                    Visualizar casas
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <a type="button" class="btn btn-secondary" style="width:150px;">
+                                    Gerar teste
+                                </a>
+                            </td>
+                            <td>
+                                <a type="button" class="btn btn-secondary" style="width:150px;">
+                                    Simular teste
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <a type="button" class="btn btn-warning" style="width:150px;" href="/configurar/">
+                                    <i class="fa fa-exclamation-triangle"></i>
+                                        Configurar
+                                    <i class="fa fa-exclamation-triangle"></i>
+                                </a>
+                            </td>
+                            <td>
+                                <a type="button" class="btn btn-warning" style="width:150px;" href="/equipamentos/">
+                                    Equipamentos
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <br>
+            </div>
+            <div class="col">
+
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}
