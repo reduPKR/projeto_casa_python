@@ -7,25 +7,40 @@
         <div class="row">
             <div class="col col-6 col-sm-6 col-md-4 col-lg-5 col-xs-4 container box-gray">
                 <form action="submit" method="POST"> {% csrf_token %}
+                    <br>
                     {% if etapa == 0 %}
-                        <br>
                         <label>Nome da casa: </label>
                         <input type="text" name="nome" maxlength="50" size="30"/>
                     {% endif %}
+                    {% if etapa == 1 %}
+                        <label>Adicionar: </label>
+                        <br>
+                        <button type="button" class="btn btn-secondary block" style="width:300px;">
+                            <i class='fa fa-bed'></i> Novo comodo 
+                        </button>
+                        <br><br>
+                        <button type="button" class="btn btn-secondary block" style="width:300px;">
+                            <i class='fa fa-shower'></i> Nova saida
+                        </button>
+                        <br><br>
+                        <button type="button" class="btn btn-secondary block" style="width:300px;">
+                            <i class='fa fa-wrench'></i> Vincular comodo e saida
+                        </button>
+                    {% endif %}
                     <br><br>
+                    <div align='center'>
+                        {% if etapa != 0%}
+                            <a type="button" class="btn btn-warning" style="position: absolute; left: 10px;" href="/cadastrar/voltar">
+                                <i class='fas fa-arrow-alt-circle-left'></i> Voltar
+                            </a>
+                        {% endif %}
+                        {% if etapa < 1 %}
+                            <a type="button" class="btn btn-success" style="position: absolute; right: 10px;" href="/cadastrar/avancar">
+                                Avançar <i class='fas fa-arrow-alt-circle-right'></i>
+                            </a>
+                        {% endif %}
+                    </div><br><br>
                 </form>
-                <div align='center'>
-                    {% if etapa != 0%}
-                        <a type="button" class="btn btn-warning" style="position: absolute; left: 10px;" href="/cadastrar/voltar">
-                            Voltar
-                        </a>
-                    {% endif %}
-                    {% if etapa < 1 %}
-                        <a type="button" class="btn btn-success" style="position: absolute; right: 10px;" href="/cadastrar/avancar">
-                            Avançar
-                        </a>
-                    {% endif %}
-                </div><br><br>
             </div>
         </div>     
     </div>
