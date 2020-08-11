@@ -2,12 +2,12 @@
 
 {% block content %}
 <div align='center' class="container">
-    <h2><i class="fa fa-laptop"></i>Equipamentos</h2>
+    <h2><i class="fas fa-laptop"></i>Equipamentos</h2>
     <div class="container">
         <div class="row">
             <div class="container col col-12 col-sm-12 col-md-5 col-lg-5 col-xs-5 box-gray">
             <br>
-            <h4><i class="fa fa-television"></i> Novo dispositivo</h4><br>
+            <h4><i class="fas fa-tv"></i> Novo dispositivo</h4><br>
             <form action="submit" method="POST"> {% csrf_token %}
                 {% if equipamento is None %}
                     <label >Nome: </label>
@@ -71,7 +71,7 @@
                     <thead>
                         <tr align="center">
                             <th colspan="3">
-                                <i class="fa fa-television"></i> Lista de dipositivos
+                                <i class="fas fa-tv"></i> Lista de dipositivos
                             </th>
                         </tr>
                     </thead>
