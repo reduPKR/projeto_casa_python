@@ -51,7 +51,7 @@ class Comodo(models.Model):
 class ComodoSaida(models.Model):
     comodo = models.ForeignKey(Comodo, on_delete=models.CASCADE)
     saida = models.ForeignKey(Saida, on_delete=models.CASCADE)
-    equipamento = models.ForeignKey(Equipamento, on_delete=models.CASCADE)
+    equipamento = models.ForeignKey(Equipamento, on_delete=models.CASCADE, null=True)
     essencial = models.BooleanField()
     
     tempo_min_semana = models.IntegerField()

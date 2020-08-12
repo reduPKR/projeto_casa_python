@@ -17,14 +17,15 @@ def Cadastrar(request):
     else:
         ctr = False
 
+
     dados = {
         'titulo':'Cadastrar nova casa',
         'etapa': etapa
     }
-    
+
     return render(request, 'casas/cadastrar.html', dados)
 
-def AvancarEtapa(request):
+def AdicionarCasa(request):
     global etapa
     global ctr
 
@@ -37,7 +38,34 @@ def VoltarEtapa(request):
     global etapa
     global ctr
 
-    etapa = etapa-1
+    etapa = 1
+    ctr = True
+
+    return redirect('/cadastrar/')
+
+def NovoComodo(request):
+    global etapa
+    global ctr
+
+    etapa = 2
+    ctr = True
+
+    return redirect('/cadastrar/')
+
+def NovaSaida(request):
+    global etapa
+    global ctr
+
+    etapa = 3
+    ctr = True
+
+    return redirect('/cadastrar/')
+
+def NovoVinculo(request):
+    global etapa
+    global ctr
+
+    etapa = 4
     ctr = True
 
     return redirect('/cadastrar/')
