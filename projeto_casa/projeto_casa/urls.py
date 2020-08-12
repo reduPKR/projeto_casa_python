@@ -46,6 +46,7 @@ urlpatterns = [
     path('listar/', Cadastro.ListarCasas),  
     path('cadastrar/', Cadastro.Cadastrar),
     path('cadastrar/add/casa', Cadastro.AdicionarCasa),
+    path('cadastrar/excluir/casa/<int:id>/', Cadastro.DeleteCasa),
     path('cadastrar/voltar/', Cadastro.VoltarEtapa),
     path('cadastrar/novo/comodo/', Cadastro.NovoComodo),
     path('cadastrar/nova/saida/', Cadastro.NovaSaida),

@@ -1,0 +1,58 @@
+{% extends "model-page.html" %}
+
+{% block content %}
+
+{% if etapa == 1 %}
+        <label>Adicionar: </label>
+        <br>
+        <a type="button" class="btn btn-secondary btn-lg btn-block" href="/cadastrar/novo/comodo">
+            <i class='fa fa-bed'></i> Novo comodo 
+        </a>
+        <br>
+        <a type="button" class="btn btn-secondary btn-lg btn-block" href="/cadastrar/nova/saida">
+            <i class='fa fa-shower'></i> Nova saida
+        </a>
+        <br>
+        <a type="button" class="btn btn-secondary btn-lg btn-block" href="/cadastrar/novo/vinculo">
+            <i class='fa fa-wrench'></i> Vincular comodo e saida
+        </a>
+    {% endif %}
+    {% if etapa == 2 %}
+        <label>Nome do comodo: </label>
+        <input type="text" name="comodo" id="comodo" maxlength="50" size="30"/>
+        <br><br>
+        <a type="text" class="btn btn-secondary btn-lg btn-block" href="/cadastrar/add/comodo/?id={{comodo}}">
+            <i class="fas fa-plus-circle"></i> Adicionar
+        </a>
+    {% endif %}
+    <br><br>
+    <div align='center'>
+        {% if etapa > 1 %}
+            <a type="button" class="btn btn-warning" style="position: absolute; left: 10px;" href="/cadastrar/voltar">
+                <i class='fas fa-arrow-alt-circle-left'></i> Voltar
+            </a>
+            <br><br>
+        {% endif %}
+    </div>
+</div>
+{% if etapa == 2 %}
+    <div class="col col-6 col-sm-6 col-md-4 col-lg-5 col-xs-4 container box-gray">
+        <br>
+        <table class="table table-striped table-dark">
+            <thead>
+                <tr>
+                    <th>Comodos cadastrados</th>
+                </tr>
+                </thead>
+            {% for item in comodos %}
+                <tr>
+                    <td>
+                        {{item}}
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+{% endif %}
+
+{% endblock %}
