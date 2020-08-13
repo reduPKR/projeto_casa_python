@@ -32,17 +32,10 @@ def SaveRecursos(request):
 def SaveCategoriaEquipamento(request):
     if request.POST:
         nome = request.POST.get('nome')
-        essencial = request.POST.get('essencial')
-
-        if essencial:
-            essencial = True
-        else:
-            essencial = False
 
         if nome:
             TipoEquipamento.objects.create(
-                nome = nome,
-                essencial = essencial
+                nome = nome
                 )
     
     return redirect('/configurar/')
