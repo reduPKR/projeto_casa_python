@@ -1,6 +1,12 @@
 from django.shortcuts import render, redirect
 from core.models import *
 
+def MenuConfigurar(request):
+    dados = {
+        'titulo':'Menu de configurações'
+    }
+    return render(request, 'gerador_testes/menu.html', dados)
+
 def Configurar(request):
     categorias = Categoria.objects.all()
     consumos = TipoConsumo.objects.all() 

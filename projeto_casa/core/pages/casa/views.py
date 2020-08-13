@@ -43,67 +43,70 @@ def DeleteCasa(request,id):
             item.delete()
     return redirect('/cadastrar/')
 
-#alternacia entre as telas
-etapa = 0
-#quem chamou
-this = False
-
 def VisualizarCasa(request):
-    global etapa
-    global this
-
-    if this is False:
-        etapa = 0
-    else:
-        this = False
-
     id = request.GET.get('id')
     casa = None
     if id:
         casa = Casa.objects.get(id=id)
 
-    comodos = Comodo.objects.all().order_by('nome')
-
     dados  = {
         'titulo':'Visualizar casa',
-        'etapa': etapa,
         'casa': casa,
-        'comodos': comodos
     }
 
     return render(request, 'casas/visualizar.html', dados)
 
 def VoltarEtapa(request):
-    global etapa
-    etapa = 0
     return redirect('/visualizar/casa/?id='+request.GET.get('id'))
 
 def NovoComodo(request):
-    global etapa
-    global this
-    etapa = 1
-    this = True
-    return redirect('/visualizar/casa/?id='+request.GET.get('id'))
+    id = request.GET.get('id')
+    comodo_id = request.GET.get('comodo_id')
+
+    casa = None
+    comodo = None
+
+    if id:
+        casa = Casa.objects.get(id=id)
+    if comodo_id:
+        comodo = Comodo.objects.get(id=comodo_id)
+    
+    
+    comodos = Comodo.objects.filter(casa=casa).order_by('nome')
+    dados  = {
+        'titulo':'Cadastro de comodo',
+        'casa': casa,
+        'comodos': comodos,
+        'comodo': comodo
+    }
+
+    return render(request, 'casas/comodo.html',dados)
 
 def AdicionarComodo(request):
     casa_id = request.POST.get('casa_id')
     casa = Casa.objects.filter(id=casa_id).first()
 
-    id = request.POST.get('id')
-    nome = request.POST.get('comodo')
-
+    comodo_id = request.POST.get('comodo_id')
+    nome = request.POST.get('nome')
+   
     if nome:
-        if id:
-            pass
+        if comodo_id:
+            Comodo.objects.filter(id = comodo_id).update(nome = nome)
         else:
             Comodo.objects.create(
                 nome = nome,
                 casa = casa
             )
 
-    global this
-    this = True
-    return redirect('/visualizar/casa/?id='+casa_id)
+    return redirect('/cadastrar/novo/comodo/?id='+casa_id)
+
+def DeleteComodo(request,id, casa_id):
+    if id:
+        item = Comodo.objects.get(id=id)
+        if item:
+            item.delete()
+    return redirect('/cadastrar/novo/comodo/?id={}'.format(casa_id))
+
 
 def NovaSaida(request):
     global etapa
