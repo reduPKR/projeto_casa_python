@@ -16,9 +16,12 @@
                         </button>
                     </form>
                     <br>
-                    <a type="button" class="btn btn-secondary btn-lg btn-block" href="/cadastrar/novo/vinculo/?id={{casa.id}}">
-                        <i class='fa fa-wrench'></i> Vincular comodo e saida
-                    </a>
+                    <form action="/cadastrar/vincular/saida" method="GET">
+                        <input type="text" name="id" value="{{casa.id}}" hidden>
+                        <button type="submit" class="btn btn-secondary btn-lg btn-block">
+                            <i class='fa fa-wrench'></i> Vincular comodo e saida
+                        </button>
+                    </form>
                     <br>
                     <a type="button" class="btn btn-secondary btn-lg btn-block" href="/cadastrar/vincular/equipamento/?id={{casa.id}}">
                         <i class="fas fa-desktop"></i> Vincular equipamentos

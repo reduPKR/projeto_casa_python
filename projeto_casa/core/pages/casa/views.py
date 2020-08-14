@@ -109,13 +109,38 @@ def DeleteComodo(request,id, casa_id):
             item.delete()
     return redirect('/cadastrar/novo/comodo/?id={}'.format(casa_id))
 
+def ComodoSaida(request):
+    id = request.GET.get('id')
 
-def NovoVinculo(request):
-    global etapa
-    global this
-    etapa = 3
-    this = True
-    return redirect('/visualizar/casa/?id='+request.GET.get('id'))
+    if id:
+        casa = Casa.objects.get(id=id)
+    
+    comodos = Comodo.objects.filter(casa=casa).order_by('nome')
+    dados = {
+        'titulo': 'Vincular comodo com terminais',
+        'casa' : casa,
+        'comodos': comodos
+    }
+
+    return render(request, 'casas/comodoSaida.html', dados)
+
+def VincularSaida(request):
+    casa_id = request.GET.get('casa_id')
+    comodo_id = request.GET.get('comodo_id')
+
+    if casa_id:
+        casa = Casa.objects.get(id=casa_id)
+    if comodo_id:
+        comodo = Comodo.objects.get(id=comodo_id)
+    
+    lista = Saida.objects.all()#lista sao os terminais cadastrados
+    dados = {
+        'titulo': 'Vincular comodo com terminais',
+        'casa' : casa,
+        'comodo': comodo,
+        'lista': lista
+    }
+    return render(request, 'casas/vincularSaida.html', dados)
 
 def VincularEquipamento(request):
     global etapa
