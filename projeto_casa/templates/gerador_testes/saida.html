@@ -1,0 +1,63 @@
+{% extends "model-page.html" %}
+
+{% block content %}
+<div align='center'>
+    <h3><i class='fa fa-home'></i> Cadastro de terminais</h3><br>
+    <div class="container">
+        <div class="row">
+            <div class="col col-6 col-sm-6 col-md-4 col-lg-5 col-xs-4 container box-gray">
+                <br>
+                {% if terminal is None %}
+                    <form action="/configurar/nova/saida" method="POST"> {% csrf_token %}
+                        <label>Nome do terminal: </label>
+                        <input type="text" name="nome" maxlength="30" size="30" required/>
+                        <br>
+                        <label>Tipo do terminal</label>
+                        <select class="form-control" name="consumo">
+                            {% for item in consumos %}
+                                <option value= {{ item.id }}> {{ item.nome }} </option>
+                            {% endfor %}
+                        </select><br><br>
+                        <button type="submit" class="btn btn-secondary btn-lg btn-block">
+                            <i class="fas fa-plus-circle"></i> Adicionar
+                        </button>
+                    </form>
+                {% else %}
+                   
+                {% endif %}
+                <br>
+            </div>
+            {% if terminais %}
+                <div class="col col-6 col-sm-6 col-md-4 col-lg-5 col-xs-4 container box-gray">
+                    <br><br>
+                    <table class="table table-striped table-dark">
+                        <thead>
+                            <tr align="center">
+                                <th colspan="3">Terminais cadastrados</th>
+                            </tr>
+                        </thead>
+                        {% for item in terminais %}
+                            <tr>
+                                <td>
+                                    {{item.nome}}
+                                </td>
+                                <td>
+                                    <a class="btn btn-secondary" href="?id={{item.id}}"> 
+                                        <i class="fas fa-edit"></i> Editar
+                                    </a>
+                                </td>
+                                <td>
+                                    <a class="btn btn-warning" href="excluir/{{item.id}}/">
+                                        <i class="fas fa-exclamation-triangle"></i> Excluir
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                <br>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

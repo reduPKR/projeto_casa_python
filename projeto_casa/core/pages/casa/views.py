@@ -25,14 +25,15 @@ def Cadastrar(request):
     return render(request, 'casas/cadastrar.html', dados)
 
 def AdicionarCasa(request):
-    nome = request.POST.get('nome')
-    
-    if nome:
-        id = request.POST.get('id')
-        if id:
-            Casa.objects.filter(id = id).update(nome = nome)
-        else:
-            Casa.objects.create(nome = nome)
+    if request.POST:
+        nome = request.POST.get('nome')
+        
+        if nome:
+            id = request.POST.get('id')
+            if id:
+                Casa.objects.filter(id = id).update(nome = nome)
+            else:
+                Casa.objects.create(nome = nome)
         
     return redirect('/cadastrar/')
 
@@ -83,20 +84,21 @@ def NovoComodo(request):
     return render(request, 'casas/comodo.html',dados)
 
 def AdicionarComodo(request):
-    casa_id = request.POST.get('casa_id')
-    casa = Casa.objects.filter(id=casa_id).first()
+    if request.POST:
+        casa_id = request.POST.get('casa_id')
+        casa = Casa.objects.filter(id=casa_id).first()
 
-    comodo_id = request.POST.get('comodo_id')
-    nome = request.POST.get('nome')
-   
-    if nome:
-        if comodo_id:
-            Comodo.objects.filter(id = comodo_id).update(nome = nome)
-        else:
-            Comodo.objects.create(
-                nome = nome,
-                casa = casa
-            )
+        comodo_id = request.POST.get('comodo_id')
+        nome = request.POST.get('nome')
+    
+        if nome:
+            if comodo_id:
+                Comodo.objects.filter(id = comodo_id).update(nome = nome)
+            else:
+                Comodo.objects.create(
+                    nome = nome,
+                    casa = casa
+                )
 
     return redirect('/cadastrar/novo/comodo/?id='+casa_id)
 
@@ -107,13 +109,6 @@ def DeleteComodo(request,id, casa_id):
             item.delete()
     return redirect('/cadastrar/novo/comodo/?id={}'.format(casa_id))
 
-
-def NovaSaida(request):
-    global etapa
-    global this
-    etapa = 2
-    this = True
-    return redirect('/visualizar/casa/?id='+request.GET.get('id'))
 
 def NovoVinculo(request):
     global etapa

@@ -17,13 +17,13 @@
                     <label>Água por hora</label>
                     <input type="number" name="agua" min="0" step="5" value="0"/> Litros<br><br>
                     <label>O que é consumido: </label> 
-                    <select name="consumo" value='1'>
+                    <select class="form-control" name="consumo" value='1'>
                         {% for item in consumos %}
                             <option value={{ item.id }}> {{ item.nome }} </option>
                         {% endfor %}
                     </select><br><br>
                     <label>Qual a categoria: </label> 
-                    <select name='tipoEquipamento' value='1'>
+                    <select class="form-control" name='tipoEquipamento' value='1'>
                         {% for item in tipoEquipamentos %}
                             <option value= {{ item.id }}> {{ item.nome }} </option>
                         {% endfor %}
@@ -38,7 +38,7 @@
                     <label>Água por hora</label>
                     <input type="number" name="agua" min="0" step="5" value="{{equipamento.consumo_agua}}"/> Litros<br><br>
                     <label>O que é consumido: </label>  
-                    <select name="consumo">
+                    <select class="form-control" name="consumo">
                         {% for item in consumos %}
                             {% if item.id is equipamento.tipo_consumo.id %}
                                 <option value= {{ item.id }} selected> {{ item.nome }} </option>
@@ -48,7 +48,7 @@
                         {% endfor %}
                     </select><br><br>
                     <label>Qual a categoria: </label> 
-                    <select name='tipoEquipamento'>
+                    <select class="form-control" name='tipoEquipamento'>
                         {% for item in tipoEquipamentos %}
                             {% if item.id is equipamento.tipo_equipamento.id %}
                                 <option value= {{ item.id }} selected> {{ item.nome }} </option>

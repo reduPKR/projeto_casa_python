@@ -33,6 +33,8 @@ urlpatterns = [
     #configurar
     path('configurar/menu', gt.MenuConfigurar),
     path('configurar/', gt.Configurar),
+    path('configurar/saida/', gt.Saidas),
+    path('configurar/nova/saida', gt.AdicionarSaida),
     path('configurar/categorias/submit', gt.SaveCategorias),
     path('configurar/recursos/submit', gt.SaveRecursos),
     path('configurar/categoria/equipamento/submit', gt.SaveCategoriaEquipamento),
@@ -53,7 +55,6 @@ urlpatterns = [
     path('cadastrar/novo/comodo/', Cadastro.NovoComodo),
     path('cadastrar/add/comodo', Cadastro.AdicionarComodo),
     path('cadastrar/excluir/comodo/<int:id>/<int:casa_id>/', Cadastro.DeleteComodo),
-    path('cadastrar/nova/saida/', Cadastro.NovaSaida),
     path('cadastrar/novo/vinculo/', Cadastro.NovoVinculo),
     path('cadastrar/vincular/equipamento/', Cadastro.VincularEquipamento),
 ]

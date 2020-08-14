@@ -127,3 +127,40 @@ def DeleteEquipamentos(request,id):
         if item:
             item.delete()
     return redirect('/equipamentos/')
+
+def Saidas(request):
+    consumos = TipoConsumo.objects.all()
+    terminais = Saida.objects.all()
+
+    lista = []
+    for item in consumos:
+        if item.id != 3:
+            lista.append(item)
+
+    dados = {
+        'titulo':'Cadastro de terminais', 
+        'consumos':lista,
+        'terminais':terminais
+    }
+
+    return render(request, 'gerador_testes/saida.html',dados)
+
+def AdicionarSaida(request):
+    if request.POST:
+        nome = request.POST.get('nome')
+        
+        consumo_id = request.POST.get('consumo')
+        tipo_consumo = TipoConsumo.objects.filter(id=consumo_id).first()
+        print(consumo_id)
+        print(tipo_consumo)
+
+        if nome:
+            id = request.POST.get('id')
+            if id:
+                pass
+            else:
+                Saida.objects.create(
+                    nome=nome, 
+                    tipo_consumo = tipo_consumo
+                    )
+        return redirect('/configurar/saida/')
