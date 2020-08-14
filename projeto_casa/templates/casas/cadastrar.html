@@ -11,14 +11,20 @@
                     <label>Nome da casa: </label>
                     {% if casa is None %}
                         <input type="text" name="nome" maxlength="50" size="30" required/>
+                        <br><br>
+                        <button type="submit" class="btn btn-secondary btn-lg btn-block">
+                            <i class='fas fa-plus-circle'></i> Cadastrar casa
+                        </button>
                     {% else %}
                         <input name="id" value='{{casa.id}}' hidden>
                         <input type="text" name="nome" maxlength="50" size="30" value="{{casa.nome}}" required/>
+                        <button type="submit" class="btn btn-secondary btn-lg btn-block">
+                            <i class="fas fa-check-circle"></i> Confirmar
+                        </button>
+                        <a type="button" class="btn btn-warning btn-lg btn-block" href="/cadastrar/">
+                            <i class="fas fa-times-circle"></i> Cancelar
+                        </a>
                     {% endif %}
-                    <br><br>
-                    <button type="submit" class="btn btn-success btn-lg btn-block">
-                        Cadastrar casa <i class='fas fa-arrow-alt-circle-right'></i>
-                    </button>
                     <br><br>
                 </form>
             </div>

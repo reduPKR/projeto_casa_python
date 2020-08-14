@@ -25,8 +25,11 @@
                         <input type="text" name="nome" value="{{comodo.nome}}" maxlength="30" size="30"/>
                         <br><br>
                         <button type="submit" class="btn btn-secondary btn-lg btn-block">
-                            <i class="fas fa-plus-circle"></i> Adicionar
+                            <i class="fas fa-check-circle"></i> Confirmar
                         </button>
+                        <a type="button" class="btn btn-warning btn-lg btn-block" href="/cadastrar/novo/comodo/?id={{casa.id}}">
+                            <i class="fas fa-times-circle"></i> Cancelar
+                        </a>   
                     </form>
                 {% endif %}
                 <br>

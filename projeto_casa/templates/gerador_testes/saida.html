@@ -23,7 +23,28 @@
                         </button>
                     </form>
                 {% else %}
-                   
+                    <form action="/configurar/nova/saida" method="POST"> {% csrf_token %}
+                        <input type="text" name="id" value="{{ terminal.id }}" hidden/>
+                        <label>Nome do terminal: </label>
+                        <input type="text" name="nome" value="{{ terminal.nome }}"maxlength="30" size="30" required/>
+                        <br>
+                        <label>Tipo do terminal</label>
+                        <select class="form-control" name="consumo">
+                            {% for item in consumos %}
+                                {% if item.id is terminal.tipo_consumo.id %}
+                                    <option value= {{ item.id }} selected> {{ item.nome }} </option>
+                                {% else %}
+                                    <option value= {{ item.id }}> {{ item.nome }} </option>
+                                {% endif %}
+                            {% endfor %}
+                        </select><br><br>
+                        <button type="submit" class="btn btn-secondary btn-lg btn-block">
+                            <i class="fas fa-check-circle"></i> Confirmar
+                        </button>
+                        <a type="button" class="btn btn-warning btn-lg btn-block" href="/configurar/saida/">
+                            <i class="fas fa-times-circle"></i> Cancelar
+                        </a>
+                    </form>
                 {% endif %}
                 <br>
             </div>

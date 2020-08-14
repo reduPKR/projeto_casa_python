@@ -29,6 +29,10 @@
                         {% endfor %}
                     </select><br><br>
                     <textarea name="descricao" rows="10" cols="50" maxlength="500" placeholder="Descrição"></textarea>            
+                    <br><br><br>
+                    <button class="btn btn-secondary btn-lg btn-block" type="submit">
+                        Salvar
+                    </button>
                 {% else %}
                     <input name="id" value='{{equipamento.id}}' hidden>
                     <label >Nome: </label>
@@ -57,10 +61,15 @@
                             {% endif %}
                         {% endfor %}
                     </select>
-                    <textarea name="descricao" rows="10" cols="50" maxlength="500" placeholder="Descrição"></textarea>            
+                    <textarea name="descricao" rows="10" cols="50" maxlength="500" placeholder="Descrição"></textarea>    
+                    <br><br><br>
+                    <button type="submit" class="btn btn-secondary btn-lg btn-block">
+                        <i class="fas fa-check-circle"></i>Confirmar
+                    </button>
+                    <a type="button" class="btn btn-warning btn-lg btn-block" href="/equipamentos/">
+                        <i class="fas fa-times-circle"></i> Cancelar
+                    </a>        
                 {% endif %}
-                <br><br><br>
-                <button class="btn btn-secondary" style="width: 300px;" type="submit">Salvar</button>
                 <br><br>
             </form>
             </div>

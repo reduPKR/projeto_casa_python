@@ -137,10 +137,16 @@ def Saidas(request):
         if item.id != 3:
             lista.append(item)
 
+    id = request.GET.get('id')
+    terminal = None
+    if id:
+        terminal = Saida.objects.get(id=id)
+
     dados = {
         'titulo':'Cadastro de terminais', 
         'consumos':lista,
-        'terminais':terminais
+        'terminais':terminais,
+        'terminal': terminal
     }
 
     return render(request, 'gerador_testes/saida.html',dados)
@@ -157,10 +163,20 @@ def AdicionarSaida(request):
         if nome:
             id = request.POST.get('id')
             if id:
-                pass
+                Saida.objects.filter(id=id).update(
+                    nome=nome,
+                    tipo_consumo = tipo_consumo
+                    )
             else:
                 Saida.objects.create(
                     nome=nome, 
                     tipo_consumo = tipo_consumo
                     )
         return redirect('/configurar/saida/')
+
+def DeleteSaida(request,id):
+    if id:
+        item = Saida.objects.get(id=id)
+        if item:
+            item.delete()
+    return redirect('/configurar/saida/')

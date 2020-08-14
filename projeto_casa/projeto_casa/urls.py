@@ -34,6 +34,7 @@ urlpatterns = [
     path('configurar/menu', gt.MenuConfigurar),
     path('configurar/', gt.Configurar),
     path('configurar/saida/', gt.Saidas),
+    path('configurar/saida/excluir/<int:id>/', gt.DeleteSaida),
     path('configurar/nova/saida', gt.AdicionarSaida),
     path('configurar/categorias/submit', gt.SaveCategorias),
     path('configurar/recursos/submit', gt.SaveRecursos),
