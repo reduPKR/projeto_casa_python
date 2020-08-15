@@ -140,7 +140,6 @@ def VincularSaida(request):
     return render(request, 'casas/vincularSaida.html', dados)
 
 def AdicionarSaidaComodo(request):
-    id = request.POST.get('id')
     comodo_id = request.POST.get('comodo_id')
     saida_id = request.POST.get('terminal')
     qtde = request.POST.get('qtde')
@@ -160,16 +159,49 @@ def AdicionarSaidaComodo(request):
                 if item.apelido > maior:
                     maior = item.apelido
         
-        if id:
-            pass
-        else:
-            for i in range(int(qtde)):
-                apelido = (i+1) + maior
-                ComodoSaida.objects.create(
-                    apelido = apelido,
-                    comodo = comodo,
-                    saida = saida
+        for i in range(int(qtde)):
+            apelido = (i+1) + maior
+            ComodoSaida.objects.create(
+                apelido = apelido,
+                comodo = comodo,
+                saida = saida
+            )
+
+    return redirect('/cadastrar/vincular/comodo/saida/?comodo_id={}'.format(comodo_id))
+
+def DeleteSaidaComodo(request,id):
+    comodo_id = None
+    if id:
+        item = ComodoSaida.objects.get(id=id)
+
+        if item:
+            comodo_id = item.comodo.id
+            saida_id = item.saida.id
+            apelido = item.apelido
+
+            item.delete()
+
+            #Fecha a lacuna caso exista
+            comodo = Comodo.objects.get(id = comodo_id)
+            saida = Saida.objects.get(id = saida_id)
+            comodoSaida = ComodoSaida.objects.filter(
+                comodo=comodo,
+                saida=saida
                 )
+
+            maior = 0
+            if comodoSaida is not None:
+                for item in comodoSaida:
+                    if item.apelido > maior:
+                        maior = item.apelido
+            
+            if maior > apelido:
+                ComodoSaida.objects.filter(
+                    comodo=comodo,
+                    saida=saida,
+                    apelido=maior
+                    ).update(apelido=apelido)
+
 
     return redirect('/cadastrar/vincular/comodo/saida/?comodo_id={}'.format(comodo_id))
 

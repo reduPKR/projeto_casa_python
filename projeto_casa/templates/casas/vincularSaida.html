@@ -48,13 +48,10 @@
                                     {{item.saida.nome}} {{item.apelido}}
                                 </td>
                                 <td>
-                                    <form action="" method="POST">
-                                        <input type="text" name="comodo_id" value="{{item.id}}" hidden>
-                                        <button type="submit" class="btn btn-secondary">
-                                            <i class="fas fa-trash-alt"></i>
-                                            Remover
-                                        </button>
-                                    </form>
+                                    <a type="button" class="btn btn-secondary" href="excluir/{{item.id}}/">
+                                        <i class="fas fa-trash-alt"></i>
+                                        Remover
+                                    </a>
                                 </td>
                             </tr>
                         {% endfor %}
