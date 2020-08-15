@@ -60,5 +60,7 @@ urlpatterns = [
     path('cadastrar/vincular/comodo/saida/', Cadastro.VincularSaida),#tela que executa acao
     path('cadastrar/vincular/comodo/saida/adicionar', Cadastro.AdicionarSaidaComodo),
     path('cadastrar/vincular/comodo/saida/excluir/<int:id>/', Cadastro.DeleteSaidaComodo),
-    path('cadastrar/vincular/equipamento/', Cadastro.VincularEquipamento),
+    path('cadastrar/vincular/equipamento/', Cadastro.ListarComodoEquipamento),
+    path('cadastrar/vincular/equipamento/comodo/', Cadastro.VincularEquipamento),
+
 ]
