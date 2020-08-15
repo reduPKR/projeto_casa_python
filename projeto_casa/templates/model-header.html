@@ -9,10 +9,10 @@
     <title>{{titulo}}</title>
     
     {% if request.get_full_path != '/home/' %}
-        <a href="/home/">Home</a>
+        <a style="position: fixed; left: 10px;" href="/home/">Home</a>
     {% endif %}
 
     {% if titulo != 'Login' %}
-        <a style="position: fixed; right: 20px;" href="/logout">logout</a>
+        <a style="position: fixed; right: 10px;" href="/logout">logout</a>
     {% endif %}
 </head>

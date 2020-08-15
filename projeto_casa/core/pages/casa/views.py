@@ -109,7 +109,7 @@ def DeleteComodo(request,id, casa_id):
             item.delete()
     return redirect('/cadastrar/novo/comodo/?id={}'.format(casa_id))
 
-def ComodoSaida(request):
+def ListarComodoSaida(request):
     id = request.GET.get('id')
 
     if id:
@@ -125,22 +125,53 @@ def ComodoSaida(request):
     return render(request, 'casas/comodoSaida.html', dados)
 
 def VincularSaida(request):
-    casa_id = request.GET.get('casa_id')
     comodo_id = request.GET.get('comodo_id')
-
-    if casa_id:
-        casa = Casa.objects.get(id=casa_id)
     if comodo_id:
         comodo = Comodo.objects.get(id=comodo_id)
+        terminais = ComodoSaida.objects.filter(comodo=comodo)
     
     lista = Saida.objects.all()#lista sao os terminais cadastrados
     dados = {
         'titulo': 'Vincular comodo com terminais',
-        'casa' : casa,
         'comodo': comodo,
-        'lista': lista
+        'lista': lista,
+        'terminais': terminais
     }
     return render(request, 'casas/vincularSaida.html', dados)
+
+def AdicionarSaidaComodo(request):
+    id = request.POST.get('id')
+    comodo_id = request.POST.get('comodo_id')
+    saida_id = request.POST.get('terminal')
+    qtde = request.POST.get('qtde')
+    
+    if comodo_id and saida_id and qtde:
+        comodo = Comodo.objects.get(id = comodo_id)
+        saida = Saida.objects.get(id = saida_id)
+
+        comodoSaida = ComodoSaida.objects.filter(
+            comodo=comodo,
+            saida=saida
+            )
+
+        maior = 0
+        if comodoSaida is not None:
+            for item in comodoSaida:
+                if item.apelido > maior:
+                    maior = item.apelido
+        
+        if id:
+            pass
+        else:
+            for i in range(int(qtde)):
+                apelido = (i+1) + maior
+                ComodoSaida.objects.create(
+                    apelido = apelido,
+                    comodo = comodo,
+                    saida = saida
+                )
+
+    return redirect('/cadastrar/vincular/comodo/saida/?comodo_id={}'.format(comodo_id))
 
 def VincularEquipamento(request):
     global etapa

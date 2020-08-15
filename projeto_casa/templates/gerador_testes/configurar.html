@@ -13,7 +13,35 @@
                 <input type="text" name="nome" maxlength="30"/> <br><br>
                 <button class="btn btn-secondary" type="submit">Salvar</button>
             </form>
+            <br>
+            <a type="button" class="btn btn-warning"style="position: absolute; left: 10px;" href="/configurar/menu">
+                <i class='fas fa-arrow-alt-circle-left'></i> Voltar
+            </a>
             <br><br>
+        </div>
+        <div class="col col-6 col-sm-6 col-md-4 col-lg-4 col-xs-4 container box-gray">
+            <br>
+            <h5><i class="fa fa-wrench"></i> Recurso consumido</h5>
+            <br>
+            <form action="recursos/submit" method="POST"> {% csrf_token %}
+                <label>Nome: </label>
+                <input type="text" name="nome" maxlength="30"/> <br><br>
+                <button class="btn btn-secondary" type="recursos/submit">Salvar</button>
+            </form>
+        </div>
+        <div class="col col-6 col-sm-6 col-md-4 col-lg-4 col-xs-4 container box-gray">
+            <br>
+            <h5><i class="fa fa-wrench"></i> Categoria de equipamento</h5>
+            <br>
+            <form action="categoria/equipamento/submit" method="POST"> {% csrf_token %}
+                <label>Nome: </label>
+                <input type="text" name="nome" maxlength="30"/> <br><br>
+                <button class="btn btn-secondary" type="submit">Salvar</button>
+            </form>
+        </div>
+    </div><br>
+    <div class="row">
+        <div class="col col-6 col-sm-6 col-md-4 col-lg-4 col-xs-4 container box-gray"><br>
             <table class="table table-striped table-dark">
                 <thead>
                     <tr>
@@ -34,20 +62,11 @@
                 {% endfor %}
             </table>
         </div>
-        <div class="col col-6 col-sm-6 col-md-4 col-lg-4 col-xs-4 container box-gray">
-            <br>
-            <h5><i class="fa fa-wrench"></i> Recurso consumido</h5>
-            <br>
-            <form action="recursos/submit" method="POST"> {% csrf_token %}
-                <label>Nome: </label>
-                <input type="text" name="nome" maxlength="30"/> <br><br>
-                <button class="btn btn-secondary" type="recursos/submit">Salvar</button>
-            </form>
-            <br><br>
+        <div class="col col-6 col-sm-6 col-md-4 col-lg-4 col-xs-4 container box-gray"><br>
             <table class="table table-striped table-dark">
                 <thead>
                     <tr>
-                        <th colspan="2">Consumos de recursos</th>
+                        <th colspan="2"> Recurso consumido</th>
                     </tr>
                 </thead>
                 {% for item in consumos %}
@@ -64,20 +83,11 @@
                 {% endfor %}
             </table>
         </div>
-        <div class="col col-6 col-sm-6 col-md-4 col-lg-4 col-xs-4 container box-gray">
-            <br>
-            <h5><i class="fa fa-wrench"></i> Categoria de equipamento</h5>
-            <br>
-            <form action="categoria/equipamento/submit" method="POST"> {% csrf_token %}
-                <label>Nome: </label>
-                <input type="text" name="nome" maxlength="30"/> <br><br>
-                <button class="btn btn-secondary" type="submit">Salvar</button>
-            </form>
-            <br><br>
+        <div class="col col-6 col-sm-6 col-md-4 col-lg-4 col-xs-4 container box-gray"><br>
             <table class="table table-striped table-dark">
                 <thead>
                     <tr>
-                        <th colspan="2">Consumos de recursos</th>
+                        <th colspan="2">Categoria de equipamento</th>
                     </tr>
                 </thead>
                 {% for item in tipoEquipamentos %}

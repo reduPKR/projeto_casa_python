@@ -6,7 +6,7 @@
     <div class="container">
         <div class="row">
             <div class="col col-6 col-sm-6 col-md-4 col-lg-5 col-xs-4 container box-gray">
-                <br>
+                <br><br>
                 {% if comodos%}
                 <table class="table table-striped table-dark">
                     <thead>
@@ -21,7 +21,6 @@
                             </td>
                             <td>
                                 <form action="/cadastrar/vincular/comodo/saida" method="GET">
-                                    <input type="text" name="casa_id" value="{{casa.id}}" hidden>
                                     <input type="text" name="comodo_id" value="{{item.id}}" hidden>
                                     <button type="submit" class="btn btn-secondary">
                                         <i class="fas fa-check-circle"></i>
@@ -33,9 +32,13 @@
                     {% endfor %}
                 </table>
                 {% else %}
-                    <label>Nenhum comodo cadastrado</label>
+                <label>Nenhum comodo cadastrado</label>
                 {% endif %}
                 <br>
+                <a type="button" class="btn btn-warning" style="position: absolute; left: 10px;" href="/cadastrar/voltar/?id={{casa.id}}">
+                    <i class='fas fa-arrow-alt-circle-left'></i> Voltar
+                </a>
+                <br><br>
             </div>
         </div>
     </div>

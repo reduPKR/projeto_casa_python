@@ -6,72 +6,75 @@
     <div class="container">
         <div class="row">
             <div class="container col col-12 col-sm-12 col-md-5 col-lg-5 col-xs-5 box-gray">
-            <br>
-            <h4><i class="fas fa-tv"></i> Novo dispositivo</h4><br>
-            <form action="submit" method="POST"> {% csrf_token %}
-                {% if equipamento is None %}
-                    <label >Nome: </label>
-                    <input type="text" name="nome" maxlength="50" size="35" /><br><br>
-                    <label>Energia por hora</label> 
-                    <input type="number" name="energia" min="0" step="5" value="0"/> Kwh<br><br>
-                    <label>Água por hora</label>
-                    <input type="number" name="agua" min="0" step="5" value="0"/> Litros<br><br>
-                    <label>O que é consumido: </label> 
-                    <select class="form-control" name="consumo" value='1'>
-                        {% for item in consumos %}
-                            <option value={{ item.id }}> {{ item.nome }} </option>
-                        {% endfor %}
-                    </select><br><br>
-                    <label>Qual a categoria: </label> 
-                    <select class="form-control" name='tipoEquipamento' value='1'>
-                        {% for item in tipoEquipamentos %}
-                            <option value= {{ item.id }}> {{ item.nome }} </option>
-                        {% endfor %}
-                    </select><br><br>
-                    <textarea name="descricao" rows="10" cols="50" maxlength="500" placeholder="Descrição"></textarea>            
-                    <br><br><br>
-                    <button class="btn btn-secondary btn-lg btn-block" type="submit">
-                        Salvar
-                    </button>
-                {% else %}
-                    <input name="id" value='{{equipamento.id}}' hidden>
-                    <label >Nome: </label>
-                    <input type="text" name="nome" maxlength="50" size="35" value="{{equipamento.nome}}"/><br><br>
-                    <label>Energia por hora</label> 
-                    <input type="number" name="energia" min="0" step="5" value="{{equipamento.consumo_energia}}"/> Kwh<br><br>
-                    <label>Água por hora</label>
-                    <input type="number" name="agua" min="0" step="5" value="{{equipamento.consumo_agua}}"/> Litros<br><br>
-                    <label>O que é consumido: </label>  
-                    <select class="form-control" name="consumo">
-                        {% for item in consumos %}
-                            {% if item.id is equipamento.tipo_consumo.id %}
-                                <option value= {{ item.id }} selected> {{ item.nome }} </option>
-                            {% else %}
+                <br>
+                <h4><i class="fas fa-tv"></i> Novo dispositivo</h4><br>
+                <form action="submit" method="POST"> {% csrf_token %}
+                    {% if equipamento is None %}
+                        <label >Nome: </label>
+                        <input type="text" name="nome" maxlength="50" size="35" /><br><br>
+                        <label>Energia por hora</label> 
+                        <input type="number" name="energia" min="0" step="5" value="0"/> Kwh<br><br>
+                        <label>Água por hora</label>
+                        <input type="number" name="agua" min="0" step="5" value="0"/> Litros<br><br>
+                        <label>O que é consumido: </label> 
+                        <select class="form-control" name="consumo" value='1'>
+                            {% for item in consumos %}
+                                <option value={{ item.id }}> {{ item.nome }} </option>
+                            {% endfor %}
+                        </select><br><br>
+                        <label>Qual a categoria: </label> 
+                        <select class="form-control" name='tipoEquipamento' value='1'>
+                            {% for item in tipoEquipamentos %}
                                 <option value= {{ item.id }}> {{ item.nome }} </option>
-                            {% endif %}
-                        {% endfor %}
-                    </select><br><br>
-                    <label>Qual a categoria: </label> 
-                    <select class="form-control" name='tipoEquipamento'>
-                        {% for item in tipoEquipamentos %}
-                            {% if item.id is equipamento.tipo_equipamento.id %}
-                                <option value= {{ item.id }} selected> {{ item.nome }} </option>
-                            {% else %}
-                                <option value= {{ item.id }}> {{ item.nome }} </option>
-                            {% endif %}
-                        {% endfor %}
-                    </select>
-                    <textarea name="descricao" rows="10" cols="50" maxlength="500" placeholder="Descrição"></textarea>    
-                    <br><br><br>
-                    <button type="submit" class="btn btn-secondary btn-lg btn-block">
-                        <i class="fas fa-check-circle"></i>Confirmar
-                    </button>
-                    <a type="button" class="btn btn-warning btn-lg btn-block" href="/equipamentos/">
-                        <i class="fas fa-times-circle"></i> Cancelar
-                    </a>        
-                {% endif %}
-                <br><br>
-            </form>
+                            {% endfor %}
+                        </select><br><br>
+                        <textarea name="descricao" rows="10" cols="50" maxlength="500" placeholder="Descrição"></textarea>            
+                        <br><br><br>
+                        <button class="btn btn-secondary btn-lg btn-block" type="submit">
+                            Salvar
+                        </button>
+                    {% else %}
+                        <input name="id" value='{{equipamento.id}}' hidden>
+                        <label >Nome: </label>
+                        <input type="text" name="nome" maxlength="50" size="35" value="{{equipamento.nome}}"/><br><br>
+                        <label>Energia por hora</label> 
+                        <input type="number" name="energia" min="0" step="5" value="{{equipamento.consumo_energia}}"/> Kwh<br><br>
+                        <label>Água por hora</label>
+                        <input type="number" name="agua" min="0" step="5" value="{{equipamento.consumo_agua}}"/> Litros<br><br>
+                        <label>O que é consumido: </label>  
+                        <select class="form-control" name="consumo">
+                            {% for item in consumos %}
+                                {% if item.id is equipamento.tipo_consumo.id %}
+                                    <option value= {{ item.id }} selected> {{ item.nome }} </option>
+                                {% else %}
+                                    <option value= {{ item.id }}> {{ item.nome }} </option>
+                                {% endif %}
+                            {% endfor %}
+                        </select><br><br>
+                        <label>Qual a categoria: </label> 
+                        <select class="form-control" name='tipoEquipamento'>
+                            {% for item in tipoEquipamentos %}
+                                {% if item.id is equipamento.tipo_equipamento.id %}
+                                    <option value= {{ item.id }} selected> {{ item.nome }} </option>
+                                {% else %}
+                                    <option value= {{ item.id }}> {{ item.nome }} </option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                        <textarea name="descricao" rows="10" cols="50" maxlength="500" placeholder="Descrição"></textarea>    
+                        <br><br><br>
+                        <button type="submit" class="btn btn-secondary btn-lg btn-block">
+                            <i class="fas fa-check-circle"></i>Confirmar
+                        </button>
+                        <a type="button" class="btn btn-warning btn-lg btn-block" href="/equipamentos/">
+                            <i class="fas fa-times-circle"></i> Cancelar
+                        </a>        
+                    {% endif %}
+                </form>
+                <br>
+                <a type="button" class="btn btn-warning"style="position: absolute; left: 10px;" href="/configurar/menu">
+                    <i class='fas fa-arrow-alt-circle-left'></i> Voltar
+                </a><br><br>
             </div>
             {% if equipamentos %}
             <div class="container col col-12 col-sm-12 col-md-5 col-lg-5 col-xs-5 box-gray">

@@ -2,45 +2,52 @@
 
 {% block content %}
 {% if casas %}
-<div class="col col-6 col-sm-6 col-md-4 col-lg-5 col-xs-4 container box-gray">
-    <br>
-    <table class="table table-striped table-dark">
-        <thead>
-            <tr align="center">
-                <th colspan="4">Casas cadastradas</th>
-            </tr>
-            </thead>
-        {% for item in casas %}
-            <tr>
-                <td>
-                    {{item.nome}}
-                </td>
-                <td>
-                    <a class="btn btn-secondary" href="/visualizar/casa/?id={{item.id}}"> 
-                        Abrir
-                    </a>
-                </td>
-                <td>
-                    <a class="btn btn-secondary" href="/cadastrar/?id={{item.id}}"> 
-                        <i class="fas fa-edit"></i>
-                        Editar
-                    </a>
-                </td>
-                <td>
-                    <a class="btn btn-warning" href="excluir/casa/{{item.id}}/">
-                        <i class="fas fa-exclamation-triangle"></i> Excluir
-                    </a>
-                </td>
-            </tr>
-        {% endfor %}
-    </table>
-    <br>
-</div>
-{% else %}
-<div class="col col-6 col-sm-6 col-md-4 col-lg-5 col-xs-4 container box-gray">
-    <br>
-    <strong>Nenhuma casa cadastrada</strong>
-    <br><br>
+<div align='center'>
+    <h2><i class="fas fa-list-alt"></i> Lista de casas</h2><br>
+    <div class="col col-6 col-sm-6 col-md-4 col-lg-5 col-xs-4 container box-gray">
+        <br>
+        <table class="table table-striped table-dark">
+            <thead>
+                <tr align="center">
+                    <th colspan="4">Casas cadastradas</th>
+                </tr>
+                </thead>
+            {% for item in casas %}
+                <tr>
+                    <td>
+                        {{item.nome}}
+                    </td>
+                    <td>
+                        <a class="btn btn-secondary" href="/visualizar/casa/?id={{item.id}}"> 
+                            Abrir
+                        </a>
+                    </td>
+                    <td>
+                        <a class="btn btn-secondary" href="/cadastrar/?id={{item.id}}"> 
+                            <i class="fas fa-edit"></i>
+                            Editar
+                        </a>
+                    </td>
+                    <td>
+                        <a class="btn btn-warning" href="excluir/casa/{{item.id}}/">
+                            <i class="fas fa-exclamation-triangle"></i> Excluir
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+        <br>
+        <a type="button" class="btn btn-warning"style="position: absolute; left: 10px;" href="/">
+            <i class='fas fa-arrow-alt-circle-left'></i> Voltar
+        </a>
+        <br><br>
+    </div>
+    {% else %}
+    <div class="col col-6 col-sm-6 col-md-4 col-lg-5 col-xs-4 container box-gray">
+        <br>
+        <strong>Nenhuma casa cadastrada</strong>
+        <br><br>
+    </div>
 </div>
 {% endif %}
 {% endblock %}
