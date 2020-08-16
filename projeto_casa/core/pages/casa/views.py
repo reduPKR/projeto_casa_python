@@ -140,32 +140,33 @@ def VincularSaida(request):
     return render(request, 'casas/vincularSaida.html', dados)
 
 def AdicionarSaidaComodo(request):
-    comodo_id = request.POST.get('comodo_id')
-    saida_id = request.POST.get('terminal')
-    qtde = request.POST.get('qtde')
-    
-    if comodo_id and saida_id and qtde:
-        comodo = Comodo.objects.get(id = comodo_id)
-        saida = Saida.objects.get(id = saida_id)
-
-        comodoSaida = ComodoSaida.objects.filter(
-            comodo=comodo,
-            saida=saida
-            )
-
-        maior = 0
-        if comodoSaida is not None:
-            for item in comodoSaida:
-                if item.apelido > maior:
-                    maior = item.apelido
+    if request.POST:
+        comodo_id = request.POST.get('comodo_id')
+        saida_id = request.POST.get('terminal')
+        qtde = request.POST.get('qtde')
         
-        for i in range(int(qtde)):
-            apelido = (i+1) + maior
-            ComodoSaida.objects.create(
-                apelido = apelido,
-                comodo = comodo,
-                saida = saida
-            )
+        if comodo_id and saida_id and qtde:
+            comodo = Comodo.objects.get(id = comodo_id)
+            saida = Saida.objects.get(id = saida_id)
+
+            comodoSaida = ComodoSaida.objects.filter(
+                comodo=comodo,
+                saida=saida
+                )
+
+            maior = 0
+            if comodoSaida is not None:
+                for item in comodoSaida:
+                    if item.apelido > maior:
+                        maior = item.apelido
+            
+            for i in range(int(qtde)):
+                apelido = (i+1) + maior
+                ComodoSaida.objects.create(
+                    apelido = apelido,
+                    comodo = comodo,
+                    saida = saida
+                )
 
     return redirect('/cadastrar/vincular/comodo/saida/?comodo_id={}'.format(comodo_id))
 
@@ -237,9 +238,71 @@ def VincularEquipamento(request):
     return render(request, 'casas/vincularEquipamento.html', dados)
 
 def ComodoEquipamento(request):
-   
+    comodo_id = request.GET.get('comodo_id')
+    equipamento_id = request.GET.get('equipamento_id')
+    saidas = Saida.objects.all()
+
+    flag = False
+    terminais = []
+    if comodo_id and equipamento_id:
+        comodo = Comodo.objects.get(id=comodo_id)
+        equipamento = Equipamento.objects.get(id=equipamento_id)
+        ambos = TipoConsumo.objects.get(nome="Água e energia")
+
+        for item in saidas:
+            cs = ComodoSaida.objects.filter(
+                comodo=comodo,
+                saida=item
+            ).first()
+            
+            if cs.equipamento is None:
+                if item.tipo_consumo == equipamento.tipo_consumo: 
+                    terminais.append(item)
+                elif equipamento.tipo_consumo == ambos:
+                    terminais.append(item)
+                    flag = True
+
+        cs = ComodoSaida.objects.filter(
+            comodo=comodo,
+            equipamento=equipamento
+        )
+
     dados = {
         'titulo': 'Vincular terminal com equipamento',
+        'comodo': comodo,
+        'equipamento': equipamento,
+        'terminais': terminais,
+        'vinculados': cs
     }
 
     return render(request, 'casas/terminalEquipamento.html', dados)
+
+def AdicionarSaidaEquipamento(request):
+    if request.POST:
+        terminal_id = request.POST.get('terminal_id')
+        comodo_id = request.GET.get('comodo_id')
+        equipamento_id = request.GET.get('equipamento_id')
+
+        if comodo_id and terminal_id and equipamento_id:
+            comodo = Comodo.objects.get(id=comodo_id)
+            equipamento = Equipamento.objects.get(id=equipamento_id)
+            saida = Saida.objects.get(id=terminal_id)
+
+            semana_min = request.POST.get('semana_min')
+            semana_max = request.POST.get('semana_max')
+            feriado_min = request.POST.get('feriado_min')
+            feriado_max = request.POST.get('feriado_max')
+
+            essencial = request.POST.get('essencial')
+
+            if comodo and saida and equipamento:
+                ComodoSaida.objects.filter(comodo = comodo, saida = saida).update(
+                    equipamento=equipamento,
+                    tempo_min_semana=semana_min,
+                    tempo_max_semana=semana_max,
+                    tempo_min_feriado=feriado_min,
+                    tempo_max_feriado=feriado_max,
+                    essencial=essencial
+                    )
+
+    return redirect('/cadastrar/vincular/equipamento/comodo/selecionar/?comodo_id={}&equipamento_id={}'.format(comodo_id,equipamento_id))

@@ -6,8 +6,8 @@
         <div class="container">
             <div class="row">
                 <div class="col col-6 col-sm-6 col-md-4 col-lg-5 col-xs-4 container box-gray"><br>
-                    <strong style="margin-right: 300px;">Nome: {{comodo.casa.nome}}</strong><br>
-                    <strong style="margin-right: 300px;">Comodo: {{comodo.nome}}</strong><br><br>
+                    <strong style="float: left;">Nome: {{comodo.casa.nome}}</strong><br>
+                    <strong style="float: left;">Comodo: {{comodo.nome}}</strong><br><br>
                     <form action="/cadastrar/vincular/comodo/saida/adicionar" method="POST"> {% csrf_token %}
                         <input type="text" name="comodo_id" value="{{comodo.id}}" hidden/>
                         <div class="row">
