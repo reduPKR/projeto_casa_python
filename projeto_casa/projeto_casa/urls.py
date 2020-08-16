@@ -62,5 +62,6 @@ urlpatterns = [
     path('cadastrar/vincular/comodo/saida/excluir/<int:id>/', Cadastro.DeleteSaidaComodo),
     path('cadastrar/vincular/equipamento/', Cadastro.ListarComodoEquipamento),
     path('cadastrar/vincular/equipamento/comodo/', Cadastro.VincularEquipamento),
+    path('cadastrar/vincular/equipamento/comodo/selecionar/', Cadastro.ComodoEquipamento),
 
 ]

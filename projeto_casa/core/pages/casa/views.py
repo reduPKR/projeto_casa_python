@@ -128,7 +128,7 @@ def VincularSaida(request):
     comodo_id = request.GET.get('comodo_id')
     if comodo_id:
         comodo = Comodo.objects.get(id=comodo_id)
-        terminais = ComodoSaida.objects.filter(comodo=comodo)
+        terminais = ComodoSaida.objects.filter(comodo=comodo).order_by('apelido')
     
     lista = Saida.objects.all()#lista sao os terminais cadastrados
     dados = {
@@ -221,9 +221,25 @@ def ListarComodoEquipamento(request):
     return render(request, 'casas/comodoEquipamento.html', dados)
 
 def VincularEquipamento(request):
+    comodo_id = request.GET.get('id')
+    if comodo_id:
+        comodo = Comodo.objects.get(id=comodo_id)
+        equipamentos = Equipamento.objects.all()
+        terminais = ComodoSaida.objects.filter(comodo=comodo)
+
     dados = {
         'titulo': 'Vincular terminal com equipamento',
+        'comodo': comodo,
+        'equipamentos': equipamentos,
+        'terminais': terminais
     }
 
     return render(request, 'casas/vincularEquipamento.html', dados)
 
+def ComodoEquipamento(request):
+   
+    dados = {
+        'titulo': 'Vincular terminal com equipamento',
+    }
+
+    return render(request, 'casas/terminalEquipamento.html', dados)
