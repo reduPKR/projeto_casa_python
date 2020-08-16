@@ -249,18 +249,20 @@ def ComodoEquipamento(request):
         equipamento = Equipamento.objects.get(id=equipamento_id)
         ambos = TipoConsumo.objects.get(nome="Água e energia")
 
-        for item in saidas:
+        for saida in saidas:
             cs = ComodoSaida.objects.filter(
                 comodo=comodo,
-                saida=item
-            ).first()
-            
-            if cs.equipamento is None:
-                if item.tipo_consumo == equipamento.tipo_consumo: 
-                    terminais.append(item)
-                elif equipamento.tipo_consumo == ambos:
-                    terminais.append(item)
-                    flag = True
+                saida=saida
+            )
+            for item in cs:
+                if item.equipamento is None:
+                    if saida.tipo_consumo == equipamento.tipo_consumo: 
+                        aux = {'id': item.id, 'apelido': item.apelido, 'nome': saida.nome}
+                        terminais.append(aux)
+                    elif equipamento.tipo_consumo == ambos:
+                        aux = {'id': item.id, 'apelido': item.apelido, 'nome': saida.nome}
+                        terminais.append(aux)
+                        flag = True
 
         cs = ComodoSaida.objects.filter(
             comodo=comodo,
@@ -280,13 +282,13 @@ def ComodoEquipamento(request):
 def AdicionarSaidaEquipamento(request):
     if request.POST:
         terminal_id = request.POST.get('terminal_id')
-        comodo_id = request.GET.get('comodo_id')
-        equipamento_id = request.GET.get('equipamento_id')
+        comodo_id = request.POST.get('comodo_id')
+        equipamento_id = request.POST.get('equipamento_id')
 
         if comodo_id and terminal_id and equipamento_id:
-            comodo = Comodo.objects.get(id=comodo_id)
+            #comodo = Comodo.objects.get(id=comodo_id)
             equipamento = Equipamento.objects.get(id=equipamento_id)
-            saida = Saida.objects.get(id=terminal_id)
+            #saida = Saida.objects.get(id=terminal_id)
 
             semana_min = request.POST.get('semana_min')
             semana_max = request.POST.get('semana_max')
@@ -294,9 +296,11 @@ def AdicionarSaidaEquipamento(request):
             feriado_max = request.POST.get('feriado_max')
 
             essencial = request.POST.get('essencial')
+            if essencial is None:
+                essencial = False
 
-            if comodo and saida and equipamento:
-                ComodoSaida.objects.filter(comodo = comodo, saida = saida).update(
+            if equipamento:
+                ComodoSaida.objects.filter(id=terminal_id).update(
                     equipamento=equipamento,
                     tempo_min_semana=semana_min,
                     tempo_max_semana=semana_max,
@@ -304,5 +308,17 @@ def AdicionarSaidaEquipamento(request):
                     tempo_max_feriado=feriado_max,
                     essencial=essencial
                     )
+
+    return redirect('/cadastrar/vincular/equipamento/comodo/selecionar/?comodo_id={}&equipamento_id={}'.format(comodo_id,equipamento_id))
+
+def DesvincularSaidaEquipamento(request,id):
+    item = ComodoSaida.objects.get(id = id)
+    comodo_id = item.comodo.id
+    equipamento_id = item.equipamento.id
+
+    ComodoSaida.objects.filter(id = id).update(
+        equipamento=None,
+        essencial=False
+    )
 
     return redirect('/cadastrar/vincular/equipamento/comodo/selecionar/?comodo_id={}&equipamento_id={}'.format(comodo_id,equipamento_id))
