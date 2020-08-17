@@ -242,7 +242,6 @@ def ComodoEquipamento(request):
     equipamento_id = request.GET.get('equipamento_id')
     saidas = Saida.objects.all()
 
-    flag = False
     terminais = []
     if comodo_id and equipamento_id:
         comodo = Comodo.objects.get(id=comodo_id)
@@ -254,27 +253,34 @@ def ComodoEquipamento(request):
                 comodo=comodo,
                 saida=saida
             )
-            for item in cs:
-                if item.equipamento is None:
-                    if saida.tipo_consumo == equipamento.tipo_consumo: 
-                        aux = {'id': item.id, 'apelido': item.apelido, 'nome': saida.nome}
-                        terminais.append(aux)
-                    elif equipamento.tipo_consumo == ambos:
-                        aux = {'id': item.id, 'apelido': item.apelido, 'nome': saida.nome}
-                        terminais.append(aux)
-                        flag = True
+            
+            vinculados = ComodoSaida.objects.filter(
+                comodo=comodo,
+                equipamento=equipamento
+            )
+            
+            flag = True
+            for vinc in vinculados:
+                if vinc.saida.tipo_consumo == saida.tipo_consumo:
+                    flag = False
 
-        cs = ComodoSaida.objects.filter(
-            comodo=comodo,
-            equipamento=equipamento
-        )
+            if flag:
+                for item in cs:
+                    if item.equipamento is None:
+                        if saida.tipo_consumo == equipamento.tipo_consumo: 
+                            aux = {'id': item.id, 'apelido': item.apelido, 'nome': saida.nome}
+                            terminais.append(aux)
+                        elif equipamento.tipo_consumo == ambos:
+                            aux = {'id': item.id, 'apelido': item.apelido, 'nome': saida.nome, 'tipo_consumo': saida.tipo_consumo}
+                            terminais.append(aux)
+
 
     dados = {
         'titulo': 'Vincular terminal com equipamento',
         'comodo': comodo,
         'equipamento': equipamento,
         'terminais': terminais,
-        'vinculados': cs
+        'vinculados': vinculados
     }
 
     return render(request, 'casas/terminalEquipamento.html', dados)
@@ -286,9 +292,7 @@ def AdicionarSaidaEquipamento(request):
         equipamento_id = request.POST.get('equipamento_id')
 
         if comodo_id and terminal_id and equipamento_id:
-            #comodo = Comodo.objects.get(id=comodo_id)
             equipamento = Equipamento.objects.get(id=equipamento_id)
-            #saida = Saida.objects.get(id=terminal_id)
 
             semana_min = request.POST.get('semana_min')
             semana_max = request.POST.get('semana_max')
