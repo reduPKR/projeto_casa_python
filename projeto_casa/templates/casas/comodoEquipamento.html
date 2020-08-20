@@ -6,7 +6,19 @@
         <div class="container">
             <div class="row">
                 <div class="col col-6 col-sm-6 col-md-4 col-lg-5 col-xs-4 container box-gray">
-                    <br><br>
+                    <br><strong>Consumo da casa</strong>
+                    <div class="row">
+                        <div class="col">
+                            <strong align="center">Energia mes</strong><br>
+                            <strong>Mínimo: </strong> {{consumo.energia_min}} Kwh<br>
+                            <strong>Máximo: </strong> {{consumo.energia_max}} Kwh
+                        </div>
+                        <div class="col">
+                            <strong align="center">Água mes</strong><br>
+                            <strong>Mínimo: </strong> {{consumo.agua_min}} Litros<br>
+                            <strong>Máximo: </strong> {{consumo.agua_max}} Litros
+                        </div>
+                    </div><br>
                     {% if comodos%}
                         <table class="table table-striped table-dark">
                             <thead>
