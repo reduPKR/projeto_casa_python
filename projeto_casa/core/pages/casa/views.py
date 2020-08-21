@@ -294,13 +294,23 @@ def ComodoEquipamento(request):
                         elif equipamento.tipo_consumo == ambos:
                             aux = {'id': item.id, 'apelido': item.apelido, 'nome': saida.nome, 'tipo_consumo': saida.tipo_consumo}
                             terminais.append(aux)
+    
+    tempo = None
+    if vinculados:
+        tempo = {
+            'tempo_min_semana': vinculados[0].tempo_min_semana,
+            'tempo_max_semana': vinculados[0].tempo_max_semana,
+            'tempo_min_feriado': vinculados[0].tempo_min_feriado,
+            'tempo_max_feriado': vinculados[0].tempo_max_feriado
+        }
 
     dados = {
         'titulo': 'Vincular terminal com equipamento',
         'comodo': comodo,
         'equipamento': equipamento,
         'terminais': terminais,
-        'vinculados': vinculados
+        'vinculados': vinculados,
+        'tempo': tempo
     }
 
     return render(request, 'casas/terminalEquipamento.html', dados)
