@@ -9,3 +9,6 @@ def ListarCasas(request):
         }
 
     return render(request, 'gerador_testes/listar.html', dados)
+
+def GerarTestes(request):
+    return render(request, 'gerador_testes/gerar.html')
