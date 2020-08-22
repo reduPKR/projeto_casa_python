@@ -78,7 +78,17 @@ class Categoria(models.Model):
     class Meta:
         db_table = 'categoria'
 
+#Nao coloquei consumo agua e energia pq da pra ser pego e calculado
+class ConsumoMes(models.Model):
+    casa = models.ForeignKey(Casa,on_delete=models.CASCADE)
+    categoria = models.ForeignKey(Categoria,on_delete=models.CASCADE)
+    mes = models.DateField()
+
+    class Meta:
+        db_table = 'consumo_mes'
+
 class ConsumoHora(models.Model):
+    mes = models.ForeignKey(ConsumoMes,on_delete=models.CASCADE)
     comodo_saida = models.ForeignKey(ComodoSaida,on_delete=models.CASCADE)
     categoria = models.ForeignKey(Categoria,on_delete=models.CASCADE)
     tempo = models.IntegerField()
@@ -87,18 +97,9 @@ class ConsumoHora(models.Model):
     class Meta:
         db_table = 'consumo_hora'
 
-#Nao coloque consumo agua e energia pq da pra ser pego e calculado
-class ConsumoMes(models.Model):
-    casa = models.ForeignKey(Casa,on_delete=models.CASCADE)
-    categoria = models.ForeignKey(Categoria,on_delete=models.CASCADE)
-    mes = models.DateField();
+# class MesHora(models.Model):
+#     mes = models.ForeignKey(ConsumoMes,on_delete=models.CASCADE)
+#     hora = models.ForeignKey(ConsumoHora,on_delete=models.CASCADE)
 
-    class Meta:
-        db_table = 'consumo_mes'
-
-class MesHora(models.Model):
-    mes = models.ForeignKey(ConsumoMes,on_delete=models.CASCADE)
-    hora = models.ForeignKey(ConsumoHora,on_delete=models.CASCADE)
-
-    class Meta:
-        db_table = 'mes_hora'
+#     class Meta:
+#         db_table = 'mes_hora'
