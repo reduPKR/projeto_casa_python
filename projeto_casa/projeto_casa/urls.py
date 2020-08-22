@@ -17,8 +17,9 @@ from django.contrib import admin
 from django.urls import path
 from django.views.generic import RedirectView
 from core import views
-from core.pages.gerador_testes import views as gt
-from core.pages.casa import views as Cadastro
+from core.pages.configuracoes import views as configurar
+from core.pages.casa import views as cadastro
+from core.pages.gerador_testes import views as gerarTeste
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -30,39 +31,42 @@ urlpatterns = [
     path('login/submit',views.SubmitLogin),
     path('logout/',views.Logout),
 
-    #configurar
-    path('configurar/menu', gt.MenuConfigurar),
-    path('configurar/', gt.Configurar),
-    path('configurar/saida/', gt.Saidas),
-    path('configurar/saida/excluir/<int:id>/', gt.DeleteSaida),
-    path('configurar/nova/saida', gt.AdicionarSaida),
-    path('configurar/categorias/submit', gt.SaveCategorias),
-    path('configurar/recursos/submit', gt.SaveRecursos),
-    path('configurar/categoria/equipamento/submit', gt.SaveCategoriaEquipamento),
-    path('configurar/categorias/excluir/<int:id>/', gt.DeleteCategorias),
-    path('configurar/recursos/excluir/<int:id>/', gt.DeleteRecursos),
-    path('configurar/categoria/equipamento/excluir/<int:id>/', gt.DeleteCategoriaEquipamento),
-    path('equipamentos/', gt.Equipamentos),
-    path('equipamentos/submit', gt.SaveEquipamentos),
-    path('equipamentos/excluir/<int:id>/', gt.DeleteEquipamentos),
+    #Configurar
+    path('configurar/menu', configurar.MenuConfigurar),
+    path('configurar/', configurar.Configurar),
+    path('configurar/saida/', configurar.Saidas),
+    path('configurar/saida/excluir/<int:id>/', configurar.DeleteSaida),
+    path('configurar/nova/saida', configurar.AdicionarSaida),
+    path('configurar/categorias/submit', configurar.SaveCategorias),
+    path('configurar/recursos/submit', configurar.SaveRecursos),
+    path('configurar/categoria/equipamento/submit', configurar.SaveCategoriaEquipamento),
+    path('configurar/categorias/excluir/<int:id>/', configurar.DeleteCategorias),
+    path('configurar/recursos/excluir/<int:id>/', configurar.DeleteRecursos),
+    path('configurar/categoria/equipamento/excluir/<int:id>/', configurar.DeleteCategoriaEquipamento),
+    path('equipamentos/', configurar.Equipamentos),
+    path('equipamentos/submit', configurar.SaveEquipamentos),
+    path('equipamentos/excluir/<int:id>/', configurar.DeleteEquipamentos),
 
     #Casa
-    path('listar/', Cadastro.ListarCasas),  
-    path('cadastrar/', Cadastro.Cadastrar),
-    path('cadastrar/add/casa', Cadastro.AdicionarCasa),
-    path('cadastrar/excluir/casa/<int:id>/', Cadastro.DeleteCasa),
-    path('visualizar/casa/', Cadastro.VisualizarCasa),
-    path('cadastrar/voltar/', Cadastro.VoltarEtapa),
-    path('cadastrar/novo/comodo/', Cadastro.NovoComodo),
-    path('cadastrar/add/comodo', Cadastro.AdicionarComodo),
-    path('cadastrar/excluir/comodo/<int:id>/<int:casa_id>/', Cadastro.DeleteComodo),
-    path('cadastrar/vincular/saida/', Cadastro.ListarComodoSaida),#exibe a tela
-    path('cadastrar/vincular/comodo/saida/', Cadastro.VincularSaida),#tela que executa acao
-    path('cadastrar/vincular/comodo/saida/adicionar', Cadastro.AdicionarSaidaComodo),
-    path('cadastrar/vincular/comodo/saida/excluir/<int:id>/', Cadastro.DeleteSaidaComodo),
-    path('cadastrar/vincular/equipamento/', Cadastro.ListarComodoEquipamento),
-    path('cadastrar/vincular/equipamento/comodo/', Cadastro.VincularEquipamento),
-    path('cadastrar/vincular/equipamento/comodo/selecionar/', Cadastro.ComodoEquipamento),
-    path('cadastrar/vincular/equipamento/comodo/adicionar', Cadastro.AdicionarSaidaEquipamento),
-    path('cadastrar/desvincular/equipamento/comodo/<int:id>/', Cadastro.DesvincularSaidaEquipamento),
+    path('listar/', cadastro.ListarCasas),  
+    path('cadastrar/', cadastro.Cadastrar),
+    path('cadastrar/add/casa', cadastro.AdicionarCasa),
+    path('cadastrar/excluir/casa/<int:id>/', cadastro.DeleteCasa),
+    path('visualizar/casa/', cadastro.VisualizarCasa),
+    path('cadastrar/voltar/', cadastro.VoltarEtapa),
+    path('cadastrar/novo/comodo/', cadastro.NovoComodo),
+    path('cadastrar/add/comodo', cadastro.AdicionarComodo),
+    path('cadastrar/excluir/comodo/<int:id>/<int:casa_id>/', cadastro.DeleteComodo),
+    path('cadastrar/vincular/saida/', cadastro.ListarComodoSaida),#exibe a tela
+    path('cadastrar/vincular/comodo/saida/', cadastro.VincularSaida),#tela que executa acao
+    path('cadastrar/vincular/comodo/saida/adicionar', cadastro.AdicionarSaidaComodo),
+    path('cadastrar/vincular/comodo/saida/excluir/<int:id>/', cadastro.DeleteSaidaComodo),
+    path('cadastrar/vincular/equipamento/', cadastro.ListarComodoEquipamento),
+    path('cadastrar/vincular/equipamento/comodo/', cadastro.VincularEquipamento),
+    path('cadastrar/vincular/equipamento/comodo/selecionar/', cadastro.ComodoEquipamento),
+    path('cadastrar/vincular/equipamento/comodo/adicionar', cadastro.AdicionarSaidaEquipamento),
+    path('cadastrar/desvincular/equipamento/comodo/<int:id>/', cadastro.DesvincularSaidaEquipamento),
+
+    #Gerar testes
+    path('gerar-testes/casas', gerarTeste.ListarCasas)
 ]
