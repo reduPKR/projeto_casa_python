@@ -24,20 +24,20 @@
                             <strong>Uso durante a semana (Minutos)</strong>
                             <div class="row">
                                 <div class="col">
-                                    Mínimo: <input type="number" name="semana_min" value="0" min="0" max="1440" step='15'/>
+                                    Mínimo: <input type="number" name="semana_min" id="semana_min" value="0" min="0" max="7200" step='15'/>
                                 </div> 
                                 <div class="col">
-                                    Maximo: <input type="number" name="semana_max" value="0" min="0" max="1440" step='15'/>
+                                    Maximo: <input type="number" name="semana_max" id="semana_max" value="0" min="0" max="7200" step='15'/>
                                 </div>
                             </div>
                             <br>
                             <strong>Uso durante o final semana (Minutos)</strong>
                             <div class="row">
                                 <div class="col">
-                                    Mínimo: <input type="number" name="feriado_min" value="0" min="0" max="1440" step='15'/>
+                                    Mínimo: <input type="number" name="feriado_min" id="feriado_min" value="0" min="0" max="2880" step='15'/>
                                 </div> 
                                 <div class="col">
-                                    Maximo: <input type="number" name="feriado_max" value="0" min="0" max="1440" step='15'/>
+                                    Maximo: <input type="number" name="feriado_max" id="feriado_max" value="0" min="0" max="2880" step='15'/>
                                 </div>
                             </div>
                         {% else %}
@@ -48,24 +48,28 @@
                             <strong>Uso durante a semana (Minutos)</strong>
                             <div class="row">
                                 <div class="col">
-                                    Mínimo: <input type="number" name="semana_min" value="{{tempo.tempo_min_semana}}" min="0" max="1440" disabled/>
+                                    Mínimo: <input type="number" name="semana_min" value="{{tempo.tempo_min_semana}}" min="0" max="7200" disabled/>
                                 </div> 
                                 <div class="col">
-                                    Maximo: <input type="number" name="semana_max" value="{{tempo.tempo_max_semana}}" min="0" max="1440" disabled/>
+                                    Maximo: <input type="number" name="semana_max" value="{{tempo.tempo_max_semana}}" min="0" max="7200" disabled/>
                                 </div>
                             </div>
                             <br>
                             <strong>Uso durante o final semana (Minutos)</strong>
                             <div class="row">
                                 <div class="col">
-                                    Mínimo: <input type="number" name="feriado_min" value="{{tempo.tempo_min_feriado}}" min="0" max="1440" disabled/>
+                                    Mínimo: <input type="number" name="feriado_min" value="{{tempo.tempo_min_feriado}}" min="0" max="2880" disabled/>
                                 </div> 
                                 <div class="col">
-                                    Maximo: <input type="number" name="feriado_max" value="{{tempo.tempo_max_feriado}}" min="0" max="1440" disabled/>
+                                    Maximo: <input type="number" name="feriado_max" value="{{tempo.tempo_max_feriado}}" min="0" max="2880" disabled/>
                                 </div>
                             </div>
                         {% endif %}
                         <br>
+                        <button type="button" class="btn btn-secondary" onclick="diaTodo()">
+                            <i class="fas fa-hourglass-half"></i> Dia todo
+                        </button>
+                        <br><br>
                         <div  style="float: left;">
                             <input type="checkbox" name="essencial" value="True"/>
                             <label> Essencial (Nunca desativar)</label>
@@ -110,4 +114,16 @@
             </div>
         </div>
     </div>
+    <script>
+        function diaTodo(){
+            let entrada = document.getElementById("semana_min");
+            entrada.value = 7200;
+            entrada = document.getElementById("semana_max");
+            entrada.value = "7200"; 
+            entrada = document.getElementById("feriado_min");
+            entrada.value = "2880"; 
+            entrada = document.getElementById("feriado_max");
+            entrada.value = "2880"; 
+        }
+    </script>
 {% endblock %}

@@ -81,8 +81,9 @@ class Categoria(models.Model):
 #Nao coloquei consumo agua e energia pq da pra ser pego e calculado
 class ConsumoMes(models.Model):
     casa = models.ForeignKey(Casa,on_delete=models.CASCADE)
-    categoria = models.ForeignKey(Categoria,on_delete=models.CASCADE)
-    mes = models.DateField()
+    categoria = models.ForeignKey(Categoria, null=True, on_delete=models.CASCADE)
+    mes = models.CharField(max_length=30)
+    ano = models.IntegerField()
 
     class Meta:
         db_table = 'consumo_mes'
