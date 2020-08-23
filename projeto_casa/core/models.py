@@ -92,6 +92,8 @@ class ConsumoHora(models.Model):
     comodo_saida = models.ForeignKey(ComodoSaida,on_delete=models.CASCADE)
     categoria = models.ForeignKey(Categoria,on_delete=models.CASCADE)
     tempo = models.IntegerField()
+    data = models.DateField()
+    hora = models.IntegerField()
     status = models.BooleanField(default=True)
 
     class Meta:

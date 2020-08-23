@@ -69,6 +69,6 @@ urlpatterns = [
 
     #Gerar testes
     path('gerar-testes/casas/', gerarTeste.ListarCasas),
-    path('gerar-testes/gerar/', gerarTeste.GerarTestes),    
-
+    path('gerar-testes/gerar/', gerarTeste.Gerar),    
+    path('gerar-testes/gerar/confirmar/', gerarTeste.GerarTestes),
 ]
