@@ -91,7 +91,7 @@ class ConsumoMes(models.Model):
 class ConsumoHora(models.Model):
     mes = models.ForeignKey(ConsumoMes,on_delete=models.CASCADE)
     comodo_saida = models.ForeignKey(ComodoSaida,on_delete=models.CASCADE)
-    categoria = models.ForeignKey(Categoria,on_delete=models.CASCADE)
+    categoria = models.ForeignKey(Categoria, null=True,on_delete=models.CASCADE)
     tempo = models.IntegerField()
     data = models.DateField()
     hora = models.IntegerField()
