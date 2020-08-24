@@ -378,9 +378,9 @@ def CalcularConsumo(comodo):
                 consumo['energia_max'] = consumo['energia_max'] + ((item.equipamento.consumo_energia/60)  * item.tempo_max_feriado * 2)
 
     if consumo is not None:
-        consumo['agua_min'] = consumo['agua_min'] * 4
-        consumo['agua_max'] = consumo['agua_max'] * 4
-        consumo['energia_min'] = (consumo['energia_min'] * 4) / 1000
-        consumo['energia_max'] = (consumo['energia_max'] * 4) / 1000
+        consumo['agua_min'] = round(consumo['agua_min'] * 4,2)
+        consumo['agua_max'] = round(consumo['agua_max'] * 4,2)
+        consumo['energia_min'] = round((consumo['energia_min'] * 4) / 1000, 2)
+        consumo['energia_max'] = round((consumo['energia_max'] * 4) / 1000, 2)
     
     return consumo

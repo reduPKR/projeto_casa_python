@@ -18,11 +18,31 @@ def Gerar(request):
     if id:
         casa = Casa.objects.get(id=id)
         meses = ConsumoMes.objects.filter(casa=casa)
-    
+
+        lista = []
+        for mes in meses:
+            consumoHoras = ConsumoHora.objects.filter(mes=mes)
+            energia = 0
+            agua = 0
+            for hora in consumoHoras:
+                energia = energia + hora.comodo_saida.equipamento.consumo_energia
+                agua = agua + hora.comodo_saida.equipamento.consumo_agua
+
+            energia = round(energia/1000,2) #kWh
+            agua = round(agua, 2)
+            lista.append({
+                'casa': mes.casa,
+                'categoria': mes.categoria,
+                'mes': mes.mes,
+                'ano': mes.ano, 
+                'energia':energia,
+                'agua':agua
+            })
+
     dados = {
         'titulo':'Gerar teste', 
         'casa':casa,
-        'meses': meses
+        'meses': lista
     }
 
     return render(request, 'gerador_testes/gerar.html',dados)
@@ -30,17 +50,17 @@ def Gerar(request):
 def GerarMes(request):
     id = request.GET.get('id')
     if id:
-        GerarTestes(id)
+        casa = Casa.objects.get(id=id)
+        ConsumoMes.objects.filter(casa=casa).delete()
+
+        GerarTestes(casa)
     return redirect('/gerar-testes/gerar/?id={}'.format(id))
 
 def GerarAno(request):
     id = request.GET.get('id')
     return redirect('/gerar-testes/gerar/?id={}'.format(id))
 
-def GerarTestes(id):
-    casa = Casa.objects.get(id=id)
-    ConsumoMes.objects.filter(casa=casa).delete()
-
+def GerarTestes(casa):
     inicio = date.today()
     aux = inicio
     mes = getMes(inicio.month-1)
