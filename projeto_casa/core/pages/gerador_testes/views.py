@@ -53,27 +53,42 @@ def GerarMes(request):
         casa = Casa.objects.get(id=id)
         ConsumoMes.objects.filter(casa=casa).delete()
 
-        GerarTestes(casa)
+        GerarTestes(casa, 0)
     return redirect('/gerar-testes/gerar/?id={}'.format(id))
 
 def GerarAno(request):
     id = request.GET.get('id')
+    if id:
+        casa = Casa.objects.get(id=id)
+        ConsumoMes.objects.filter(casa=casa).delete()
+
+        for i in range(12):
+            GerarTestes(casa, i)
+        
     return redirect('/gerar-testes/gerar/?id={}'.format(id))
 
-def GerarTestes(casa):
-    inicio = date.today()
-    aux = inicio
-    mes = getMes(inicio.month-1)
+def GerarTestes(casa, inicial):
+    inicio = fim = date.today()
+    inicio = inicio.replace(day=1)
+    #se nao for mes atual
+    if inicial != 0:
+        aux = inicio.month + inicial
+        if aux > 12:
+            aux = aux - 12
+            
+            year = inicio.year + 1
+            inicio = inicio.replace(year=year)
+            fim = fim.replace(year=year)
 
+        inicio = inicio.replace(month=aux)
+        fim = fim.replace(month=aux)
+    
+    mes = getMes(inicio.month-1)
     ConsumoMes.objects.create(
         casa=casa,
         mes=mes,
-        ano = aux.year
+        ano = inicio.year
     )
-
-    inicio = fim = date.today()
-    while inicio.day != 1:
-        inicio = inicio - timedelta(days=1)
     
     comodos = Comodo.objects.filter(casa=casa)
     consumoMes = ConsumoMes.objects.get(
