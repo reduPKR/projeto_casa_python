@@ -129,10 +129,10 @@ def GerarTestes(casa, inicial):
                                 data = inicio,
                                 hora = hora
                             )            
+        print(inicio)
         inicio = inicio + timedelta(days=1)
-    ConsumoMes.objects.filter(casa = casa,
-                    mes = mes,
-                    ano = inicio.year).update(agua=agua, energia=energia)
+    ConsumoMes.objects.filter(casa = casa,mes = mes,
+                    ano = fim.year).update(agua=agua, energia=energia)
 
 #Metodos
 def getMes(mes):
