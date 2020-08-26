@@ -20,6 +20,7 @@ from core import views
 from core.pages.configuracoes import views as configurar
 from core.pages.casa import views as cadastro
 from core.pages.gerador_testes import views as gerarTeste
+from core.pages.simulacao import views as simular
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -72,4 +73,8 @@ urlpatterns = [
     path('gerar-testes/gerar/', gerarTeste.Gerar),    
     path('gerar-testes/gerar/mes/', gerarTeste.GerarMes),
     path('gerar-testes/gerar/ano/', gerarTeste.GerarAno),
+
+    #Simulacao
+    path('simular/casas/', simular.ListarCasas),
+    path('simular/meses/', simular.ListarMeses),
 ]
