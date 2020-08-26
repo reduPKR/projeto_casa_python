@@ -134,7 +134,7 @@ def Saidas(request):
 
     lista = []
     for item in consumos:
-        if item.id != 3:   #id direto
+        if item.id != 3:   #Valor direto
             lista.append(item)
 
     id = request.GET.get('id')

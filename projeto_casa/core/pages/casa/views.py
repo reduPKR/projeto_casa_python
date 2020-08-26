@@ -363,7 +363,7 @@ def CalcularConsumo(comodo):
     consumo = {'agua_min': 0, 'agua_max': 0, 'energia_min': 0, 'energia_max': 0 }
     for item in terminais:
         if item.saida is not None and item.equipamento is not None:
-            if item.saida.tipo_consumo.id == 1: #id Direto
+            if item.saida.tipo_consumo.id == 1: #Valor Direto
                 # agua_hora/60 * tempo_min_semana * 5 dias semana + final de semana
                 consumo['agua_min'] = consumo['agua_min'] + ((item.equipamento.consumo_agua/60)  * item.tempo_min_semana * 5)
                 consumo['agua_min'] = consumo['agua_min'] + ((item.equipamento.consumo_agua/60)  * item.tempo_min_feriado * 2)

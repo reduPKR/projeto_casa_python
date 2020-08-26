@@ -19,30 +19,13 @@ def Gerar(request):
         casa = Casa.objects.get(id=id)
         meses = ConsumoMes.objects.filter(casa=casa)
 
-        lista = []
         for mes in meses:
-            consumoHoras = ConsumoHora.objects.filter(mes=mes)
-            energia = 0
-            agua = 0
-            for hora in consumoHoras:
-                energia = energia + hora.comodo_saida.equipamento.consumo_energia
-                agua = agua + hora.comodo_saida.equipamento.consumo_agua
-
-            energia = round(energia/1000,2) #kWh
-            agua = round(agua, 2)
-            lista.append({
-                'casa': mes.casa,
-                'categoria': mes.categoria,
-                'mes': mes.mes,
-                'ano': mes.ano, 
-                'energia':energia,
-                'agua':agua
-            })
+            mes.energia = round((mes.energia/1000), 1)
 
     dados = {
         'titulo':'Gerar teste', 
         'casa':casa,
-        'meses': lista
+        'meses': meses
     }
 
     return render(request, 'gerador_testes/gerar.html',dados)
@@ -91,14 +74,11 @@ def GerarTestes(casa, inicial):
     )
     
     comodos = Comodo.objects.filter(casa=casa)
-    consumoMes = ConsumoMes.objects.get(
-            casa = casa,
-            mes = getMes(inicio.month-1),
-            ano = inicio.year
-        )
+    consumoMes = ConsumoMes.objects.get(casa = casa,mes = mes,ano = inicio.year)
 
+    energia = 0
+    agua = 0
     while inicio.month == fim.month:
-        print(inicio)
         #pega todos os comodos
         for comodo in comodos:
             comodoSaidas = ComodoSaida.objects.filter(comodo=comodo)
@@ -121,7 +101,7 @@ def GerarTestes(casa, inicial):
                     for hora in range(24):
                         x = random.randint(0, 100)
 
-                        if terminal.equipamento.tipo_equipamento.nome == "Iluminação": #id direto
+                        if terminal.equipamento.tipo_equipamento.nome == "Iluminação": #Valor direto
                             #luz acessa ate 0 horas depois as 6 da manha
                             if hora > 0 and hora < 6:
                                 probabilidade = 5
@@ -138,6 +118,9 @@ def GerarTestes(casa, inicial):
                                 uso = 60
                                 tempo = tempo - 60
                                 qtde = qtde - 1
+
+                            energia = energia + calcularConsumo(terminal.equipamento.consumo_energia, uso)
+                            agua = agua + calcularConsumo(terminal.equipamento.consumo_agua, uso)
                     
                             ConsumoHora.objects.create(
                                 mes = consumoMes,
@@ -145,11 +128,17 @@ def GerarTestes(casa, inicial):
                                 tempo = uso,
                                 data = inicio,
                                 hora = hora
-                            )
-                        
+                            )            
         inicio = inicio + timedelta(days=1)
+    ConsumoMes.objects.filter(casa = casa,
+                    mes = mes,
+                    ano = inicio.year).update(agua=agua, energia=energia)
 
 #Metodos
 def getMes(mes):
     meses = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro']
     return meses[mes]
+
+def calcularConsumo(consumoHora, tempo):
+    percent = tempo * 10 / 6 #100 / 60
+    return (consumoHora * percent)/100

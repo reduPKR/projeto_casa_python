@@ -57,6 +57,7 @@ class ComodoSaida(models.Model):
     saida = models.ForeignKey(Saida, on_delete=models.CASCADE)
     equipamento = models.ForeignKey(Equipamento, on_delete=models.CASCADE, null=True)
     essencial = models.BooleanField(default=False)
+    status = models.BooleanField(default=True)
     
     tempo_min_semana = models.IntegerField(null=True)
     tempo_max_semana = models.IntegerField(null=True)
@@ -84,6 +85,9 @@ class ConsumoMes(models.Model):
     categoria = models.ForeignKey(Categoria, null=True, on_delete=models.CASCADE)
     mes = models.CharField(max_length=30)
     ano = models.IntegerField()
+    #consome mais memoria mas evita processar no carregamento
+    agua = models.IntegerField(default=0)
+    energia = models.IntegerField(default=0)
 
     class Meta:
         db_table = 'consumo_mes'
@@ -95,7 +99,6 @@ class ConsumoHora(models.Model):
     tempo = models.IntegerField()
     data = models.DateField()
     hora = models.IntegerField()
-    status = models.BooleanField(default=True)
 
     class Meta:
         db_table = 'consumo_hora'
@@ -106,3 +109,27 @@ class ConsumoHora(models.Model):
 
 #     class Meta:
 #         db_table = 'mes_hora'
+
+class GrupoCoeficientes(models.Model):
+    casa = models.ForeignKey(Casa,on_delete=models.CASCADE)
+    precisao = models.DecimalField(max_digits=4, decimal_places=1, default=0)
+    status = models.BooleanField(default=False)
+
+    class Meta:
+        db_table = 'grupo_coeficientes'
+
+class Coeficiente(models.Model):
+    comodo = models.ForeignKey(Comodo, on_delete=models.CASCADE)
+    grupo = models.ForeignKey(GrupoCoeficientes,on_delete=models.CASCADE)
+    precisao = models.DecimalField(max_digits=4, decimal_places=1, default=0)
+
+    class Meta:
+        db_table = 'coeficientes'
+
+class CoeficienteValor(models.Model):
+    coeficiente = models.ForeignKey(Coeficiente, on_delete=models.CASCADE)
+    categoria = models.ForeignKey(TipoEquipamento,on_delete=models.CASCADE)
+    valor = models.DecimalField(max_digits=24,decimal_places=22)
+
+    class Meta:
+        db_table = 'coeficiente_valor'
