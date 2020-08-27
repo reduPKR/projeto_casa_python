@@ -21,6 +21,7 @@ from core.pages.configuracoes import views as configurar
 from core.pages.casa import views as cadastro
 from core.pages.gerador_testes import views as gerarTeste
 from core.pages.simulacao import views as simular
+from core.pages.regressao_linear import views as regressao
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -78,4 +79,7 @@ urlpatterns = [
     path('simular/casas/', simular.ListarCasas),
     path('simular/meses/', simular.ListarMeses),
     path('simular/algoritmos/', simular.Algoritmos),
+    #regressao linear
+    path('regressao-linear-multipla/coeficiente', regressao.ListaCoeficientes),
+
 ]
