@@ -26,3 +26,19 @@ def ListarMeses(request):
     }
 
     return render(request, 'simulacao/listarMeses.html',dados)
+
+def Algoritmos(request):
+    casa_id = request.GET.get('casa_id')
+    mes_id = request.GET.get('mes_id')
+
+    if casa_id and mes_id:
+        casa = Casa.objects.get(id=casa_id)
+        mes = ConsumoMes.objects.get(id=mes_id)
+
+    dados = {
+        'titulo':'Seleção de algoritmo', 
+        'casa': casa,
+        'mes': mes
+    }
+
+    return render(request, 'simulacao/algoritmos.html',dados)

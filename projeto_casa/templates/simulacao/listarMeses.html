@@ -39,10 +39,14 @@
                             {{item.agua}} Litros
                         </td>
                         <td>
-                            <a class="btn btn-secondary" href="#"> 
-                                <i class="fas fa-check-circle"></i>
-                                Selecionar
-                            </a>
+                            <form action="/simular/algoritmos" method="GET">
+                                <input type="text" name="casa_id" value="{{casa.id}}" hidden>
+                                <input type="text" name="mes_id" value="{{item.id}}" hidden>
+                                <button type="submit" class="btn btn-secondary">
+                                    <i class="fas fa-check-circle"></i>
+                                    Selecionar
+                                </button>
+                            </form>
                         </td>
                     </tr>
                 {% endfor %}

@@ -77,4 +77,5 @@ urlpatterns = [
     #Simulacao
     path('simular/casas/', simular.ListarCasas),
     path('simular/meses/', simular.ListarMeses),
+    path('simular/algoritmos/', simular.Algoritmos),
 ]
