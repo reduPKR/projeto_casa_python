@@ -81,5 +81,6 @@ urlpatterns = [
     path('simular/algoritmos/', simular.Algoritmos),
     #regressao linear
     path('regressao-linear-multipla/coeficiente', regressao.ListaCoeficientes),
+    path('regressao-linear-multipla/coeficiente/gerar', regressao.GerarCoeficientes),
 
 ]

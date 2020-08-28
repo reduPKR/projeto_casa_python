@@ -12,9 +12,21 @@
                     <br>
                     <strong style="float: left;">Mes: {{mes.mes}} </strong>
                     <br><br>
-                    <a type="button" class="btn btn-warning btn-block" href="#">
-                        <i class="fas fa-wave-square"></i> Gerar coeficiente
-                    </a><br>
+                    {% if coeficientes == None %}
+                        <form action="/regressao-linear-multipla/coeficiente/gerar" method="GET">
+                            <div style="float: left;">Nome
+                                <label>Reduzir energia </label>
+                                <input type="number" name="energia" value="{{energia}}" min="{{energia_min}}" max="{{energia}}"required/> Kwh 
+                            </div><br><br>
+                            <div style="float: left;">Nome
+                                <label>Reduzir água </label>
+                                <input type="number" name="agua" value="{{agua}}" min="{{agua_min}}" max="{{agua}}" required/> Litros   
+                            </div><br><br>
+                            <button type="submit" class="btn btn-warning btn-block">
+                                <i class="fas fa-wave-square"></i> Gerar coeficiente
+                            </button>
+                        </form><br>
+                    {% endif %}
                    
                     <a type="button" class="btn btn-warning"style="position: absolute; left: 10px;" href="/simular/algoritmos/?casa_id={{casa.id}}&mes_id={{mes.id}}">
                         <i class='fas fa-arrow-alt-circle-left'></i> Voltar
