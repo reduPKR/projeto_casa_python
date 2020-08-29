@@ -113,7 +113,8 @@ class ConsumoHora(models.Model):
 class GrupoCoeficientes(models.Model):
     casa = models.ForeignKey(Casa,on_delete=models.CASCADE)
     precisao = models.DecimalField(max_digits=4, decimal_places=1, default=0)
-    status = models.BooleanField(default=False)
+    meta_agua = models.IntegerField(default=0)
+    meta_energia = models.IntegerField(default=0)
 
     class Meta:
         db_table = 'grupo_coeficientes'
