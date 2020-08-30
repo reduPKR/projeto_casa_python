@@ -6,26 +6,51 @@
         <h3><i class="fas fa-home"></i> Seleção dos coeficientes </h3><br>
         <div class="container">
             <div class="row">
-                <div class="col col-6 col-sm-6 col-md-4 col-lg-5 col-xs-4 container box-gray">
+                <div class="col col-6 col-sm-6 col-md-4 col-lg-6 col-xs-4 container box-gray">
                     <br>
                     <strong style="float: left;">Nome: {{casa.nome}} </strong>
                     <br>
                     <strong style="float: left;">Mes: {{mes.mes}} </strong>
-                    <br><br>
+                    <br>
+                    <strong style="float: left;">Energia mes: {{mes.energia}} Kwh </strong>
+                    <strong >Água mes: {{mes.agua}} Litros</strong>
+                    <br><hr>
                     {% if coeficientes == None %}
                         <form action="/regressao-linear-multipla/coeficiente/gerar" method="GET">
-                            <div style="float: left;">Nome
-                                <label>Reduzir energia </label>
-                                <input type="number" name="energia" value="{{energia}}" min="{{energia_min}}" max="{{energia}}" required/> Kwh 
-                            </div><br><br>
-                            <div style="float: left;">Nome
-                                <label>Reduzir água </label>
-                                <input type="number" name="agua" value="{{agua}}" min="{{agua_min}}" max="{{agua}}" required/> Litros   
-                            </div><br><br>
+                            <div align="center">
+                                <strong>Reduzir energia </strong>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <label>Semana </label>
+                                    {{energia_semana_max}}
+                                    <input type="number" name="energia_semana" value="{{mes.energia_semana}}" min="{{energia_semana}}" max="{{mes.energia_semana}}" required/> kWh
+                                </div>
+                                <div class="col">
+                                    <label> Fim de semana </label>
+                                    <input type="number" name="energia_final" value="{{mes.energia_feriado}}" min="{{energia_feriado}}" max="{{mes.energia_feriado}}"  required/> kWh
+                                </div>
+                            </div><br>
+                            <div align="center">
+                                <strong>Reduzir água </strong>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <label>Semana </label>
+                                    <input type="number" name="agua_semana" value="{{mes.agua_semana}}" min="{{agua_semana}}" max="{{mes.agua_semana}}" required/> 
+                                    Litros
+                                </div>
+                                <div class="col">
+                                    <label> Fim de semana </label>
+                                    <input type="number" name="agua_final" value="{{mes.agua_feriado}}" min="{{agua_feriado}}" max="{{mes.agua_feriado}}" required/>
+                                    Litros
+                                </div>
+                            </div><br>
                             <button type="submit" class="btn btn-warning btn-block">
                                 <i class="fas fa-wave-square"></i> Gerar coeficiente
                             </button>
-                        </form><br>
+                        </form>
+                        <br><hr>
                     {% endif %}
                    
                     <a type="button" class="btn btn-warning"style="position: absolute; left: 10px;" href="/simular/algoritmos/?casa_id={{casa.id}}&mes_id={{mes.id}}">

@@ -13,19 +13,19 @@ def ListaCoeficientes(request):
 
         casa = Casa.objects.get(id=casa_id)
         mes = ConsumoMes.objects.get(id=mes_id)
-
-        energia = round(mes.energia/1000,2)
-        agua = mes.agua
+        mes.energia = round(mes.energia/1000,2)
+        mes.energia_semana = round(mes.energia_semana/1000) #converto para Kwh
+        mes.energia_feriado = round(mes.energia_feriado/1000)
 
     dados = {
         'titulo':'Selecionar coeficiente', 
         'casa': casa,
         'mes': mes,
-        'energia': energia,
-        'energia_min': round(energia/2, 2),
-        'agua': agua,
-        'agua_min': round(agua/2, 2),
-        'coeficientes': None
+        'coeficientes': None,
+        "agua_semana": round(mes.agua_semana/2,2),
+        "agua_feriado": round(mes.agua_feriado/2,2),
+        "energia_semana": round(mes.energia_semana/2), # energia kWh /2
+        "energia_feriado": round(mes.energia_feriado/2)
     }
 
     return render(request, 'simulacao/regressao_linear/menu.html',dados)

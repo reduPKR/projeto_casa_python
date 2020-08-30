@@ -85,9 +85,13 @@ class ConsumoMes(models.Model):
     categoria = models.ForeignKey(Categoria, null=True, on_delete=models.CASCADE)
     mes = models.CharField(max_length=30)
     ano = models.IntegerField()
-    #consome mais memoria mas evita processar no carregamento
+    #consome mais memoria mas evita processar no carregamento que demorava muito
     agua = models.IntegerField(default=0)
+    agua_semana = models.IntegerField(default=0)
+    agua_feriado = models.IntegerField(default=0)
     energia = models.IntegerField(default=0)
+    energia_semana = models.IntegerField(default=0)
+    energia_feriado = models.IntegerField(default=0)
 
     class Meta:
         db_table = 'consumo_mes'
@@ -103,18 +107,13 @@ class ConsumoHora(models.Model):
     class Meta:
         db_table = 'consumo_hora'
 
-# class MesHora(models.Model):
-#     mes = models.ForeignKey(ConsumoMes,on_delete=models.CASCADE)
-#     hora = models.ForeignKey(ConsumoHora,on_delete=models.CASCADE)
-
-#     class Meta:
-#         db_table = 'mes_hora'
-
 class GrupoCoeficientes(models.Model):
     casa = models.ForeignKey(Casa,on_delete=models.CASCADE)
     precisao = models.DecimalField(max_digits=4, decimal_places=1, default=0)
-    meta_agua = models.IntegerField(default=0)
-    meta_energia = models.IntegerField(default=0)
+    meta_agua_semana = models.IntegerField(default=0)
+    meta_agua_feriado = models.IntegerField(default=0)
+    meta_energia_semana = models.IntegerField(default=0)
+    meta_energia_feriado = models.IntegerField(default=0)
 
     class Meta:
         db_table = 'grupo_coeficientes'
@@ -123,6 +122,7 @@ class Coeficiente(models.Model):
     comodo = models.ForeignKey(Comodo, on_delete=models.CASCADE)
     grupo = models.ForeignKey(GrupoCoeficientes,on_delete=models.CASCADE)
     precisao = models.DecimalField(max_digits=4, decimal_places=1, default=0)
+    feriado = models.BooleanField(default=False)
 
     class Meta:
         db_table = 'coeficientes'

@@ -53,6 +53,8 @@ def GerarAno(request):
 def GerarTestes(casa, inicial):
     inicio = fim = date.today()
     inicio = inicio.replace(day=1)
+    fim = fim.replace(day=1)
+    
     #se nao for mes atual
     if inicial != 0:
         aux = inicio.month + inicial
@@ -76,17 +78,23 @@ def GerarTestes(casa, inicial):
     comodos = Comodo.objects.filter(casa=casa)
     consumoMes = ConsumoMes.objects.get(casa = casa,mes = mes,ano = inicio.year)
 
-    energia = 0
-    agua = 0
+    energia = energia_semana = energia_feriado = 0
+    agua = agua_semana = agua_feriado = 0
+    semanas = feriados = 0
     while inicio.month == fim.month:
         #pega todos os comodos
+        semana = inicio.weekday()
+        if semana < 5:
+            semanas = semanas + 1
+        else:
+            feriados = feriados + 1
+
         for comodo in comodos:
             comodoSaidas = ComodoSaida.objects.filter(comodo=comodo)
             #gera um valor aleatorio de tempo de uso
             for terminal in comodoSaidas:
                 if terminal.equipamento:
                     # 0 segunda e 6 domingo
-                    semana = inicio.weekday()
                     if semana < 5:
                         min =  math.ceil(terminal.tempo_min_semana / 5)
                         max =  math.ceil(terminal.tempo_max_semana / 5)
@@ -112,15 +120,24 @@ def GerarTestes(casa, inicial):
 
                         if x <= probabilidade:
                             if qtde == 1:
-                                uso = abs(tempo) #evita caso dire 60 de algum valor menor
+                                uso = abs(tempo) #evita caso tire 60 de algum valor menor
                                 tempo = qtde = 0 
                             else:
                                 uso = 60
                                 tempo = tempo - 60
                                 qtde = qtde - 1
 
-                            energia = energia + calcularConsumo(terminal.equipamento.consumo_energia, uso)
-                            agua = agua + calcularConsumo(terminal.equipamento.consumo_agua, uso)
+                            consumoEnergia = calcularConsumo(terminal.equipamento.consumo_energia, uso)
+                            consumoAgua = calcularConsumo(terminal.equipamento.consumo_agua, uso)
+                            
+                            energia = energia + consumoEnergia
+                            agua = agua + consumoAgua
+                            if semana < 5:
+                                energia_semana = energia_semana + consumoEnergia
+                                agua_semana = agua_semana + consumoAgua
+                            else:
+                                energia_feriado = energia_feriado + consumoEnergia
+                                agua_feriado = agua_feriado + consumoAgua
                     
                             ConsumoHora.objects.create(
                                 mes = consumoMes,
@@ -131,8 +148,22 @@ def GerarTestes(casa, inicial):
                             )            
         print(inicio)
         inicio = inicio + timedelta(days=1)
+    
+    semanas = semanas / 5
+    feriados = feriados / 2
+
+    energia_semana = energia_semana / semanas
+    agua_semana = agua_semana / semanas
+    energia_feriado = energia_feriado / feriados
+    agua_feriado = agua_feriado / feriados
+
     ConsumoMes.objects.filter(casa = casa,mes = mes,
-                    ano = fim.year).update(agua=agua, energia=energia)
+                    ano = fim.year).update(agua=agua, 
+                    energia=energia,
+                    energia_semana=energia_semana,
+                    agua_semana=agua_semana,
+                    energia_feriado=energia_feriado,
+                    agua_feriado=agua_feriado)
 
 #Metodos
 def getMes(mes):
