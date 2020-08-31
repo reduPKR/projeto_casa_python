@@ -52,7 +52,10 @@
                         </form>
                         <br><hr>
                     {% endif %}
-                   
+                   {% if coeficientes != None %}
+                        <br><hr>
+                        <label>asdasd</label>
+                   {% endif %}
                     <a type="button" class="btn btn-warning"style="position: absolute; left: 10px;" href="/simular/algoritmos/?casa_id={{casa.id}}&mes_id={{mes.id}}">
                         <i class='fas fa-arrow-alt-circle-left'></i> Voltar
                     </a><br><br>

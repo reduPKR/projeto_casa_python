@@ -240,7 +240,7 @@ def VincularEquipamento(request):
 
         #1 esta sendo id da agua e 2 da energia
         consumo = CalcularConsumo(comodo)
-        
+
         vinculados = []
         for item in terminais:
             if item.saida is not None and item.equipamento is not None:
