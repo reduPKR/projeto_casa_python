@@ -57,11 +57,16 @@ def GerarCoeficientes(request):
             item['media_agua_final'] = round(item['percent_agua'] * agua_final / 100,2)
         
         #Aqui embaixo vou colocar vetor de categorias
+        categorias = PreencherCategorias(casa, mes)
         
     return redirect('/regressao-linear-multipla/coeficiente?casa_id=3&mes_id=319')
 
         
-#metodos
+#Gerar os Gerar coeficientes
+def calcularConsumo(consumoHora, tempo):
+    percent = tempo * 10 / 6 #100 / 60
+    return (consumoHora * percent)/100
+
 def gerarPesos(casa, energia_semana, agua_semana, energia_final, agua_final):
     comodos = Comodo.objects.filter(casa=casa)
 
@@ -93,4 +98,20 @@ def gerarPesos(casa, energia_semana, agua_semana, energia_final, agua_final):
 
     return consumos
         
+def PreencherCategorias(casa, mes):
+    comodos = Comodo.objects.filter(casa=casa)
+    print("cheguei no preencher categorias")
+    for comodo in comodos:
+        comodoSaidas = ComodoSaida.objects.filter(comodo=comodo)
+        for terminal in comodoSaidas:
+            if terminal.equipamento:
+                horas = ConsumoHora.objects.filter(comodo_saida=terminal,mes= mes)
+
+                for hora in horas:
+                    pass
+                    #Aqui vou estabelecer a regra
+                    #Vai pegar 10 dias
+                    #passos pegar todos terminais naquele horario somar
+                    #depois avancar para o proximo horario
+                    #depois de 10 dias avancar para o comodo
 
