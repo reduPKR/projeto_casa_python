@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect
 from core.models import *
+from datetime import date, timedelta 
+import time
 
 casa = None
 mes = None
@@ -48,7 +50,7 @@ def GerarCoeficientes(request):
         agua_final = agua_final / 48
 
         #faz as conversoes para saber o que cada comodo usa por hora
-        consumos = gerarPesos(casa, energia_semana, agua_semana, energia_final, agua_final)
+        consumos = gerarPesos(energia_semana, agua_semana, energia_final, agua_final)
         for item in consumos:
             item['media_energia_semana'] = round(item['percent_energia'] * energia_semana / 100,2)
             item['media_energia_final'] = round(item['percent_energia'] * energia_final / 100,2)
@@ -57,61 +59,92 @@ def GerarCoeficientes(request):
             item['media_agua_final'] = round(item['percent_agua'] * agua_final / 100,2)
         
         #Aqui embaixo vou colocar vetor de categorias
-        categorias = PreencherCategorias(casa, mes)
+        categorias = PreencherCategorias()
         
     return redirect('/regressao-linear-multipla/coeficiente?casa_id=3&mes_id=319')
-
-        
+       
 #Gerar os Gerar coeficientes
+def getMes(mes):
+    meses = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro']
+    return meses[mes]
+
+def getPosMes(mes):
+    meses = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro']
+    return meses.index(mes)
+
 def calcularConsumo(consumoHora, tempo):
     percent = tempo * 10 / 6 #100 / 60
     return (consumoHora * percent)/100
 
-def gerarPesos(casa, energia_semana, agua_semana, energia_final, agua_final):
-    comodos = Comodo.objects.filter(casa=casa)
+def gerarPesos(energia_semana, agua_semana, energia_final, agua_final):
+    global casa
 
     consumos = []
-    agua_total = energia_total = 0
-    for comodo in comodos:
-        terminais = ComodoSaida.objects.filter(comodo=comodo)
-        agua = energia = 0
-        for terminal in terminais:
-            if terminal.saida is not None and terminal.equipamento is not None:
-                if terminal.saida.tipo_consumo.id == 1: #Valor Direto
-                    agua = agua + terminal.equipamento.consumo_agua
-                else:
-                    energia = energia + terminal.equipamento.consumo_energia
-        energia_total = energia_total + energia
-        agua_total = agua_total + agua
-        consumos.append({'id': comodo.id, 'nome': comodo.nome,'agua': agua, 'energia': energia})
-    
-    for item in consumos:
-        if item['agua'] == 0:
-            item['percent_agua'] = 0
-        else:
-            item['percent_agua'] = round((item['agua']*100)/agua_total,2)
+    if casa:
+        comodos = Comodo.objects.filter(casa=casa)
+        agua_total = energia_total = 0
+        for comodo in comodos:
+            terminais = ComodoSaida.objects.filter(comodo=comodo)
+            agua = energia = 0
+            for terminal in terminais:
+                if terminal.saida is not None and terminal.equipamento is not None:
+                    if terminal.saida.tipo_consumo.id == 1: #Valor Direto
+                        agua = agua + terminal.equipamento.consumo_agua
+                    else:
+                        energia = energia + terminal.equipamento.consumo_energia
+            energia_total = energia_total + energia
+            agua_total = agua_total + agua
+            consumos.append({'id': comodo.id, 'nome': comodo.nome,'agua': agua, 'energia': energia})
         
-        if item['energia'] == 0:
-            item['percent_energia'] = 0
-        else:
-            item['percent_energia'] = round((item['energia']*100)/energia_total,2)
+        for item in consumos:
+            if item['agua'] == 0:
+                item['percent_agua'] = 0
+            else:
+                item['percent_agua'] = round((item['agua']*100)/agua_total,2)
+            
+            if item['energia'] == 0:
+                item['percent_energia'] = 0
+            else:
+                item['percent_energia'] = round((item['energia']*100)/energia_total,2)
 
     return consumos
         
-def PreencherCategorias(casa, mes):
-    comodos = Comodo.objects.filter(casa=casa)
-    print("cheguei no preencher categorias")
-    for comodo in comodos:
-        comodoSaidas = ComodoSaida.objects.filter(comodo=comodo)
-        for terminal in comodoSaidas:
-            if terminal.equipamento:
-                horas = ConsumoHora.objects.filter(comodo_saida=terminal,mes= mes)
+def PreencherCategorias():
+    global casa
+    global mes
+    if casa and mes:
+        comodos = Comodo.objects.filter(casa=casa)
 
-                for hora in horas:
-                    pass
-                    #Aqui vou estabelecer a regra
-                    #Vai pegar 10 dias
-                    #passos pegar todos terminais naquele horario somar
-                    #depois avancar para o proximo horario
-                    #depois de 10 dias avancar para o comodo
+        month = getPosMes(mes.mes) + 1
+        dia = date(mes.ano,month,1)
+
+        #Estou tentando evitar ficar fazendo requisicoes ao banco
+        for comodo in comodos:
+            comodoSaidas = ComodoSaida.objects.filter(comodo=comodo)
+            comodo.comodoSaidas = comodoSaidas
+
+            for terminal in comodo.comodoSaidas:
+                if terminal.equipamento:
+                    horas = ConsumoHora.objects.filter(comodo_saida=terminal,mes= mes)
+                    terminal.horas = horas
+
+        ini = time.time()
+        while dia.day != 11:
+            for hora in range(24):
+                print("{} as {}:00".format(dia, hora))
+                for comodo in comodos:
+                    #comodoSaidas = ComodoSaida.objects.filter(comodo=comodo)
+                    for terminal in comodo.comodoSaidas:
+                        if terminal.equipamento:
+                            # horas = ConsumoHora.objects.filter(comodo_saida=terminal,mes= mes)
+                            for item in terminal.horas:
+                               pass
+
+            dia = dia + timedelta(days=1)
+        fim = time.time()
+        print("\n")
+        print("Tempo {}".format(fim-ini))
+        print("\n")
+
+                
 
