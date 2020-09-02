@@ -131,14 +131,16 @@ def PreencherCategorias():
         ini = time.time()
         while dia.day != 11:
             for hora in range(24):
-                print("{} as {}:00".format(dia, hora))
                 for comodo in comodos:
                     #comodoSaidas = ComodoSaida.objects.filter(comodo=comodo)
+                    energia = 0
+                    agua = 0
                     for terminal in comodo.comodoSaidas:
                         if terminal.equipamento:
                             # horas = ConsumoHora.objects.filter(comodo_saida=terminal,mes= mes)
                             for item in terminal.horas:
-                               pass
+                                if item.data == dia and item.hora == hora:
+                                    print(" {} {} {} {}".format(item.data,dia, item.hora, hora))
 
             dia = dia + timedelta(days=1)
         fim = time.time()
