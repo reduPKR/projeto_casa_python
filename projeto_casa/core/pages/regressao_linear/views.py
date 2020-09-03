@@ -59,7 +59,7 @@ def GerarCoeficientes(request):
             item['media_agua_final'] = round(item['percent_agua'] * agua_final / 100,2)
         
         #Aqui embaixo vou colocar vetor de categorias
-        categorias = PreencherCategorias()
+        categorias = PreencherCategorias(energia_semana, agua_semana, energia_final, agua_final)
         
     return redirect('/regressao-linear-multipla/coeficiente?casa_id=3&mes_id=319')
        
@@ -109,7 +109,7 @@ def gerarPesos(energia_semana, agua_semana, energia_final, agua_final):
 
     return consumos
         
-def PreencherCategorias():
+def PreencherCategorias(energia_semana, agua_semana, energia_final, agua_final):
     global casa
     global mes
     if casa and mes:
@@ -130,9 +130,11 @@ def PreencherCategorias():
 
         ini = time.time()
         while dia.day != 11:
+            semana = dia.weekday()
             for hora in range(24):
                 for comodo in comodos:
                     #comodoSaidas = ComodoSaida.objects.filter(comodo=comodo)
+                    print(comodo.nome)
                     energia = 0
                     agua = 0
                     for terminal in comodo.comodoSaidas:
@@ -140,7 +142,17 @@ def PreencherCategorias():
                             # horas = ConsumoHora.objects.filter(comodo_saida=terminal,mes= mes)
                             for item in terminal.horas:
                                 if item.data == dia and item.hora == hora:
-                                    print(" {} {} {} {}".format(item.data,dia, item.hora, hora))
+                                    #print(" {} {}".format(terminal.saida.tipo_consumo.id, terminal.saida.tipo_consumo.nome))
+                                    if terminal.saida.tipo_consumo.id == 1: #Id diretamente
+                                        agua = agua + calcularConsumo(terminal.equipamento.consumo_agua, item.hora.tempo)
+                                    elif terminal.saida.tipo_consumo.id == 2: 
+                                        energia = energia + calcularConsumo(terminal.equipamento.consumo_energia, item.hora.tempo)
+                                    print(" {} {}".format(item.data,dia))
+
+                    if semana < 5:
+                        categoria = Indice(energia,agua, energia_semana, agua_semana)
+                    else:
+                        categoria = Indice(energia,agua, energia_final, agua_final)        
 
             dia = dia + timedelta(days=1)
         fim = time.time()
@@ -148,5 +160,33 @@ def PreencherCategorias():
         print("Tempo {}".format(fim-ini))
         print("\n")
 
+def Indice(energia, agua, meta_energia, meta_agua):
+    catEnergia = catAgua = 0
+    percEnergia = (meta_energia * 100) / energia
+    percAgua = (meta_agua * 100) / agua
+
+    if percEnergia < 35:
+        catEnergia = 1
+    elif percEnergia < 70:
+        catEnergia = 2
+    elif percEnergia < 105:
+        catEnergia = 3
+    elif percEnergia < 140:
+        catEnergia = 4
+    else:
+        catEnergia = 5
+
+    if percAgua < 35:
+        catAgua = 1
+    elif percAgua < 70:
+        catAgua = 2
+    elif percAgua < 105:
+        catEnergia = 3
+    elif percAgua < 140:
+        catAgua = 4
+    else:
+        catAgua = 5
+    
+    return (catEnergia + catAgua)/2
                 
 
