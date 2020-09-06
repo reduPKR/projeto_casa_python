@@ -129,7 +129,8 @@ def VincularSaida(request):
     if comodo_id:
         comodo = Comodo.objects.get(id=comodo_id)
         terminais = ComodoSaida.objects.filter(comodo=comodo)
-    
+    print("\n\n")
+    print(terminais)
     lista = Saida.objects.all()#lista sao os terminais cadastrados
     dados = {
         'titulo': 'Vincular comodo com terminais',
