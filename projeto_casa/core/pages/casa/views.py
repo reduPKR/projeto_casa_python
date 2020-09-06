@@ -267,7 +267,7 @@ def ComodoEquipamento(request):
     if comodo_id and equipamento_id:
         comodo = Comodo.objects.get(id=comodo_id)
         equipamento = Equipamento.objects.get(id=equipamento_id)
-        ambos = TipoConsumo.objects.get(nome="Água e energia")
+        ambos = TipoConsumo.objects.get(nome="Água e energia")# diretamente
 
         for saida in saidas:
             cs = ComodoSaida.objects.filter(

@@ -127,14 +127,11 @@ def PreencherCategorias(energia_semana, agua_semana, energia_final, agua_final):
                 if terminal.equipamento:
                     horas = ConsumoHora.objects.filter(comodo_saida=terminal,mes= mes)
                     terminal.horas = horas
-
-        ini = time.time()
         while dia.day != 11:
             semana = dia.weekday()
             for hora in range(24):
                 for comodo in comodos:
                     #comodoSaidas = ComodoSaida.objects.filter(comodo=comodo)
-                    print(comodo.nome)
                     energia = 0
                     agua = 0
                     for terminal in comodo.comodoSaidas:
@@ -147,7 +144,6 @@ def PreencherCategorias(energia_semana, agua_semana, energia_final, agua_final):
                                         agua = agua + calcularConsumo(terminal.equipamento.consumo_agua, item.hora.tempo)
                                     elif terminal.saida.tipo_consumo.id == 2: 
                                         energia = energia + calcularConsumo(terminal.equipamento.consumo_energia, item.hora.tempo)
-                                    print(" {} {}".format(item.data,dia))
 
                     if semana < 5:
                         categoria = Indice(energia,agua, energia_semana, agua_semana)
@@ -155,10 +151,6 @@ def PreencherCategorias(energia_semana, agua_semana, energia_final, agua_final):
                         categoria = Indice(energia,agua, energia_final, agua_final)        
 
             dia = dia + timedelta(days=1)
-        fim = time.time()
-        print("\n")
-        print("Tempo {}".format(fim-ini))
-        print("\n")
 
 def Indice(energia, agua, meta_energia, meta_agua):
     catEnergia = catAgua = 0

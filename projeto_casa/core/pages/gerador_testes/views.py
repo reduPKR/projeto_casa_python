@@ -3,6 +3,7 @@ from core.models import *
 from datetime import date, timedelta 
 import random 
 import math
+import time
 
 def ListarCasas(request):
     casas = Casa.objects.all().order_by('nome')
@@ -46,7 +47,11 @@ def GerarAno(request):
         ConsumoMes.objects.filter(casa=casa).delete()
 
         for i in range(12):
+            ini = time.time()
             GerarTestes(casa, i)
+            fim = time.time()
+            mes = getMes(i)
+            print("\n{} Tempo {}".format(mes, fim-ini))
         
     return redirect('/gerar-testes/gerar/?id={}'.format(id))
 
@@ -75,8 +80,11 @@ def GerarTestes(casa, inicial):
         ano = inicio.year
     )
     
-    comodos = Comodo.objects.filter(casa=casa)
     consumoMes = ConsumoMes.objects.get(casa = casa,mes = mes,ano = inicio.year)
+    #gambiarra reduz acesso ao banco de ddos
+    casa.comodos = Comodo.objects.filter(casa=casa)
+    for comodo in casa.comodos:
+        comodo.comodoSaidas = ComodoSaida.objects.filter(comodo=comodo)
 
     energia = energia_semana = energia_feriado = 0
     agua = agua_semana = agua_feriado = 0
@@ -89,10 +97,12 @@ def GerarTestes(casa, inicial):
         else:
             feriados = feriados + 1
 
-        for comodo in comodos:
-            comodoSaidas = ComodoSaida.objects.filter(comodo=comodo)
+        for comodo in casa.comodos:
+            #comodoSaidas = ComodoSaida.objects.filter(comodo=comodo)
             #gera um valor aleatorio de tempo de uso
-            for terminal in comodoSaidas:
+
+            registradas = [] #Caso um equipamento esteja em duas listas
+            for terminal in comodo.comodoSaidas:
                 if terminal.equipamento:
                     # 0 segunda e 6 domingo
                     if semana < 5:
@@ -108,7 +118,6 @@ def GerarTestes(casa, inicial):
 
                     for hora in range(24):
                         x = random.randint(0, 100)
-
                         if terminal.equipamento.tipo_equipamento.nome == "Iluminação": #Valor direto
                             #luz acessa ate 0 horas depois as 6 da manha
                             if hora > 0 and hora < 6:
@@ -127,8 +136,14 @@ def GerarTestes(casa, inicial):
                                 tempo = tempo - 60
                                 qtde = qtde - 1
 
-                            consumoEnergia = calcularConsumo(terminal.equipamento.consumo_energia, uso)
-                            consumoAgua = calcularConsumo(terminal.equipamento.consumo_agua, uso)
+                            consumoAgua = consumoEnergia = 0
+                            if terminal.equipamento.tipo_consumo.id == 1:
+                                consumoAgua = calcularConsumo(terminal.equipamento.consumo_agua, uso)
+                            elif terminal.equipamento.tipo_consumo.id == 2:
+                                consumoEnergia = calcularConsumo(terminal.equipamento.consumo_energia, uso)
+                            else:
+                                consumoAgua = calcularConsumo(terminal.equipamento.consumo_agua, uso)
+                                consumoEnergia = calcularConsumo(terminal.equipamento.consumo_energia, uso)
                             
                             energia = energia + consumoEnergia
                             agua = agua + consumoAgua
@@ -146,7 +161,6 @@ def GerarTestes(casa, inicial):
                                 data = inicio,
                                 hora = hora
                             )            
-        print(inicio)
         inicio = inicio + timedelta(days=1)
     
     semanas = semanas / 5
