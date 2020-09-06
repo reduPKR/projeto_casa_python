@@ -23,7 +23,7 @@ class TipoEquipamento(models.Model):
 
     class Meta:
         db_table = 'tipo_equipamento'
-    
+
 class Equipamento(models.Model):
     tipo_consumo = models.ForeignKey(TipoConsumo,on_delete=models.CASCADE)
     tipo_equipamento = models.ForeignKey(TipoEquipamento,on_delete=models.CASCADE)
@@ -48,6 +48,15 @@ class Comodo(models.Model):
     class Meta:
         db_table = 'comodo'
 
+class ComodoEquipamento(models.Model):
+    apelido = models.IntegerField()
+
+    comodo = models.ForeignKey(Comodo, on_delete=models.CASCADE)
+    equipamento = models.ForeignKey(Equipamento, on_delete=models.CASCADE)
+
+    class Meta:
+        db_table = 'comodo_equipamento'
+
 class ComodoSaida(models.Model):
     #Apelido é um int que descreve qual é
     #Exemplo tomada 3, uso para que se for excluida e adicionada fique na ordem 1,2,3 ...
@@ -55,7 +64,8 @@ class ComodoSaida(models.Model):
 
     comodo = models.ForeignKey(Comodo, on_delete=models.CASCADE)
     saida = models.ForeignKey(Saida, on_delete=models.CASCADE)
-    equipamento = models.ForeignKey(Equipamento, on_delete=models.CASCADE, null=True)
+    #equipamento = models.ForeignKey(Equipamento, on_delete=models.CASCADE, null=True)
+    comodo_equipamento = models.ForeignKey(ComodoEquipamento,on_delete=models.CASCADE,null=True)
     essencial = models.BooleanField(default=False)
     status = models.BooleanField(default=True)
     
@@ -72,6 +82,8 @@ class ComodoSaida(models.Model):
             return 'Essencial'
         else:
             return 'Não essencial'
+
+
 
 class Categoria(models.Model):
     nome = models.CharField(max_length=30)
