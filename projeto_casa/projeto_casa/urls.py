@@ -65,7 +65,7 @@ urlpatterns = [
     path('cadastrar/vincular/comodo/saida/excluir/<int:id>/', cadastro.DeleteSaidaComodo),
     path('cadastrar/vincular/equipamento/', cadastro.ListarComodoEquipamento),
     path('cadastrar/vincular/equipamento/comodo/', cadastro.VincularEquipamento),
-    path('cadastrar/vincular/equipamento/comodo/selecionar/', cadastro.ComodoEquipamento),
+    path('cadastrar/vincular/equipamento/comodo/selecionar/', cadastro.ComodoEquipamentos),
     path('cadastrar/vincular/equipamento/comodo/adicionar', cadastro.AdicionarSaidaEquipamento),
     path('cadastrar/desvincular/equipamento/comodo/<int:id>/', cadastro.DesvincularSaidaEquipamento),
 
