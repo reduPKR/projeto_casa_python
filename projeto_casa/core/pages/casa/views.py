@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from core.models import *
+import time
 
 def ListarCasas(request):
     casas = Casa.objects.all().order_by('nome')
@@ -129,8 +130,6 @@ def VincularSaida(request):
     if comodo_id:
         comodo = Comodo.objects.get(id=comodo_id)
         terminais = ComodoSaida.objects.filter(comodo=comodo)
-    print("\n\n")
-    print(terminais)
     lista = Saida.objects.all()#lista sao os terminais cadastrados
     dados = {
         'titulo': 'Vincular comodo com terminais',
@@ -244,9 +243,9 @@ def VincularEquipamento(request):
 
         vinculados = []
         for item in terminais:
-            if item.saida is not None and item.equipamento is not None:
-                if item.equipamento not in vinculados:
-                    vinculados.append(item.equipamento)
+            if item.saida is not None and item.comodo_equipamento is not None:
+                if item.comodo_equipamento and item.comodo_equipamento.equipamento not in vinculados:
+                    vinculados.append(item.comodo_equipamento.equipamento)
  
     dados = {
         'titulo': 'Vincular terminal com equipamento',
@@ -268,27 +267,27 @@ def ComodoEquipamento(request):
     if comodo_id and equipamento_id:
         comodo = Comodo.objects.get(id=comodo_id)
         equipamento = Equipamento.objects.get(id=equipamento_id)
-        ambos = TipoConsumo.objects.get(nome="Água e energia")# diretamente
+        ambos = TipoConsumo.objects.get(id=3)# diretamente
 
+        vinculados = ComodoSaida.objects.filter(
+            comodo=comodo,
+            comodo_equipamento = not None
+        )
+        
         for saida in saidas:
             cs = ComodoSaida.objects.filter(
                 comodo=comodo,
                 saida=saida
             )
             
-            vinculados = ComodoSaida.objects.filter(
-                comodo=comodo,
-                equipamento=equipamento
-            )
-            
             flag = True
-            for vinc in vinculados:
-                if vinc.saida.tipo_consumo == saida.tipo_consumo:
+            for vinculado in vinculados:
+                if vinculado.saida.tipo_consumo == saida.tipo_consumo:
                     flag = False
 
             if flag:
                 for item in cs:
-                    if item.equipamento is None:
+                    if item.comodo_equipamento is None:
                         if saida.tipo_consumo == equipamento.tipo_consumo: 
                             aux = {'id': item.id, 'apelido': item.apelido, 'nome': saida.nome}
                             terminais.append(aux)
@@ -322,6 +321,8 @@ def AdicionarSaidaEquipamento(request):
         comodo_id = request.POST.get('comodo_id')
         equipamento_id = request.POST.get('equipamento_id')
 
+        #Modificar o adicionar
+
         if comodo_id and terminal_id and equipamento_id:
             equipamento = Equipamento.objects.get(id=equipamento_id)
 
@@ -334,15 +335,15 @@ def AdicionarSaidaEquipamento(request):
             if essencial is None:
                 essencial = False
 
-            if equipamento:
-                ComodoSaida.objects.filter(id=terminal_id).update(
-                    equipamento=equipamento,
-                    tempo_min_semana=semana_min,
-                    tempo_max_semana=semana_max,
-                    tempo_min_feriado=feriado_min,
-                    tempo_max_feriado=feriado_max,
-                    essencial=essencial
-                    )
+            # if equipamento:
+            #     ComodoSaida.objects.filter(id=terminal_id).update(
+            #         equipamento=equipamento,
+            #         tempo_min_semana=semana_min,
+            #         tempo_max_semana=semana_max,
+            #         tempo_min_feriado=feriado_min,
+            #         tempo_max_feriado=feriado_max,
+            #         essencial=essencial
+            #         )
 
     return redirect('/cadastrar/vincular/equipamento/comodo/selecionar/?comodo_id={}&equipamento_id={}'.format(comodo_id,equipamento_id))
 
@@ -360,23 +361,23 @@ def DesvincularSaidaEquipamento(request,id):
 
 def CalcularConsumo(comodo):
     terminais = ComodoSaida.objects.filter(comodo=comodo)
-
+    
     consumo = {'agua_min': 0, 'agua_max': 0, 'energia_min': 0, 'energia_max': 0 }
     for item in terminais:
-        if item.saida is not None and item.equipamento is not None:
+        if item.saida is not None and item.comodo_equipamento is not None:
             if item.saida.tipo_consumo.id == 1: #Valor Direto
                 # agua_hora/60 * tempo_min_semana * 5 dias semana + final de semana
-                consumo['agua_min'] = consumo['agua_min'] + ((item.equipamento.consumo_agua/60)  * item.tempo_min_semana * 5)
-                consumo['agua_min'] = consumo['agua_min'] + ((item.equipamento.consumo_agua/60)  * item.tempo_min_feriado * 2)
+                consumo['agua_min'] = consumo['agua_min'] + ((item.comodo_equipamento.equipamento.consumo_agua/60)  * item.tempo_min_semana * 5)
+                consumo['agua_min'] = consumo['agua_min'] + ((item.comodo_equipamento.equipamento.consumo_agua/60)  * item.tempo_min_feriado * 2)
 
-                consumo['agua_max'] = consumo['agua_max'] + ((item.equipamento.consumo_agua/60)  * item.tempo_max_semana * 5)
-                consumo['agua_max'] = consumo['agua_max'] + ((item.equipamento.consumo_agua/60)  * item.tempo_max_feriado * 2)
+                consumo['agua_max'] = consumo['agua_max'] + ((item.comodo_equipamento.equipamento.consumo_agua/60)  * item.tempo_max_semana * 5)
+                consumo['agua_max'] = consumo['agua_max'] + ((item.comodo_equipamento.equipamento.consumo_agua/60)  * item.tempo_max_feriado * 2)
             else:
-                consumo['energia_min'] = consumo['energia_min'] + ((item.equipamento.consumo_energia/60)  * item.tempo_min_semana * 5)
-                consumo['energia_min'] = consumo['energia_min'] + ((item.equipamento.consumo_energia/60)  * item.tempo_min_feriado * 2)
+                consumo['energia_min'] = consumo['energia_min'] + ((item.comodo_equipamento.equipamento.consumo_energia/60)  * item.tempo_min_semana * 5)
+                consumo['energia_min'] = consumo['energia_min'] + ((item.comodo_equipamento.equipamento.consumo_energia/60)  * item.tempo_min_feriado * 2)
 
-                consumo['energia_max'] = consumo['energia_max'] + ((item.equipamento.consumo_energia/60)  * item.tempo_max_semana * 5)
-                consumo['energia_max'] = consumo['energia_max'] + ((item.equipamento.consumo_energia/60)  * item.tempo_max_feriado * 2)
+                consumo['energia_max'] = consumo['energia_max'] + ((item.comodo_equipamento.equipamento.consumo_energia/60)  * item.tempo_max_semana * 5)
+                consumo['energia_max'] = consumo['energia_max'] + ((item.comodo_equipamento.equipamento.consumo_energia/60)  * item.tempo_max_feriado * 2)
 
     if consumo is not None:
         consumo['agua_min'] = round(consumo['agua_min'] * 4,2)
