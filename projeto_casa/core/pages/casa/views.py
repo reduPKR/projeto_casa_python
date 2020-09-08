@@ -244,8 +244,9 @@ def VincularEquipamento(request):
         vinculados = []
         for item in terminais:
             if item.saida is not None and item.comodo_equipamento is not None:
-                if item.comodo_equipamento and item.comodo_equipamento.equipamento not in vinculados:
-                    vinculados.append(item.comodo_equipamento.equipamento)
+                if item.comodo_equipamento and item.comodo_equipamento.equipamento:
+                    item.comodo_equipamento.equipamento.apelido = item.comodo_equipamento.apelido
+                    vinculados.append(item.comodo_equipamento)
  
     dados = {
         'titulo': 'Vincular terminal com equipamento',
@@ -255,6 +256,8 @@ def VincularEquipamento(request):
         'terminais': terminais,
         'consumo': consumo
     }
+    print("\n\n")
+    print(vinculados)
 
     return render(request, 'casas/vincularEquipamento.html', dados)
 
@@ -376,13 +379,36 @@ def DesvincularSaidaEquipamento(request,id):
     item = ComodoSaida.objects.get(id = id)
     comodo_id = item.comodo.id
     equipamento_id = item.comodo_equipamento.equipamento.id
-    
-    # ComodoSaida.objects.filter(id = id).update(
-    #     comodo_equipamento=None,
-    #     essencial=False
-    # )
-    ComodoEquipamento.objects.filter(id=1).delete()
-    # ComodoEquipamento.objects.filter(id=item.comodo_equipamento.id).delete()
+    comodo_equip = ComodoSaida.objects.get(id = id).comodo_equipamento.id
+
+    ComodoSaida.objects.filter(id = id).update(
+        comodo_equipamento=None,
+        essencial=False
+    )
+    #ComodoEquipamento.objects.filter(id=comodo_equip).delete()
+    item = ComodoEquipamento.objects.get(id=comodo_equip)
+    if item:
+        apelido = item.apelido
+        comodo = item.comodo
+        equipamento = item.equipamento
+
+        item.delete()
+
+        lista = ComodoEquipamento.objects.filter(comodo=comodo, equipamento = equipamento)
+
+        maior = 0
+        if lista is not None:
+            for item in lista:
+                if item.apelido > maior:
+                    maior = item.apelido
+            
+        if maior > apelido:
+            ComodoEquipamento.objects.filter(
+                    comodo=comodo,
+                    equipamento=equipamento,
+                    apelido=maior
+                    ).update(apelido=apelido)
+
 
     return redirect('/cadastrar/vincular/equipamento/comodo/selecionar/?comodo_id={}&equipamento_id={}'.format(comodo_id,equipamento_id))
 
@@ -412,3 +438,16 @@ def CalcularConsumo(comodo):
         consumo['energia_max'] = round((consumo['energia_max'] * 4.3) / 1000, 2)
     
     return consumo
+
+def ComodoEquipamentoVisualizar(request):
+    id = request.GET.get('id')
+    if id:
+        comodo_equipamento = ComodoEquipamento.objects.get(id=id)
+        print(comodo_equipamento)
+
+        dados = {
+        'titulo': 'Viualizar equipamento',
+        'comodo_equipamento': comodo_equipamento
+    }
+
+    return render(request, 'casas/equipamentoVisualizar.html',dados)

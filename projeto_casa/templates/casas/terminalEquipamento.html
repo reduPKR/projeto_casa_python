@@ -41,27 +41,23 @@
                                 </div>
                             </div>
                         {% else %}
-                        <input name="semana_min" value="{{tempo.tempo_min_semana}}" hidden/>
-                        <input name="semana_max" value="{{tempo.tempo_max_semana}}" hidden/>
-                        <input name="feriado_min" value="{{tempo.tempo_min_feriado}}" hidden/>
-                        <input name="feriado_max" value="{{tempo.tempo_max_feriado}}" hidden/>
                             <strong>Uso durante a semana (Minutos)</strong>
                             <div class="row">
                                 <div class="col">
-                                    Mínimo: <input type="number" name="semana_min" value="{{tempo.tempo_min_semana}}" min="0" max="7200" disabled/>
+                                    Mínimo: <input type="number" name="semana_min" value="{{tempo.tempo_min_semana}}" min="0" max="7200" step='15'/>
                                 </div> 
                                 <div class="col">
-                                    Maximo: <input type="number" name="semana_max" value="{{tempo.tempo_max_semana}}" min="0" max="7200" disabled/>
+                                    Maximo: <input type="number" name="semana_max" value="{{tempo.tempo_max_semana}}" min="0" max="7200" step='15'/>
                                 </div>
                             </div>
                             <br>
                             <strong>Uso durante o final semana (Minutos)</strong>
                             <div class="row">
                                 <div class="col">
-                                    Mínimo: <input type="number" name="feriado_min" value="{{tempo.tempo_min_feriado}}" min="0" max="2880" disabled/>
+                                    Mínimo: <input type="number" name="feriado_min" value="{{tempo.tempo_min_feriado}}" min="0" max="2880" step='15'/>
                                 </div> 
                                 <div class="col">
-                                    Maximo: <input type="number" name="feriado_max" value="{{tempo.tempo_max_feriado}}" min="0" max="2880" disabled/>
+                                    Maximo: <input type="number" name="feriado_max" value="{{tempo.tempo_max_feriado}}" min="0" max="2880" step='15'/>
                                 </div>
                             </div>
                         {% endif %}

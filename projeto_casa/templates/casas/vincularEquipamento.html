@@ -77,12 +77,11 @@
                             {% for item in vinculados %}
                                 <tr>
                                     <td>
-                                        {{item.nome}}
+                                        {{item.equipamento.nome}} {{item.equipamento.apelido}}
                                     </td>
                                     <td>
-                                        <form action="/cadastrar/vincular/equipamento/comodo/selecionar/" method="GET">
-                                            <input type="text" name="comodo_id" value="{{comodo.id}}" hidden>
-                                            <input type="text" name="equipamento_id" value="{{item.id}}" hidden>
+                                        <form action="/cadastrar/vincular/equipamento/comodo/visualizar/" method="GET">
+                                            <input type="text" name="id" value="{{item.id}}" hidden>
                                             <button type="submit" class="btn btn-secondary">
                                                 <i class="fas fa-eye"></i>
                                                 Visualizar

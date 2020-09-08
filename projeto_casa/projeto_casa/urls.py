@@ -68,6 +68,7 @@ urlpatterns = [
     path('cadastrar/vincular/equipamento/comodo/selecionar/', cadastro.ComodoEquipamentos),
     path('cadastrar/vincular/equipamento/comodo/adicionar', cadastro.AdicionarSaidaEquipamento),
     path('cadastrar/desvincular/equipamento/comodo/<int:id>/', cadastro.DesvincularSaidaEquipamento),
+    path('cadastrar/vincular/equipamento/comodo/visualizar/', cadastro.ComodoEquipamentoVisualizar),
 
     #Gerar testes
     path('gerar-testes/casas/', gerarTeste.ListarCasas),
