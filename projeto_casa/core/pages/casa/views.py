@@ -256,8 +256,6 @@ def VincularEquipamento(request):
         'terminais': terminais,
         'consumo': consumo
     }
-    print("\n\n")
-    print(vinculados)
 
     return render(request, 'casas/vincularEquipamento.html', dados)
 
@@ -265,7 +263,7 @@ def ComodoEquipamentos(request):
     comodo_id = request.GET.get('comodo_id')
     equipamento_id = request.GET.get('equipamento_id')
     saidas = Saida.objects.all()
-    print("teste")
+
     terminais = []
     if comodo_id and equipamento_id:
         comodo = Comodo.objects.get(id=comodo_id)
@@ -306,22 +304,13 @@ def ComodoEquipamentos(request):
                         elif equipamento.tipo_consumo == ambos:
                             aux = {'id': item.id, 'apelido': item.apelido, 'nome': saida.nome, 'tipo_consumo': saida.tipo_consumo}
                             terminais.append(aux)
-    tempo = None
-    if vinculados:
-        tempo = {
-            'tempo_min_semana': vinculados[0].tempo_min_semana,
-            'tempo_max_semana': vinculados[0].tempo_max_semana,
-            'tempo_min_feriado': vinculados[0].tempo_min_feriado,
-            'tempo_max_feriado': vinculados[0].tempo_max_feriado
-        }
 
     dados = {
         'titulo': 'Vincular terminal com equipamento',
         'comodo': comodo,
         'equipamento': equipamento,
         'terminais': terminais,
-        'vinculados': vinculados,
-        'tempo': tempo
+        'vinculados': vinculados
     }
 
     return render(request, 'casas/terminalEquipamento.html', dados)
@@ -380,7 +369,7 @@ def DesvincularSaidaEquipamento(request,id):
     comodo_id = item.comodo.id
     equipamento_id = item.comodo_equipamento.equipamento.id
     comodo_equip = ComodoSaida.objects.get(id = id).comodo_equipamento.id
-
+    
     ComodoSaida.objects.filter(id = id).update(
         comodo_equipamento=None,
         essencial=False
@@ -443,11 +432,35 @@ def ComodoEquipamentoVisualizar(request):
     id = request.GET.get('id')
     if id:
         comodo_equipamento = ComodoEquipamento.objects.get(id=id)
-        print(comodo_equipamento)
-
+        terminal = ComodoSaida.objects.get(comodo_equipamento=comodo_equipamento)
+        
         dados = {
         'titulo': 'Viualizar equipamento',
-        'comodo_equipamento': comodo_equipamento
-    }
+        'terminal': terminal
+        }
 
     return render(request, 'casas/equipamentoVisualizar.html',dados)
+
+def ComodoEquipamentoAlterar(request):
+    id = request.POST.get('id')
+
+    if id:
+        semana_min = request.POST.get('semana_min')
+        semana_max = request.POST.get('semana_max')
+        feriado_min = request.POST.get('feriado_min')
+        feriado_max = request.POST.get('feriado_max')
+
+        essencial = request.POST.get('essencial')
+        if essencial is None:
+            essencial = False
+
+        ComodoSaida.objects.filter(id=id).update(
+            tempo_min_semana=semana_min,
+            tempo_max_semana=semana_max,
+            tempo_min_feriado=feriado_min,
+            tempo_max_feriado=feriado_max,
+            essencial=essencial
+            )
+    terminal = ComodoSaida.objects.get(id=id)
+                      
+    return redirect('/cadastrar/vincular/equipamento/comodo/visualizar/?id={}'.format(terminal.comodo_equipamento.id))

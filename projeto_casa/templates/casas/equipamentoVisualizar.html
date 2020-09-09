@@ -6,50 +6,71 @@
         <h3><i class="fas fa-link"></i> Visualizar equipamento</h3>
         <div class="container">
             <div class="row">
-                <!--<div class="col col-6 col-sm-6 col-md-4 col-lg-5 col-xs-4 container box-gray"><br>
-                    <strong style="float: left;">Nome: {{comodo.casa.nome}}</strong><br>
-                    <strong style="float: left;">Comodo: {{comodo.nome}}</strong><br>
-                    <strong style="float: left;">Equipamento: {{equipamento.nome}}</strong><br><br>
-                    <strong>Uso durante a semana (Minutos)</strong>
-                    <div class="row">
-                        <div class="col">
-                            Mínimo: <input type="number" name="semana_min" value="{{tempo.tempo_min_semana}}" min="0" max="7200" step='15'/>
-                        </div> 
-                        <div class="col">
-                            Maximo: <input type="number" name="semana_max" value="{{tempo.tempo_max_semana}}" min="0" max="7200" step='15'/>
+                <div class="col col-6 col-sm-6 col-md-4 col-lg-6 col-xs-4 container box-gray"><br>
+                    <strong style="float: left;">Nome: {{terminal.comodo.casa.nome}}</strong><br>
+                    <strong style="float: left;">Comodo: {{terminal.comodo.nome}}</strong><br>
+                    <strong style="float: left;">Equipamento: {{terminal.comodo_equipamento.equipamento.nome}}
+                        {{terminal.comodo_equipamento.apelido}}</strong><br>
+                    <strong style="float: left;">Saida: {{terminal.saida.nome}}
+                            {{terminal.apelido}}</strong> 
+                            <a class="btn btn-warning" href="/cadastrar/desvincular/equipamento/comodo/{{terminal.id}}">
+                                <i class="fas fa-exclamation-triangle"></i> Devincular
+                            </a><br><br>
+                    <form action="/cadastrar/vincular/equipamento/comodo/alterar" method="POST"> {% csrf_token %}
+                        <input type="number" name="id" value="{{terminal.id}}" hidden/>
+                        <strong>Uso durante a semana (Minutos)</strong>
+                        <div class="row">
+                            <div class="col">
+                                Mínimo: <input type="number" id="semana_min" name="semana_min" value="{{terminal.tempo_min_semana}}" min="0" max="7200" step='15'/>
+                            </div> 
+                            <div class="col">
+                                Maximo: <input type="number" id="semana_max" name="semana_max" value="{{terminal.tempo_max_semana}}" min="0" max="7200" step='15'/>
+                            </div>
                         </div>
-                    </div>
-                    <br>
-                    <strong>Uso durante o final semana (Minutos)</strong>
-                    <div class="row">
-                        <div class="col">
-                            Mínimo: <input type="number" name="feriado_min" value="{{tempo.tempo_min_feriado}}" min="0" max="2880" step='15'/>
-                        </div> 
-                        <div class="col">
-                            Maximo: <input type="number" name="feriado_max" value="{{tempo.tempo_max_feriado}}" min="0" max="2880" step='15'/>
+                        <br>
+                        <strong>Uso durante o final semana (Minutos)</strong>
+                        <div class="row">
+                            <div class="col">
+                                Mínimo: <input type="number" id="feriado_min" name="feriado_min" value="{{terminal.tempo_min_feriado}}" min="0" max="2880" step='15'/>
+                            </div> 
+                            <div class="col">
+                                Maximo: <input type="number" id="feriado_max" name="feriado_max" value="{{terminal.tempo_max_feriado}}" min="0" max="2880" step='15'/>
+                            </div>
                         </div>
-                    </div>
-                    <br>
-                    <button type="button" class="btn btn-secondary" onclick="diaTodo()">
-                        <i class="fas fa-hourglass-half"></i> Dia todo
-                    </button>
-                    <br><br>
-                    <div  style="float: left;">
-                        <input type="checkbox" name="essencial" value="True"/>
-                        <label> Essencial (Nunca desativar)</label>
-                    </div>
-                    <br>
-                    <button type="submit" class="btn btn-secondary btn-lg btn-block">
-                        <i class="fas fa-plus-circle"></i>
-                        Adicionar
-                    </button>
-                    <br>                                                                                                         
-                    <a type="button" class="btn btn-warning" style="position: absolute; left: 10px;" href="/cadastrar/vincular/equipamento/comodo/?id={{comodo.id}}">
+                        <br>
+                        <button type="button" class="btn btn-secondary" onclick="diaTodo()">
+                            <i class="fas fa-hourglass-half"></i> Dia todo
+                        </button>
+                        <br><br>
+                        <div  style="float: left;">
+                            <input type="checkbox" name="essencial" value="True"/>
+                            <label> Essencial (Nunca desativar)</label>
+                        </div>
+                        <br>
+                        <button type="submit" class="btn btn-secondary btn-lg btn-block">
+                            <i class="fas fa-plus-circle"></i>
+                            Confirmar
+                        </button>
+                        <br>
+                    </form>
+                    <a type="button" class="btn btn-warning" style="position: absolute; left: 10px;" href="/cadastrar/vincular/equipamento/comodo/?id={{terminal.comodo.id}}">
                         <i class='fas fa-arrow-alt-circle-left'></i> Voltar
                     </a>
                     <br><br>
-                </div>!-->
+                </div>
             </div>
         </div>
     </div>
+    <script>
+        function diaTodo(){
+            let entrada = document.getElementById("semana_min");
+            entrada.value = '7200';
+            entrada = document.getElementById("semana_max");
+            entrada.value = "7200"; 
+            entrada = document.getElementById("feriado_min");
+            entrada.value = "2880"; 
+            entrada = document.getElementById("feriado_max");
+            entrada.value = "2880"; 
+        }
+    </script>
 {% endblock %}
