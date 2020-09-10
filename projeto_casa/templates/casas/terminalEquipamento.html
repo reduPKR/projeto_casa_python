@@ -14,11 +14,26 @@
                     <form action="/cadastrar/vincular/equipamento/comodo/adicionar" method="POST"> {% csrf_token %}
                         <input type="text" name="comodo_id" value="{{comodo.id}}" hidden>
                         <input type="text" name="equipamento_id" value="{{equipamento.id}}" hidden>                              
-                        <select class="form-control" name="terminal_id" value='1'>
-                            {% for item in terminais %}
-                                <option value={{ item.id }}> {{ item.nome }} {{ item.apelido}} </option>
-                            {% endfor %}
-                        </select>
+                        {% if equipamento.tipo_consumo.id != 3 %}
+                            <select class="form-control" name="terminal_id" value='1'>
+                                {% for item in terminais %}
+                                    <option value={{ item.id }}> {{ item.nome }} {{ item.apelido}} </option>
+                                {% endfor %}
+                            </select>
+                        {% endif %}
+                        {% if equipamento.tipo_consumo.id == 3 %}
+                            <select class="form-control" name="energia_id" value='1'>
+                                {% for item in terminais.energia %}
+                                    <option value={{ item.id }}> {{ item.nome }} {{ item.apelido}} </option>
+                                {% endfor %}
+                            </select>
+                            <br>
+                            <select class="form-control" name="agua_id" value='1'>
+                                {% for item in terminais.agua %}
+                                    <option value={{ item.id }}> {{ item.nome }} {{ item.apelido}} </option>
+                                {% endfor %}
+                            </select>
+                        {% endif %}
                         <br>
                         <strong>Uso durante a semana (Minutos)</strong>
                         <div class="row">

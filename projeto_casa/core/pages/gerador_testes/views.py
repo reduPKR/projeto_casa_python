@@ -51,7 +51,6 @@ def GerarAno(request):
             GerarTestes(casa, i)
             fim = time.time()
             mes = getMes(i)
-            print("\n{} Tempo {}".format(mes, fim-ini))
         
     return redirect('/gerar-testes/gerar/?id={}'.format(id))
 

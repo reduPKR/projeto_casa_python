@@ -157,8 +157,6 @@ def AdicionarSaida(request):
         
         consumo_id = request.POST.get('consumo')
         tipo_consumo = TipoConsumo.objects.filter(id=consumo_id).first()
-        print(consumo_id)
-        print(tipo_consumo)
 
         if nome:
             id = request.POST.get('id')
