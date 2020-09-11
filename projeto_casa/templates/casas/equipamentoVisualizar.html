@@ -11,11 +11,14 @@
                     <strong style="float: left;">Comodo: {{terminal.comodo.nome}}</strong><br>
                     <strong style="float: left;">Equipamento: {{terminal.comodo_equipamento.equipamento.nome}}
                         {{terminal.comodo_equipamento.apelido}}</strong><br>
-                    <strong style="float: left;">Saida: {{terminal.saida.nome}}
-                            {{terminal.apelido}}</strong> 
-                            <a class="btn btn-warning" href="/cadastrar/desvincular/equipamento/comodo/{{terminal.id}}">
-                                <i class="fas fa-exclamation-triangle"></i> Devincular
-                            </a><br><br>
+                    <strong style="float: left;">Saida: {{terminal.saida.nome}} {{terminal.apelido}}</strong> 
+                    {% if terminal.saida2 %}
+                        <br>
+                        <strong style="float: left;">Saida2: {{terminal.saida2.nome}} {{terminal.apelido2}}</strong> 
+                    {% endif %}
+                    <a class="btn btn-warning" href="/cadastrar/desvincular/equipamento/comodo/{{terminal.id}}">
+                        <i class="fas fa-exclamation-triangle"></i> Devincular
+                    </a><br><br>
                     <form action="/cadastrar/vincular/equipamento/comodo/alterar" method="POST"> {% csrf_token %}
                         <input type="number" name="id" value="{{terminal.id}}" hidden/>
                         <strong>Uso durante a semana (Minutos)</strong>

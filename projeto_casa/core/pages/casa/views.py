@@ -242,12 +242,17 @@ def VincularEquipamento(request):
         #1 esta sendo id da agua e 2 da energia
         consumo = CalcularConsumo(comodo)
         vinculados = []
+        multiplo = [] #evita que um chuveiro que esta conectado a duas saidas se repita
         for item in terminais:
             if item.saida is not None and item.comodo_equipamento is not None:
                 if item.comodo_equipamento and item.comodo_equipamento.equipamento:
-                    item.comodo_equipamento.equipamento.apelido = item.comodo_equipamento.apelido
-                    vinculados.append(item.comodo_equipamento)
- 
+                    if item.comodo_equipamento not in multiplo:
+                        item.comodo_equipamento.equipamento.apelido = item.comodo_equipamento.apelido
+                        vinculados.append(item.comodo_equipamento)
+
+                    if item.comodo_equipamento.equipamento.tipo_consumo.id == 3: # diretamente
+                        multiplo.append(item.comodo_equipamento)
+    
     dados = {
         'titulo': 'Vincular terminal com equipamento',
         'comodo': comodo,
@@ -369,6 +374,7 @@ def AdicionarSaidaEquipamento(request):
             else:
                 energia_id = request.POST.get('energia_id')
                 agua_id = request.POST.get('agua_id')
+
                 if energia_id and agua_id:
                     ComodoSaida.objects.filter(id=energia_id).update(
                         comodo_equipamento = comodoEquipamento,
@@ -396,12 +402,12 @@ def DesvincularSaidaEquipamento(request,id):
     comodo_id = item.comodo.id
     equipamento_id = item.comodo_equipamento.equipamento.id
     comodo_equip = ComodoSaida.objects.get(id = id).comodo_equipamento.id
-    
+
     ComodoSaida.objects.filter(id = id).update(
         comodo_equipamento=None,
         essencial=False
     )
-    #ComodoEquipamento.objects.filter(id=comodo_equip).delete()
+    
     item = ComodoEquipamento.objects.get(id=comodo_equip)
     if item:
         apelido = item.apelido
@@ -459,7 +465,20 @@ def ComodoEquipamentoVisualizar(request):
     id = request.GET.get('id')
     if id:
         comodo_equipamento = ComodoEquipamento.objects.get(id=id)
-        terminal = ComodoSaida.objects.get(comodo_equipamento=comodo_equipamento)
+        
+        
+        if comodo_equipamento.equipamento.tipo_consumo.id != 3: # id Diretamente
+            terminal = ComodoSaida.objects.get(comodo_equipamento=comodo_equipamento)
+        else:
+            terminal = ComodoSaida.objects.filter(
+                comodo_equipamento = comodo_equipamento
+            )
+            
+            saida2 =  terminal[1].saida
+            apelido2 = terminal[1].apelido
+            terminal = terminal[0]
+            terminal.saida2 = saida2
+            terminal.apelido2 = apelido2
         
         dados = {
         'titulo': 'Viualizar equipamento',
