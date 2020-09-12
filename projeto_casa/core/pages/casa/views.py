@@ -22,7 +22,7 @@ def Cadastrar(request):
         'casas':casas,
         'casa': casa
     }
-
+    
     return render(request, 'casas/cadastrar.html', dados)
 
 def AdicionarCasa(request):
@@ -399,25 +399,31 @@ def AdicionarSaidaEquipamento(request):
 
 def DesvincularSaidaEquipamento(request,id):
     item = ComodoSaida.objects.get(id = id)
-    comodo_id = item.comodo.id
-    equipamento_id = item.comodo_equipamento.equipamento.id
-    comodo_equip = ComodoSaida.objects.get(id = id).comodo_equipamento.id
 
-    ComodoSaida.objects.filter(id = id).update(
-        comodo_equipamento=None,
-        essencial=False
-    )
+    if item.comodo_equipamento.equipamento.tipo_consumo.id != 3: #id diretamente
+        ComodoSaida.objects.filter(id = id).update(
+            comodo_equipamento=None,
+            essencial=False
+        )
+    else:
+        ComodoSaida.objects.filter(comodo_equipamento = item.comodo_equipamento).update(
+            comodo_equipamento=None,
+            essencial=False
+        )
+
     
-    item = ComodoEquipamento.objects.get(id=comodo_equip)
-    if item:
-        apelido = item.apelido
+    if item.comodo_equipamento:
         comodo = item.comodo
-        equipamento = item.equipamento
+        equipamento = item.comodo_equipamento.equipamento
+        comodoEquipamento = item.comodo_equipamento
 
-        item.delete()
+        apelido = comodoEquipamento.apelido
+    #     comodo = item.comodo
+    #     equipamento = item.equipamento
+
+        comodoEquipamento.delete()
 
         lista = ComodoEquipamento.objects.filter(comodo=comodo, equipamento = equipamento)
-
         maior = 0
         if lista is not None:
             for item in lista:
@@ -432,7 +438,7 @@ def DesvincularSaidaEquipamento(request,id):
                     ).update(apelido=apelido)
 
 
-    return redirect('/cadastrar/vincular/equipamento/comodo/selecionar/?comodo_id={}&equipamento_id={}'.format(comodo_id,equipamento_id))
+    return redirect('/cadastrar/vincular/equipamento/comodo/selecionar/?comodo_id={}&equipamento_id={}'.format(comodo.id,equipamento.id))
 
 def CalcularConsumo(comodo):
     terminais = ComodoSaida.objects.filter(comodo=comodo)
@@ -474,11 +480,17 @@ def ComodoEquipamentoVisualizar(request):
                 comodo_equipamento = comodo_equipamento
             )
             
-            saida2 =  terminal[1].saida
-            apelido2 = terminal[1].apelido
-            terminal = terminal[0]
-            terminal.saida2 = saida2
-            terminal.apelido2 = apelido2
+            print(terminal)
+            if terminal.count() > 1:
+                saida2 =  terminal[1].saida
+                apelido2 = terminal[1].apelido
+                terminal = terminal[0]
+                terminal.saida2 = saida2
+                terminal.apelido2 = apelido2
+            elif terminal.count() == 1:
+                terminal = terminal[0]
+            else:
+                terminal = None
         
         dados = {
         'titulo': 'Viualizar equipamento',
