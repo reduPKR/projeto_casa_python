@@ -411,7 +411,6 @@ def DesvincularSaidaEquipamento(request,id):
             essencial=False
         )
 
-    
     if item.comodo_equipamento:
         comodo = item.comodo
         equipamento = item.comodo_equipamento.equipamento

@@ -36,8 +36,10 @@ def GerarMes(request):
     if id:
         casa = Casa.objects.get(id=id)
         ConsumoMes.objects.filter(casa=casa).delete()
-
-        GerarTestes(casa, 0)
+        ini = time.time()
+        GerarTestes(casa, 0)          
+        fim = time.time()
+        print("Tempo {}".format(fim-ini))
     return redirect('/gerar-testes/gerar/?id={}'.format(id))
 
 def GerarAno(request):
@@ -47,9 +49,9 @@ def GerarAno(request):
         ConsumoMes.objects.filter(casa=casa).delete()
 
         for i in range(12):
-            ini = time.time()
+            #ini = time.time()
             GerarTestes(casa, i)
-            fim = time.time()
+            #fim = time.time()
             mes = getMes(i)
         
     return redirect('/gerar-testes/gerar/?id={}'.format(id))
@@ -101,67 +103,97 @@ def GerarTestes(casa, inicial):
             #gera um valor aleatorio de tempo de uso
 
             registradas = [] #Caso um equipamento esteja em duas listas
+            dados = [] # Evita gambiarra de comparacao
             for terminal in comodo.comodoSaidas:
-                if terminal.equipamento:
-                    # 0 segunda e 6 domingo
-                    if semana < 5:
-                        min =  math.ceil(terminal.tempo_min_semana / 5)
-                        max =  math.ceil(terminal.tempo_max_semana / 5)
-                    else:
-                        min =  math.ceil(terminal.tempo_min_feriado / 2)
-                        max =  math.ceil(terminal.tempo_max_feriado / 2)
+                if terminal.comodo_equipamento and terminal.comodo_equipamento.equipamento:
+                    if terminal.comodo_equipamento not in registradas:
+                        # 0 segunda e 6 domingo
+                        if semana < 5:
+                            min =  math.ceil(terminal.tempo_min_semana / 5)
+                            max =  math.ceil(terminal.tempo_max_semana / 5)
+                        else:
+                            min =  math.ceil(terminal.tempo_min_feriado / 2)
+                            max =  math.ceil(terminal.tempo_max_feriado / 2)
 
-                    qtde = math.ceil(((min+max)/2) / 60)
-                    tempo = random.randint(min, max)
-                    probabilidade = ((qtde * 100) / 24)
+                        qtde = math.ceil(((min+max)/2) / 60)
+                        if qtde == 0:
+                            qtde = 1
+                        min = math.ceil(min / qtde)
+                        max = math.ceil(max / qtde)
+                        print("\nmin {} max {}".format(min, max))
 
-                    for hora in range(24):
-                        x = random.randint(0, 100)
-                        if terminal.equipamento.tipo_equipamento.nome == "Iluminação": #Valor direto
-                            #luz acessa ate 0 horas depois as 6 da manha
-                            if hora > 0 and hora < 6:
-                                probabilidade = 5
-                            elif hora > 6 and hora < 19:
-                                probabilidade = 1
+                        probabilidade = ((qtde * 100) / 24)
+                        hora = 0
+                        while hora < 24 and qtde > 0:
+                            x = random.randint(0, 100)
+                            if terminal.comodo_equipamento.equipamento.tipo_equipamento.id == 4: #Valor direto (Iluminação)
+                                #luz acessa ate 0 horas depois as 6 da manha
+                                if hora > 0 and hora < 6:
+                                    probabilidade = 5
+                                elif hora > 6 and hora < 19:
+                                    probabilidade = 2
+                                else:
+                                    probabilidade = 93
                             else:
-                                probabilidade = 95
+                                #Restante
+                                if hora > 0 and hora < 6:
+                                    probabilidade = probabilidade / 2
+                                else:
+                                    probabilidade = probabilidade * 2
+                           
+                            if x <= probabilidade:
+                                tempo = abs(random.randint(min, max))
+                                print("tempo {} horario {}:00".format(tempo, hora))
 
-                        if x <= probabilidade:
-                            if qtde == 1:
-                                uso = abs(tempo) #evita caso tire 60 de algum valor menor
-                                tempo = qtde = 0 
-                            else:
-                                uso = 60
-                                tempo = tempo - 60
                                 qtde = qtde - 1
+                                consumoAgua = consumoEnergia = 0
+                                if terminal.comodo_equipamento.equipamento.tipo_consumo.id == 1:
+                                    consumoAgua = calcularConsumo(terminal.comodo_equipamento.equipamento.consumo_agua, tempo)
+                                elif terminal.comodo_equipamento.equipamento.tipo_consumo.id == 2:
+                                    consumoEnergia = calcularConsumo(terminal.comodo_equipamento.equipamento.consumo_energia, tempo)
+                                else:
+                                    consumoAgua = calcularConsumo(terminal.comodo_equipamento.equipamento.consumo_agua, tempo)
+                                    consumoEnergia = calcularConsumo(terminal.comodo_equipamento.equipamento.consumo_energia, tempo)
+                                
+                                energia = energia + consumoEnergia
+                                agua = agua + consumoAgua
+                                if semana < 5:
+                                    energia_semana = energia_semana + consumoEnergia
+                                    agua_semana = agua_semana + consumoAgua
+                                else:
+                                    energia_feriado = energia_feriado + consumoEnergia
+                                    agua_feriado = agua_feriado + consumoAgua
+                                
+                                cont = cont+1
+                                if terminal.comodo_equipamento.equipamento.tipo_consumo.id == 3: #Valor direto 
+                                    registradas.append(terminal.comodo_equipamento)
+                                    dados.append({'tempo': tempo, 'data': inicio, 'hora': hora})
 
-                            consumoAgua = consumoEnergia = 0
-                            if terminal.equipamento.tipo_consumo.id == 1:
-                                consumoAgua = calcularConsumo(terminal.equipamento.consumo_agua, uso)
-                            elif terminal.equipamento.tipo_consumo.id == 2:
-                                consumoEnergia = calcularConsumo(terminal.equipamento.consumo_energia, uso)
-                            else:
-                                consumoAgua = calcularConsumo(terminal.equipamento.consumo_agua, uso)
-                                consumoEnergia = calcularConsumo(terminal.equipamento.consumo_energia, uso)
-                            
-                            energia = energia + consumoEnergia
-                            agua = agua + consumoAgua
-                            if semana < 5:
-                                energia_semana = energia_semana + consumoEnergia
-                                agua_semana = agua_semana + consumoAgua
-                            else:
-                                energia_feriado = energia_feriado + consumoEnergia
-                                agua_feriado = agua_feriado + consumoAgua
-                    
+                                ConsumoHora.objects.create(
+                                    mes = consumoMes,
+                                    comodo_saida = terminal,
+                                    tempo = tempo,
+                                    data = inicio,
+                                    hora = hora
+                                )
+
+                            hora = hora + 1
+                    elif terminal.comodo_equipamento in registradas:
+                        while terminal.comodo_equipamento in registradas:
+                            pos = registradas.index(terminal.comodo_equipamento)  
+                            item = dados[pos]
+
                             ConsumoHora.objects.create(
                                 mes = consumoMes,
                                 comodo_saida = terminal,
-                                tempo = uso,
-                                data = inicio,
-                                hora = hora
-                            )            
+                                tempo = item['tempo'],
+                                data = item['data'],
+                                hora = item['hora']
+                            )
+
+                            registradas.pop(pos)
+                            dados.pop(pos)
         inicio = inicio + timedelta(days=1)
-    
     semanas = semanas / 5
     feriados = feriados / 2
 
@@ -184,5 +216,7 @@ def getMes(mes):
     return meses[mes]
 
 def calcularConsumo(consumoHora, tempo):
-    percent = tempo * 10 / 6 #100 / 60
-    return (consumoHora * percent)/100
+    # percent = tempo * 10 / 6 #100 / 60
+    # return (consumoHora * percent)/100
+    return (consumoHora / 60) * tempo 
+   
