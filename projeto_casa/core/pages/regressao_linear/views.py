@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from core.models import *
 from datetime import date, timedelta 
 import time
+import math
 
 casa = None
 mes = None
@@ -24,21 +25,21 @@ def ListaCoeficientes(request):
         'casa': casa,
         'mes': mes,
         'coeficientes': None,
-        "agua_semana": round(mes.agua_semana/2,2),
-        "agua_feriado": round(mes.agua_feriado/2,2),
-        "energia_semana": round(mes.energia_semana/2), # energia kWh /2
-        "energia_feriado": round(mes.energia_feriado/2)
+        "agua_semana": math.ceil(mes.agua_semana/2),
+        "agua_feriado": math.ceil(mes.agua_feriado/2),
+        "energia_semana": math.ceil(mes.energia_semana/2), # energia kWh /2
+        "energia_feriado": math.ceil(mes.energia_feriado/2)
     }
 
     return render(request, 'simulacao/regressao_linear/menu.html',dados)
 
 # Daqui para baixo é a geracao dos coeficientes
-def GerarCoeficientes(request):
+def GerarCategorias(request):
     global casa
     global mes
 
     if casa and mes:
-        energia_semana = float(request.GET.get('energia_semana')) * 1000 #faz a conversao w para kW
+        energia_semana = float(request.GET.get('energia_semana')) * 1000 #faz a conversao kW para w
         energia_final =float(request.GET.get('energia_final')) * 1000
         agua_semana = float(request.GET.get('agua_semana'))
         agua_final = float(request.GET.get('agua_final'))
@@ -73,8 +74,7 @@ def getPosMes(mes):
     return meses.index(mes)
 
 def calcularConsumo(consumoHora, tempo):
-    percent = tempo * 10 / 6 #100 / 60
-    return (consumoHora * percent)/100
+    return (consumoHora / 60) * tempo 
 
 def gerarPesos(energia_semana, agua_semana, energia_final, agua_final):
     global casa
@@ -127,7 +127,7 @@ def PreencherCategorias(energia_semana, agua_semana, energia_final, agua_final):
                 if terminal.equipamento:
                     horas = ConsumoHora.objects.filter(comodo_saida=terminal,mes= mes)
                     terminal.horas = horas
-        while dia.day != 11:
+        while dia.month == month:
             semana = dia.weekday()
             for hora in range(24):
                 for comodo in comodos:

@@ -120,7 +120,6 @@ def GerarTestes(casa, inicial):
                             qtde = 1
                         min = math.ceil(min / qtde)
                         max = math.ceil(max / qtde)
-                        print("\nmin {} max {}".format(min, max))
 
                         probabilidade = ((qtde * 100) / 24)
                         hora = 0
@@ -143,7 +142,6 @@ def GerarTestes(casa, inicial):
                            
                             if x <= probabilidade:
                                 tempo = abs(random.randint(min, max))
-                                print("tempo {} horario {}:00".format(tempo, hora))
 
                                 qtde = qtde - 1
                                 consumoAgua = consumoEnergia = 0
@@ -164,7 +162,6 @@ def GerarTestes(casa, inicial):
                                     energia_feriado = energia_feriado + consumoEnergia
                                     agua_feriado = agua_feriado + consumoAgua
                                 
-                                cont = cont+1
                                 if terminal.comodo_equipamento.equipamento.tipo_consumo.id == 3: #Valor direto 
                                     registradas.append(terminal.comodo_equipamento)
                                     dados.append({'tempo': tempo, 'data': inicio, 'hora': hora})
