@@ -111,13 +111,22 @@ class ConsumoMes(models.Model):
 class ConsumoHora(models.Model):
     mes = models.ForeignKey(ConsumoMes,on_delete=models.CASCADE)
     comodo_saida = models.ForeignKey(ComodoSaida,on_delete=models.CASCADE)
-    categoria = models.ForeignKey(Categoria, null=True,on_delete=models.CASCADE)
+    #categoria = models.ForeignKey(Categoria, null=True,on_delete=models.CASCADE)
     tempo = models.IntegerField()
     data = models.DateField()
     hora = models.IntegerField()
 
     class Meta:
         db_table = 'consumo_hora'
+
+class ComodoCategoria(models.Model):
+    comodo = models.ForeignKey(Comodo, on_delete=models.CASCADE)
+    categoria = models.ForeignKey(Categoria, null=True,on_delete=models.CASCADE)
+
+    data = models.DateField()
+    hora = models.IntegerField()
+    class Meta:
+        db_table = 'comodo_categoria'
 
 class GrupoCoeficientes(models.Model):
     casa = models.ForeignKey(Casa,on_delete=models.CASCADE)

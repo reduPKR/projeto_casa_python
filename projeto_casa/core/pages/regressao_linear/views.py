@@ -37,7 +37,7 @@ def ListaCoeficientes(request):
 def GerarCategorias(request):
     global casa
     global mes
-
+    
     if casa and mes:
         energia_semana = float(request.GET.get('energia_semana')) * 1000 #faz a conversao kW para w
         energia_final =float(request.GET.get('energia_final')) * 1000
@@ -50,6 +50,11 @@ def GerarCategorias(request):
         energia_final = energia_final / 48
         agua_final = agua_final / 48
 
+        #Aqui embaixo vou colocar vetor de categorias
+        categorias = PreencherCategorias(energia_semana, agua_semana, energia_final, agua_final)
+        #print(categorias)
+        
+        
         #faz as conversoes para saber o que cada comodo usa por hora
         consumos = gerarPesos(energia_semana, agua_semana, energia_final, agua_final)
         for item in consumos:
@@ -59,10 +64,8 @@ def GerarCategorias(request):
             item['media_agua_semana'] = round(item['percent_agua'] * agua_semana / 100,2)
             item['media_agua_final'] = round(item['percent_agua'] * agua_final / 100,2)
         
-        #Aqui embaixo vou colocar vetor de categorias
-        categorias = PreencherCategorias(energia_semana, agua_semana, energia_final, agua_final)
-        
-    return redirect('/regressao-linear-multipla/coeficiente?casa_id=3&mes_id=319')
+        return redirect('/regressao-linear-multipla/coeficiente?casa_id={}&mes_id={}'.format(casa.id,mes.id))
+    return redirect('/simular/casas/')
        
 #Gerar os Gerar coeficientes
 def getMes(mes):
@@ -87,11 +90,11 @@ def gerarPesos(energia_semana, agua_semana, energia_final, agua_final):
             terminais = ComodoSaida.objects.filter(comodo=comodo)
             agua = energia = 0
             for terminal in terminais:
-                if terminal.saida is not None and terminal.equipamento is not None:
+                if terminal.saida and terminal.comodo_equipamento:
                     if terminal.saida.tipo_consumo.id == 1: #Valor Direto
-                        agua = agua + terminal.equipamento.consumo_agua
+                        agua = agua + terminal.comodo_equipamento.equipamento.consumo_agua
                     else:
-                        energia = energia + terminal.equipamento.consumo_energia
+                        energia = energia + terminal.comodo_equipamento.equipamento.consumo_energia
             energia_total = energia_total + energia
             agua_total = agua_total + agua
             consumos.append({'id': comodo.id, 'nome': comodo.nome,'agua': agua, 'energia': energia})
@@ -114,6 +117,10 @@ def PreencherCategorias(energia_semana, agua_semana, energia_final, agua_final):
     global mes
     if casa and mes:
         comodos = Comodo.objects.filter(casa=casa)
+        
+        #Elimina dados para n ficar dados que nao vao ser usados
+        for comodo in comodos:
+            ComodoCategoria.objects.filter(comodo=comodo).delete()
 
         month = getPosMes(mes.mes) + 1
         dia = date(mes.ano,month,1)
@@ -124,9 +131,10 @@ def PreencherCategorias(energia_semana, agua_semana, energia_final, agua_final):
             comodo.comodoSaidas = comodoSaidas
 
             for terminal in comodo.comodoSaidas:
-                if terminal.equipamento:
+                if terminal.comodo_equipamento:
                     horas = ConsumoHora.objects.filter(comodo_saida=terminal,mes= mes)
                     terminal.horas = horas
+        
         while dia.month == month:
             semana = dia.weekday()
             for hora in range(24):
@@ -135,27 +143,40 @@ def PreencherCategorias(energia_semana, agua_semana, energia_final, agua_final):
                     energia = 0
                     agua = 0
                     for terminal in comodo.comodoSaidas:
-                        if terminal.equipamento:
+                        if terminal.comodo_equipamento and terminal.comodo_equipamento.equipamento:
                             # horas = ConsumoHora.objects.filter(comodo_saida=terminal,mes= mes)
                             for item in terminal.horas:
                                 if item.data == dia and item.hora == hora:
-                                    #print(" {} {}".format(terminal.saida.tipo_consumo.id, terminal.saida.tipo_consumo.nome))
                                     if terminal.saida.tipo_consumo.id == 1: #Id diretamente
-                                        agua = agua + calcularConsumo(terminal.equipamento.consumo_agua, item.hora.tempo)
+                                        agua = agua + calcularConsumo(terminal.comodo_equipamento.equipamento.consumo_agua, item.tempo)
                                     elif terminal.saida.tipo_consumo.id == 2: 
-                                        energia = energia + calcularConsumo(terminal.equipamento.consumo_energia, item.hora.tempo)
-
-                    if semana < 5:
-                        categoria = Indice(energia,agua, energia_semana, agua_semana)
-                    else:
-                        categoria = Indice(energia,agua, energia_final, agua_final)        
+                                        energia = energia + calcularConsumo(terminal.comodo_equipamento.equipamento.consumo_energia, item.tempo)
+                    
+                    if energia > 0 or agua > 0:
+                        if semana < 5:
+                            categoria = Indice(energia,agua, energia_semana, agua_semana)
+                        else:
+                            categoria = Indice(energia,agua, energia_final, agua_final)
+                        ComodoCategoria.objects.create(
+                            comodo=comodo,
+                            categoria=categoria,
+                            data=dia,
+                            hora=hora
+                        )        
 
             dia = dia + timedelta(days=1)
 
 def Indice(energia, agua, meta_energia, meta_agua):
     catEnergia = catAgua = 0
-    percEnergia = (meta_energia * 100) / energia
-    percAgua = (meta_agua * 100) / agua
+    if energia > 0:
+        percEnergia = (meta_energia * 100) / energia
+    else:
+        percEnergia = 0
+
+    if agua > 0:
+        percAgua = (meta_agua * 100) / agua
+    else:
+        percAgua = 0
 
     if percEnergia < 35:
         catEnergia = 1
@@ -179,6 +200,8 @@ def Indice(energia, agua, meta_energia, meta_agua):
     else:
         catAgua = 5
     
-    return (catEnergia + catAgua)/2
+    id = round((catEnergia + catAgua)/2)
+    
+    return Categoria.objects.get(id=id)
                 
 
