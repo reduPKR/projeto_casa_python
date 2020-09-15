@@ -19,12 +19,14 @@ def ListaCoeficientes(request):
         mes.energia = round(mes.energia/1000,2)
         mes.energia_semana = round(mes.energia_semana/1000) #converto para Kwh
         mes.energia_feriado = round(mes.energia_feriado/1000)
+        categorias = ComodoCategoria.objects.filter(mes=mes).first()
 
     dados = {
         'titulo':'Selecionar coeficiente', 
         'casa': casa,
-        'mes': mes,
         'coeficientes': None,
+        'categorias': categorias,
+        'mes': mes,
         "agua_semana": math.ceil(mes.agua_semana/2),
         "agua_feriado": math.ceil(mes.agua_feriado/2),
         "energia_semana": math.ceil(mes.energia_semana/2), # energia kWh /2
@@ -51,9 +53,7 @@ def GerarCategorias(request):
         agua_final = agua_final / 48
 
         #Aqui embaixo vou colocar vetor de categorias
-        categorias = PreencherCategorias(energia_semana, agua_semana, energia_final, agua_final)
-        #print(categorias)
-        
+        PreencherCategorias(energia_semana, agua_semana, energia_final, agua_final)        
         
         #faz as conversoes para saber o que cada comodo usa por hora
         consumos = gerarPesos(energia_semana, agua_semana, energia_final, agua_final)
@@ -78,39 +78,6 @@ def getPosMes(mes):
 
 def calcularConsumo(consumoHora, tempo):
     return (consumoHora / 60) * tempo 
-
-def gerarPesos(energia_semana, agua_semana, energia_final, agua_final):
-    global casa
-
-    consumos = []
-    if casa:
-        comodos = Comodo.objects.filter(casa=casa)
-        agua_total = energia_total = 0
-        for comodo in comodos:
-            terminais = ComodoSaida.objects.filter(comodo=comodo)
-            agua = energia = 0
-            for terminal in terminais:
-                if terminal.saida and terminal.comodo_equipamento:
-                    if terminal.saida.tipo_consumo.id == 1: #Valor Direto
-                        agua = agua + terminal.comodo_equipamento.equipamento.consumo_agua
-                    else:
-                        energia = energia + terminal.comodo_equipamento.equipamento.consumo_energia
-            energia_total = energia_total + energia
-            agua_total = agua_total + agua
-            consumos.append({'id': comodo.id, 'nome': comodo.nome,'agua': agua, 'energia': energia})
-        
-        for item in consumos:
-            if item['agua'] == 0:
-                item['percent_agua'] = 0
-            else:
-                item['percent_agua'] = round((item['agua']*100)/agua_total,2)
-            
-            if item['energia'] == 0:
-                item['percent_energia'] = 0
-            else:
-                item['percent_energia'] = round((item['energia']*100)/energia_total,2)
-
-    return consumos
         
 def PreencherCategorias(energia_semana, agua_semana, energia_final, agua_final):
     global casa
@@ -204,4 +171,36 @@ def Indice(energia, agua, meta_energia, meta_agua):
     
     return Categoria.objects.get(id=id)
                 
+#------------------------------------------------------------------------------------------------
+def gerarPesos(energia_semana, agua_semana, energia_final, agua_final):
+    global casa
 
+    consumos = []
+    if casa:
+        comodos = Comodo.objects.filter(casa=casa)
+        agua_total = energia_total = 0
+        for comodo in comodos:
+            terminais = ComodoSaida.objects.filter(comodo=comodo)
+            agua = energia = 0
+            for terminal in terminais:
+                if terminal.saida and terminal.comodo_equipamento:
+                    if terminal.saida.tipo_consumo.id == 1: #Valor Direto
+                        agua = agua + terminal.comodo_equipamento.equipamento.consumo_agua
+                    else:
+                        energia = energia + terminal.comodo_equipamento.equipamento.consumo_energia
+            energia_total = energia_total + energia
+            agua_total = agua_total + agua
+            consumos.append({'id': comodo.id, 'nome': comodo.nome,'agua': agua, 'energia': energia})
+        
+        for item in consumos:
+            if item['agua'] == 0:
+                item['percent_agua'] = 0
+            else:
+                item['percent_agua'] = round((item['agua']*100)/agua_total,2)
+            
+            if item['energia'] == 0:
+                item['percent_energia'] = 0
+            else:
+                item['percent_energia'] = round((item['energia']*100)/energia_total,2)
+
+    return consumos

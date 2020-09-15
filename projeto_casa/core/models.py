@@ -120,6 +120,7 @@ class ConsumoHora(models.Model):
         db_table = 'consumo_hora'
 
 class ComodoCategoria(models.Model):
+    mes = models.ForeignKey(ConsumoMes,on_delete=models.CASCADE)
     comodo = models.ForeignKey(Comodo, on_delete=models.CASCADE)
     categoria = models.ForeignKey(Categoria, null=True,on_delete=models.CASCADE)
 
