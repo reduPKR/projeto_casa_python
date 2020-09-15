@@ -9,7 +9,7 @@
             Atenção: Todos valores sao substituidos, e cada mes pode levar ate 5 minutos para gerar os testes
             <i class="fas fa-exclamation-triangle"></i>
         </label>
-        <div class="col col-6 col-sm-6 col-md-4 col-lg-5 col-xs-4 container box-gray">
+        <div class="col col-6 col-sm-6 col-md-4 col-lg-6 col-xs-4 container box-gray">
             <br>
             <a type="button" class="btn btn-secondary" href="/gerar-testes/gerar/mes/?id={{casa.id}}">
                 Gerar 1 mes para teste
@@ -24,7 +24,7 @@
             <table class="table table-striped table-dark">
                 <thead>
                     <tr align="center">
-                        <th colspan="3">Testes gerados</th>
+                        <th colspan="5">Testes gerados</th>
                     </tr>
                     <tr>
                         <td>
@@ -35,6 +35,15 @@
                         </td>
                         <td>
                             Água
+                        </td>
+                        <td>
+                            Temperatura
+                        </td>
+                        <td>
+                            Umidade
+                        </td>
+                        <td>
+                            Vento
                         </td>
                     </tr>
                     </thead>
@@ -48,6 +57,15 @@
                         </td>
                         <td>
                             {{item.agua}} Litros
+                        </td>
+                        <td>
+                            {{item.temperatura}} °C
+                        </td>
+                        <td>
+                            {{item.umidade}} %
+                        </td>
+                        <td>
+                            {{item.vento}} km/h
                         </td>
                     </tr>
                 {% endfor %}

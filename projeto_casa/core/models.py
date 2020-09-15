@@ -105,22 +105,35 @@ class ConsumoMes(models.Model):
     energia_semana = models.IntegerField(default=0)
     energia_feriado = models.IntegerField(default=0)
 
+    temperatura = models.IntegerField(default=0)
+    umidade = models.IntegerField(default=0)
+    vento = models.IntegerField(default=0)
+
     class Meta:
         db_table = 'consumo_mes'
 
-class ConsumoHora(models.Model):
+class DiaMes(models.Model):
     mes = models.ForeignKey(ConsumoMes,on_delete=models.CASCADE)
-    comodo_saida = models.ForeignKey(ComodoSaida,on_delete=models.CASCADE)
-    #categoria = models.ForeignKey(Categoria, null=True,on_delete=models.CASCADE)
-    tempo = models.IntegerField()
     data = models.DateField()
+    temperatura = models.IntegerField(default=0)
+    umidade = models.IntegerField(default=0)
+    vento = models.IntegerField(default=0)
+
+    class Meta:
+        db_table = 'dia_mes'
+
+class ConsumoHora(models.Model):
+    dia_mes = models.ForeignKey(DiaMes,on_delete=models.CASCADE)
+    comodo_saida = models.ForeignKey(ComodoSaida,on_delete=models.CASCADE)
+    tempo = models.IntegerField()
     hora = models.IntegerField()
 
     class Meta:
         db_table = 'consumo_hora'
 
+
 class ComodoCategoria(models.Model):
-    mes = models.ForeignKey(ConsumoMes,on_delete=models.CASCADE)
+    dia_mes = models.ForeignKey(DiaMes,on_delete=models.CASCADE)
     comodo = models.ForeignKey(Comodo, on_delete=models.CASCADE)
     categoria = models.ForeignKey(Categoria, null=True,on_delete=models.CASCADE)
 

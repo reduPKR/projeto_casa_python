@@ -90,18 +90,31 @@ def GerarTestes(casa, inicial):
     energia = energia_semana = energia_feriado = 0
     agua = agua_semana = agua_feriado = 0
     semanas = feriados = 0
+    med_temp = med_vento = med_umi = 0
     while inicio.month == fim.month:
-        #pega todos os comodos
         semana = inicio.weekday()
         if semana < 5:
             semanas = semanas + 1
         else:
             feriados = feriados + 1
 
-        for comodo in casa.comodos:
-            #comodoSaidas = ComodoSaida.objects.filter(comodo=comodo)
-            #gera um valor aleatorio de tempo de uso
+        temperatura = getTemperatura(inicio)
+        umidade = getUmidade(inicio)
+        vento = getVento(inicio)
 
+        med_temp =  med_temp + temperatura
+        med_vento = med_vento + vento
+        med_umi =  med_umi + umidade
+
+        dia_mes = DiaMes.objects.create(
+            mes=consumoMes,
+            data=inicio,
+            temperatura=temperatura,
+            umidade=umidade,
+            vento=vento 
+        )
+
+        for comodo in casa.comodos:
             registradas = [] #Caso um equipamento esteja em duas listas
             dados = [] # Evita gambiarra de comparacao
             for terminal in comodo.comodoSaidas:
@@ -164,13 +177,12 @@ def GerarTestes(casa, inicial):
                                 
                                 if terminal.comodo_equipamento.equipamento.tipo_consumo.id == 3: #Valor direto 
                                     registradas.append(terminal.comodo_equipamento)
-                                    dados.append({'tempo': tempo, 'data': inicio, 'hora': hora})
+                                    dados.append({'tempo': tempo, 'hora': hora})
 
                                 ConsumoHora.objects.create(
-                                    mes = consumoMes,
+                                    dia_mes = dia_mes,
                                     comodo_saida = terminal,
                                     tempo = tempo,
-                                    data = inicio,
                                     hora = hora
                                 )
 
@@ -181,10 +193,9 @@ def GerarTestes(casa, inicial):
                             item = dados[pos]
 
                             ConsumoHora.objects.create(
-                                mes = consumoMes,
+                                dia_mes = dia_mes,
                                 comodo_saida = terminal,
                                 tempo = item['tempo'],
-                                data = item['data'],
                                 hora = item['hora']
                             )
 
@@ -199,13 +210,22 @@ def GerarTestes(casa, inicial):
     energia_feriado = energia_feriado / feriados
     agua_feriado = agua_feriado / feriados
 
+    inicio = inicio - timedelta(days=1)
+    med_temp = med_temp / inicio.day
+    med_vento = med_vento / inicio.day
+    med_umi = med_umi / inicio.day
+
     ConsumoMes.objects.filter(casa = casa,mes = mes,
                     ano = fim.year).update(agua=agua, 
                     energia=energia,
                     energia_semana=energia_semana,
                     agua_semana=agua_semana,
                     energia_feriado=energia_feriado,
-                    agua_feriado=agua_feriado)
+                    agua_feriado=agua_feriado,
+                    temperatura = med_temp,
+                    umidade = med_umi,
+                    vento = med_vento
+                    )
 
 #Metodos
 def getMes(mes):
@@ -213,7 +233,11 @@ def getMes(mes):
     return meses[mes]
 
 def calcularConsumo(consumoHora, tempo):
-    # percent = tempo * 10 / 6 #100 / 60
-    # return (consumoHora * percent)/100
     return (consumoHora / 60) * tempo 
-   
+
+def getTemperatura(data):
+    return 25
+def getUmidade(data):
+    return 36
+def getVento(data):
+    return 10 
