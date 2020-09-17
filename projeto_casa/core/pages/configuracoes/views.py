@@ -8,24 +8,14 @@ def MenuConfigurar(request):
     return render(request, 'configuracoes/menu.html', dados)
 
 def Configurar(request):
-    categorias = Categoria.objects.all()
     consumos = TipoConsumo.objects.all() 
     tipoEquipamentos = TipoEquipamento.objects.all()
     dados = {
             'titulo':'Configurações', 
-            'categorias': categorias,
             'consumos': consumos,
             'tipoEquipamentos': tipoEquipamentos
         }
     return render(request, 'configuracoes/configurar.html', dados)
-
-def SaveCategorias(request):
-    if request.POST:
-        nome = request.POST.get('nome')
-        if nome:
-            Categoria.objects.create(nome = nome)
-    
-    return redirect('/configurar/')
 
 def SaveRecursos(request):
     if request.POST:
@@ -46,12 +36,6 @@ def SaveCategoriaEquipamento(request):
     
     return redirect('/configurar/')
 
-def DeleteCategorias(request,id):
-    if id:
-        item = Categoria.objects.get(id=id)
-        if item:
-            item.delete()
-    return redirect('/configurar/')
 
 def DeleteRecursos(request,id):
     if id:

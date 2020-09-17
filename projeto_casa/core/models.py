@@ -9,7 +9,6 @@ class TipoConsumo(models.Model):
     class Meta:
         db_table = 'tipo_consumo'
 
-#é a categoria, torneira, tomada
 class Saida(models.Model):
     tipo_consumo = models.ForeignKey(TipoConsumo,on_delete=models.CASCADE)
     nome = models.CharField(max_length=30)
@@ -83,21 +82,12 @@ class ComodoSaida(models.Model):
         else:
             return 'Não essencial'
 
-
-
-class Categoria(models.Model):
-    nome = models.CharField(max_length=30)
-
-    class Meta:
-        db_table = 'categoria'
-
 #Nao coloquei consumo agua e energia pq da pra ser pego e calculado
 class ConsumoMes(models.Model):
     casa = models.ForeignKey(Casa,on_delete=models.CASCADE)
-    categoria = models.ForeignKey(Categoria, null=True, on_delete=models.CASCADE)
     mes = models.CharField(max_length=30)
     ano = models.IntegerField()
-    #consome mais memoria mas evita processar no carregamento que demorava muito
+    
     agua = models.IntegerField(default=0)
     agua_semana = models.IntegerField(default=0)
     agua_feriado = models.IntegerField(default=0)
@@ -122,6 +112,17 @@ class DiaMes(models.Model):
     class Meta:
         db_table = 'dia_mes'
 
+class ComodoCategoria(models.Model):
+    dia_mes = models.ForeignKey(DiaMes,on_delete=models.CASCADE)
+    comodo = models.ForeignKey(Comodo, on_delete=models.CASCADE)
+
+    #É a comparacao do comodo naquele dia
+    meta_agua = models.IntegerField(default=0)
+    meta_energia = models.IntegerField(default=0)
+    
+    class Meta:
+        db_table = 'comodo_categoria'
+
 class ConsumoHora(models.Model):
     dia_mes = models.ForeignKey(DiaMes,on_delete=models.CASCADE)
     comodo_saida = models.ForeignKey(ComodoSaida,on_delete=models.CASCADE)
@@ -131,16 +132,6 @@ class ConsumoHora(models.Model):
     class Meta:
         db_table = 'consumo_hora'
 
-
-class ComodoCategoria(models.Model):
-    dia_mes = models.ForeignKey(DiaMes,on_delete=models.CASCADE)
-    comodo = models.ForeignKey(Comodo, on_delete=models.CASCADE)
-    categoria = models.ForeignKey(Categoria, null=True,on_delete=models.CASCADE)
-
-    data = models.DateField()
-    hora = models.IntegerField()
-    class Meta:
-        db_table = 'comodo_categoria'
 
 class GrupoCoeficientes(models.Model):
     casa = models.ForeignKey(Casa,on_delete=models.CASCADE)
@@ -164,7 +155,6 @@ class Coeficiente(models.Model):
 
 class CoeficienteValor(models.Model):
     coeficiente = models.ForeignKey(Coeficiente, on_delete=models.CASCADE)
-    categoria = models.ForeignKey(TipoEquipamento,on_delete=models.CASCADE)
     valor = models.DecimalField(max_digits=24,decimal_places=22)
 
     class Meta:
