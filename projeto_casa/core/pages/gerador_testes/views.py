@@ -52,7 +52,7 @@ def GerarAno(request):
 
         for i in range(12):
             #ini = time.time()
-            GerarTestes(casa, i)
+            GerarTestes(casa, i+1)
             #fim = time.time()
             mes = getMes(i)
         
@@ -61,22 +61,15 @@ def GerarAno(request):
 def GerarTestes(casa, inicial):
     inicio = fim = date.today()
     inicio = inicio.replace(day=1)
+    fim = fim.replace(day=1)
     #O banco de dados que eu obtive foi de 2019
     inicio = inicio.replace(year=2019)
     fim = fim.replace(year=2019)
     
     #se nao for mes atual
     if inicial != 0:
-        aux = inicio.month + inicial
-        if aux > 12:
-            aux = aux - 12
-            
-            year = inicio.year + 1
-            inicio = inicio.replace(year=year)
-            fim = fim.replace(year=year)
-
-        inicio = inicio.replace(month=aux)
-        fim = fim.replace(month=aux)
+        inicio = inicio.replace(month=inicial)
+        fim = fim.replace(month=inicial)
     
 
     mes = getMes(inicio.month-1)
@@ -91,10 +84,6 @@ def GerarTestes(casa, inicial):
     casa.comodos = Comodo.objects.filter(casa=casa)
     for comodo in casa.comodos:
         comodo.comodoSaidas = ComodoSaida.objects.filter(comodo=comodo)
-
-    while inicio.month == fim.month:
-        fim = fim + timedelta(days=1)
-    fim = fim - timedelta(days=1)   
 
     energia = energia_semana = energia_feriado = 0
     agua = agua_semana = agua_feriado = 0
@@ -206,11 +195,6 @@ def GerarTestes(casa, inicial):
     agua_semana = agua_semana / semanas
     energia_feriado = energia_feriado / feriados
     agua_feriado = agua_feriado / feriados
-
-    inicio = inicio - timedelta(days=1)
-    med_temp = med_temp / inicio.day
-    med_vento = med_vento / inicio.day
-    med_umi = med_umi / inicio.day
 
     ConsumoMes.objects.filter(casa = casa,mes = mes,
                     ano = fim.year).update(agua=agua, 
