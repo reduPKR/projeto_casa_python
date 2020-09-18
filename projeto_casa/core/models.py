@@ -91,13 +91,10 @@ class ConsumoMes(models.Model):
     agua = models.IntegerField(default=0)
     agua_semana = models.IntegerField(default=0)
     agua_feriado = models.IntegerField(default=0)
+
     energia = models.IntegerField(default=0)
     energia_semana = models.IntegerField(default=0)
     energia_feriado = models.IntegerField(default=0)
-
-    temperatura = models.IntegerField(default=0)
-    umidade = models.IntegerField(default=0)
-    vento = models.IntegerField(default=0)
 
     class Meta:
         db_table = 'consumo_mes'
@@ -105,9 +102,6 @@ class ConsumoMes(models.Model):
 class DiaMes(models.Model):
     mes = models.ForeignKey(ConsumoMes,on_delete=models.CASCADE)
     data = models.DateField()
-    temperatura = models.IntegerField(default=0)
-    umidade = models.IntegerField(default=0)
-    vento = models.IntegerField(default=0)
 
     class Meta:
         db_table = 'dia_mes'
@@ -116,9 +110,11 @@ class ComodoCategoria(models.Model):
     dia_mes = models.ForeignKey(DiaMes,on_delete=models.CASCADE)
     comodo = models.ForeignKey(Comodo, on_delete=models.CASCADE)
 
-    #É a comparacao do comodo naquele dia
-    meta_agua = models.IntegerField(default=0)
-    meta_energia = models.IntegerField(default=0)
+    #É a comparacao do comodo naquele dia hora
+    meta_agua_semana = models.IntegerField(default=0)
+    meta_agua_feriado = models.IntegerField(default=0)
+    meta_energia_semana = models.IntegerField(default=0)
+    meta_energia_feriado = models.IntegerField(default=0)
     
     class Meta:
         db_table = 'comodo_categoria'
@@ -132,6 +128,18 @@ class ConsumoHora(models.Model):
     class Meta:
         db_table = 'consumo_hora'
 
+class Clima(models.Model):
+    data = models.DateField()
+    hora = models.IntegerField()
+
+    temperatura = models.IntegerField(default=0)
+    umidade = models.IntegerField(default=0)
+    vento = models.IntegerField(default=0)
+    pressao = models.IntegerField(default=0)
+    chuva = models.IntegerField(default=0)
+
+    class Meta:
+        db_table = 'clima'
 
 class GrupoCoeficientes(models.Model):
     casa = models.ForeignKey(Casa,on_delete=models.CASCADE)

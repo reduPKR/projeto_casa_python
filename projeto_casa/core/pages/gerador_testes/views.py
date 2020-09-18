@@ -4,6 +4,8 @@ from datetime import date, timedelta
 import random 
 import math
 import time
+import requests
+import json
 
 def ListarCasas(request):
     casas = Casa.objects.all().order_by('nome')
@@ -59,7 +61,9 @@ def GerarAno(request):
 def GerarTestes(casa, inicial):
     inicio = fim = date.today()
     inicio = inicio.replace(day=1)
-    fim = fim.replace(day=1)
+    #O banco de dados que eu obtive foi de 2019
+    inicio = inicio.replace(year=2019)
+    fim = fim.replace(year=2019)
     
     #se nao for mes atual
     if inicial != 0:
@@ -74,6 +78,7 @@ def GerarTestes(casa, inicial):
         inicio = inicio.replace(month=aux)
         fim = fim.replace(month=aux)
     
+
     mes = getMes(inicio.month-1)
     ConsumoMes.objects.create(
         casa=casa,
@@ -87,10 +92,13 @@ def GerarTestes(casa, inicial):
     for comodo in casa.comodos:
         comodo.comodoSaidas = ComodoSaida.objects.filter(comodo=comodo)
 
+    while inicio.month == fim.month:
+        fim = fim + timedelta(days=1)
+    fim = fim - timedelta(days=1)   
+
     energia = energia_semana = energia_feriado = 0
     agua = agua_semana = agua_feriado = 0
     semanas = feriados = 0
-    med_temp = med_vento = med_umi = 0
     while inicio.month == fim.month:
         semana = inicio.weekday()
         if semana < 5:
@@ -98,20 +106,9 @@ def GerarTestes(casa, inicial):
         else:
             feriados = feriados + 1
 
-        temperatura = getTemperatura(inicio)
-        umidade = getUmidade(inicio)
-        vento = getVento(inicio)
-
-        med_temp =  med_temp + temperatura
-        med_vento = med_vento + vento
-        med_umi =  med_umi + umidade
-
         dia_mes = DiaMes.objects.create(
             mes=consumoMes,
             data=inicio,
-            temperatura=temperatura,
-            umidade=umidade,
-            vento=vento 
         )
 
         for comodo in casa.comodos:
@@ -222,9 +219,6 @@ def GerarTestes(casa, inicial):
                     agua_semana=agua_semana,
                     energia_feriado=energia_feriado,
                     agua_feriado=agua_feriado,
-                    temperatura = med_temp,
-                    umidade = med_umi,
-                    vento = med_vento
                     )
 
 #Metodos
@@ -234,10 +228,3 @@ def getMes(mes):
 
 def calcularConsumo(consumoHora, tempo):
     return (consumoHora / 60) * tempo 
-
-def getTemperatura(data):
-    return 25
-def getUmidade(data):
-    return 36
-def getVento(data):
-    return 10 
