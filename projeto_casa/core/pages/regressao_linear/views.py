@@ -67,7 +67,7 @@ def GerarCategorias(request):
                 reduzir_energia_feriado = energia_final,
             )
 
-            gerarPadrao()
+            gerarPadrao(energia_semana, energia_final, agua_semana, agua_final)
 
         return redirect('/regressao-linear-multipla/coeficiente?casa_id={}&mes_id={}'.format(casa.id,mes.id))
     return redirect('/simular/casas/')
@@ -117,3 +117,47 @@ def gerarPesos():
                 item['percent_energia'] = round((item['energia']*100)/energia_total,2)
 
     return consumos
+
+#Aqui vou pegar o padrao de consumo e gerar a saida Y reduzida, para que as previsoes gerem
+#os valores de comparacao.
+def gerarPadrao(energia_semana, energia_final, agua_semana, agua_final):
+    global casa
+    global mes
+    
+    if casa and mes:
+        #elimina ficar buscando posteriormente
+        comodos = Comodo.objects.filter(casa=casa)
+        for comodo in comodos:
+            terminais = ComodoSaida.objects.filter(comodo=comodo)
+            comodo.terminais = terminais
+            for terminal in comodo.terminais:
+                consumos = ConsumoHora.objects.filter(comodo_saida = terminal, mes = mes)
+                terminal.consumos = consumos
+
+        for comodo in comodos:
+            ComodoValorY.objects.filter(comodo=comodo).delete()
+
+        month = getPosMes(mes.mes) + 1
+        data = date(2019,month, 1)
+        while data.day <= 7:
+            for hora in range(24):
+                for comodo in comodos:
+                    energia = agua = 0
+                    for terminal in comodo.terminais:
+                        for consumo in terminal.consumos:
+                            if data == consumo.data and hora == consumo.hora:
+                                agua = agua + calcularConsumo(terminal.comodo_equipamento.equipamento.consumo_agua, consumo.tempo)
+                                energia = energia + calcularConsumo(terminal.comodo_equipamento.equipamento.consumo_energia, consumo.tempo)                              
+                    
+                    #Se nao tem nada vai atrapalhar
+                    if agua > 0 or energia > 0:
+                        ComodoValorY.objects.create(
+                            comodo = comodo,
+                            data = data,
+                            hora = hora,
+                            meta_agua = agua,
+                            meta_energia = energia
+                        )
+            data = data + timedelta(days=1)
+
+

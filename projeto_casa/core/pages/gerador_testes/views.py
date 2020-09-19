@@ -87,9 +87,9 @@ def GerarTestes(casa, inicial):
     for comodo in casa.comodos:
         comodo.comodoSaidas = ComodoSaida.objects.filter(comodo=comodo)
 
-    #elimina historico anterior
-    for comodo_saida in comodo.comodoSaidas:
-        ConsumoHora.objects.filter(mes = consumoMes,comodo_saida=comodo_saida).delete()
+    for comodo in casa.comodos:
+        for comodo_saida in comodo.comodoSaidas:
+            ConsumoHora.objects.filter(mes = consumoMes,comodo_saida=comodo_saida).delete()
 
     energia = energia_semana = energia_feriado = 0
     agua = agua_semana = agua_feriado = 0
@@ -167,34 +167,28 @@ def GerarTestes(casa, inicial):
                                     hora = hora,
                                     tempo = tempo,
                                     comodo_saida = terminal
-                                    
                                 )
 
                             hora = hora + 1
                     elif terminal.comodo_equipamento in registradas:
-                        while terminal.comodo_equipamento in registradas:
-                            pos = registradas.index(terminal.comodo_equipamento)  
-                            item = dados[pos]
+                        pos = registradas.index(terminal.comodo_equipamento)  
+                        item = dados[pos]
 
-                            ConsumoHora.objects.create(
-                                mes = consumoMes,
-                                data = inicio,
-                                comodo_saida = terminal,
-                                tempo = item['tempo'],
-                                hora = item['hora']
-                            )
+                        # ConsumoHora.objects.create(
+                        #     mes = consumoMes,
+                        #     data = inicio,
+                        #     comodo_saida = terminal,
+                        #     tempo = item['tempo'],
+                        #     hora = item['hora']
+                        # )
 
-                            registradas.pop(pos)
-                            dados.pop(pos)
+                        registradas.pop(pos)
+                        dados.pop(pos)
         inicio = inicio + timedelta(days=1)
-
-    # energia_semana = energia_semana / 4.3
-    # agua_semana = agua_semana / 4.3
-    # energia_feriado = energia_feriado / 4.3
-    # agua_feriado = agua_feriado / 4.3
-
-    ConsumoMes.objects.filter(casa = casa,mes = mes,
-                    ano = fim.year).update(agua=agua, 
+    
+        ConsumoMes.objects.filter(casa = casa,mes = mes,
+                    ano = fim.year).update(
+                    agua=agua, 
                     energia=energia,
                     energia_semana=energia_semana,
                     agua_semana=agua_semana,
