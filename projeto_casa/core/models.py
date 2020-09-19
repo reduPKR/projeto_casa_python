@@ -44,13 +44,20 @@ class Comodo(models.Model):
     casa = models.ForeignKey(Casa,on_delete=models.CASCADE)
     nome = models.CharField(max_length=30)
 
-    meta_agua_semana = models.IntegerField(default=0)
-    meta_agua_feriado = models.IntegerField(default=0)
-    meta_energia_semana = models.IntegerField(default=0)
-    meta_energia_feriado = models.IntegerField(default=0)
-
     class Meta:
         db_table = 'comodo'
+
+class ComodoValorY(models.Model):
+    comodo = models.ForeignKey(Comodo,on_delete=models.CASCADE)
+    data = models.DateField()
+    hora = models.IntegerField()
+
+    meta_agua = models.IntegerField(default=0)
+    meta_energia = models.IntegerField(default=0)
+
+    class Meta:
+        db_table = 'comodo_valor_y'
+    
 
 class ComodoEquipamento(models.Model):
     apelido = models.IntegerField()
@@ -96,10 +103,14 @@ class ConsumoMes(models.Model):
     agua = models.IntegerField(default=0)
     agua_semana = models.IntegerField(default=0)
     agua_feriado = models.IntegerField(default=0)
+    reduzir_agua_semana = models.IntegerField(default=0)
+    reduzir_agua_feriado = models.IntegerField(default=0)
 
     energia = models.IntegerField(default=0)
     energia_semana = models.IntegerField(default=0)
     energia_feriado = models.IntegerField(default=0)
+    reduzir_energia_semana = models.IntegerField(default=0)
+    reduzir_energia_feriado = models.IntegerField(default=0)
 
     class Meta:
         db_table = 'consumo_mes'
@@ -130,11 +141,6 @@ class Clima(models.Model):
 class GrupoCoeficientes(models.Model):
     casa = models.ForeignKey(Casa,on_delete=models.CASCADE)
     precisao = models.DecimalField(max_digits=4, decimal_places=1, default=0)
-
-    meta_agua_semana = models.IntegerField(default=0)
-    meta_agua_feriado = models.IntegerField(default=0)
-    meta_energia_semana = models.IntegerField(default=0)
-    meta_energia_feriado = models.IntegerField(default=0)
 
     class Meta:
         db_table = 'grupo_coeficientes'

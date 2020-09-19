@@ -17,30 +17,25 @@ def ListaCoeficientes(request):
         casa = Casa.objects.get(id=casa_id)
         mes = ConsumoMes.objects.get(id=mes_id)
         mes.energia = round(mes.energia/1000,2)
-        mes.energia_semana = round(mes.energia_semana/1000) #converto para Kwh
-        mes.energia_feriado = round(mes.energia_feriado/1000)
+        mes.energia_semana = round(mes.energia_semana /1000) #converto para Kwh
+        mes.energia_feriado = round(mes.energia_feriado /1000)     
 
-        comodos = Comodo.objects.filter(casa=casa)
-        meta_agua_semana = meta_agua_feriado = meta_energia_semana = meta_energia_feriado = 0       
-        if comodos is not None:
-            for item in comodos:
-                meta_agua_semana = item.meta_agua_semana + meta_agua_semana
-                meta_agua_feriado = item.meta_agua_feriado + meta_agua_feriado
-                meta_energia_semana = item.meta_energia_semana + meta_energia_semana
-                meta_energia_feriado = item.meta_energia_feriado + meta_energia_feriado
-        else:
-            meta_agua_semana = mes.agua_semana
-            meta_agua_feriado = mes.agua_feriado
-            meta_energia_semana = round(mes.energia_semana/1000)
-            meta_energia_feriado = round(mes.energia_feriado/1000)
-        
-        
         reduzir = {
-            'agua_semana': round(meta_agua_semana * 120,1),  
-            'agua_feriado': round(meta_agua_feriado * 48,1), 
-            'energia_semana': round(meta_energia_semana * 12 / 100,1), #120/1000
-            'energia_feriado': round(meta_energia_feriado * 48 / 1000,1)
-        }
+            'agua_semana': mes.reduzir_agua_semana,
+            'agua_feriado': mes.reduzir_agua_feriado,
+            'energia_semana': mes.reduzir_energia_semana,
+            'energia_feriado': mes.reduzir_energia_feriado
+        }   
+
+        data = date.today()
+        data = data.replace(day=1)
+        data = data.replace(year=2019)
+        comodo = Comodo.objects.filter(casa=casa).first();
+        comodoY = ComodoValorY.objects.filter(comodo=comodo,data=data).first()
+        if comodoY == None:
+            executar = True
+        else:
+            executar = False
 
     dados = {
         'titulo':'Selecionar coeficiente', 
@@ -48,10 +43,7 @@ def ListaCoeficientes(request):
         'coeficientes': None,
         'mes': mes,
         'reduzir':reduzir,
-        "agua_semana": math.ceil(mes.agua_semana/2),
-        "agua_feriado": math.ceil(mes.agua_feriado/2),
-        "energia_semana": math.ceil(mes.energia_semana/2), # energia kWh /2
-        "energia_feriado": math.ceil(mes.energia_feriado/2)
+        'executar': executar
     }
 
     return render(request, 'simulacao/regressao_linear/menu.html',dados)
@@ -62,34 +54,21 @@ def GerarCategorias(request):
     global mes
     
     if casa and mes:
-        energia_semana = float(request.GET.get('energia_semana')) * 1000 #faz a conversao kW para w
-        energia_final =float(request.GET.get('energia_final')) * 1000
+        energia_semana = float(request.GET.get('energia_semana'))
+        energia_final =float(request.GET.get('energia_final'))
         agua_semana = float(request.GET.get('agua_semana'))
         agua_final = float(request.GET.get('agua_final'))
 
-        #converte para hora porem de todos comodos
-        energia_semana = energia_semana / 120
-        agua_semana = agua_semana / 120
-        energia_final = energia_final / 48
-        agua_final = agua_final / 48
-
-        #faz as conversoes para saber o que cada comodo usa por hora
-        comodos = gerarPesos()
-        for item in comodos:
-            item['media_energia_semana'] = round(item['percent_energia'] * energia_semana / 100,2)
-            item['media_energia_final'] = round(item['percent_energia'] * energia_final / 100,2)
-
-            item['media_agua_semana'] = round(item['percent_agua'] * agua_semana / 100,2)
-            item['media_agua_final'] = round(item['percent_agua'] * agua_final / 100,2)
-
-        for comodo in comodos:
-            Comodo.objects.filter(id=comodo['id']).update(
-                meta_agua_semana = comodo['media_agua_semana'], 
-                meta_agua_feriado = comodo['media_agua_final'],         
-                meta_energia_semana = comodo['media_energia_semana'],              
-                meta_energia_feriado = comodo['media_energia_final']
+        if energia_semana  > 0 and energia_final  > 0 and agua_semana  > 0 and agua_final > 0:
+            ConsumoMes.objects.filter(id=mes.id).update(
+                reduzir_agua_semana = agua_semana,
+                reduzir_agua_feriado = agua_final,
+                reduzir_energia_semana = energia_semana,
+                reduzir_energia_feriado = energia_final,
             )
-        
+
+            gerarPadrao()
+
         return redirect('/regressao-linear-multipla/coeficiente?casa_id={}&mes_id={}'.format(casa.id,mes.id))
     return redirect('/simular/casas/')
        

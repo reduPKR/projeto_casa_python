@@ -28,7 +28,7 @@
                 </div>
                 <div class="col col-6 col-sm-6 col-md-4 col-lg-5 col-xs-4 container box-gray">
                     <br>
-                    {% if categorias == None %}
+                    {% if executar %}
                         <label style="color: #ff4800">
                             <i class="fas fa-exclamation-triangle"></i>
                             Ação nescessária
@@ -48,11 +48,13 @@
                         <div class="row">
                             <div class="col">
                                 <label>Semana </label>
-                                <input type="number" name="energia_semana" value="{{reduzir.energia_semana}}" min="{{energia_semana}}" max="{{mes.energia_semana}}" required/> kWh
+                                <input type="number" name="energia_semana" value="{{reduzir.energia_semana}}" min="1" max="30" required/>
+                                <label> % </label>
                             </div>
                             <div class="col">
                                 <label> Fim de semana </label>
-                                <input type="number" name="energia_final" value="{{reduzir.energia_feriado}}" min="{{energia_feriado}}" max="{{mes.energia_feriado}}"  required/> kWh
+                                <input type="number" name="energia_final" value="{{reduzir.energia_feriado}}" min="1" max="30"  required/>
+                                <label> % </label>
                             </div>
                         </div><br>
                         <div align="center">
@@ -61,13 +63,13 @@
                         <div class="row">
                             <div class="col">
                                 <label>Semana </label>
-                                <input type="number" name="agua_semana" value="{{reduzir.agua_semana}}" min="{{agua_semana}}" max="{{mes.agua_semana}}" required/> 
-                                Litros
+                                <input type="number" name="agua_semana" value="{{reduzir.agua_semana}}" min="1"  max="30" required/>
+                                <label> % </label>
                             </div>
                             <div class="col">
                                 <label> Fim de semana </label>
-                                <input type="number" name="agua_final" value="{{reduzir.agua_feriado}}" min="{{agua_feriado}}" max="{{mes.agua_feriado}}" required/>
-                                Litros
+                                <input type="number" name="agua_final" value="{{reduzir.agua_feriado}}" min="1" max="30" required/>
+                                <label> % </label>
                             </div>
                         </div><br>
                         <button type="submit" class="btn btn-warning btn-block">

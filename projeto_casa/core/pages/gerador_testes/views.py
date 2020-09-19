@@ -188,10 +188,10 @@ def GerarTestes(casa, inicial):
                             dados.pop(pos)
         inicio = inicio + timedelta(days=1)
 
-    energia_semana = energia_semana / 4.3
-    agua_semana = agua_semana / 4.3
-    energia_feriado = energia_feriado / 4.3
-    agua_feriado = agua_feriado / 4.3
+    # energia_semana = energia_semana / 4.3
+    # agua_semana = agua_semana / 4.3
+    # energia_feriado = energia_feriado / 4.3
+    # agua_feriado = agua_feriado / 4.3
 
     ConsumoMes.objects.filter(casa = casa,mes = mes,
                     ano = fim.year).update(agua=agua, 
