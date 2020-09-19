@@ -20,12 +20,34 @@ def ListaCoeficientes(request):
         mes.energia_semana = round(mes.energia_semana/1000) #converto para Kwh
         mes.energia_feriado = round(mes.energia_feriado/1000)
 
+        comodos = Comodo.objects.filter(casa=casa)
+        meta_agua_semana = meta_agua_feriado = meta_energia_semana = meta_energia_feriado = 0       
+        if comodos is not None:
+            for item in comodos:
+                meta_agua_semana = item.meta_agua_semana + meta_agua_semana
+                meta_agua_feriado = item.meta_agua_feriado + meta_agua_feriado
+                meta_energia_semana = item.meta_energia_semana + meta_energia_semana
+                meta_energia_feriado = item.meta_energia_feriado + meta_energia_feriado
+        else:
+            meta_agua_semana = mes.agua_semana
+            meta_agua_feriado = mes.agua_feriado
+            meta_energia_semana = round(mes.energia_semana/1000)
+            meta_energia_feriado = round(mes.energia_feriado/1000)
+        
+        
+        reduzir = {
+            'agua_semana': round(meta_agua_semana * 120,1),  
+            'agua_feriado': round(meta_agua_feriado * 48,1), 
+            'energia_semana': round(meta_energia_semana * 12 / 100,1), #120/1000
+            'energia_feriado': round(meta_energia_feriado * 48 / 1000,1)
+        }
+
     dados = {
         'titulo':'Selecionar coeficiente', 
         'casa': casa,
         'coeficientes': None,
-        'categorias': None,
         'mes': mes,
+        'reduzir':reduzir,
         "agua_semana": math.ceil(mes.agua_semana/2),
         "agua_feriado": math.ceil(mes.agua_feriado/2),
         "energia_semana": math.ceil(mes.energia_semana/2), # energia kWh /2
@@ -46,10 +68,10 @@ def GerarCategorias(request):
         agua_final = float(request.GET.get('agua_final'))
 
         #converte para hora porem de todos comodos
-        energia_semana = energia_semana / 5
-        agua_semana = agua_semana /5
-        energia_final = energia_final / 2
-        agua_final = agua_final / 2
+        energia_semana = energia_semana / 120
+        agua_semana = agua_semana / 120
+        energia_final = energia_final / 48
+        agua_final = agua_final / 48
 
         #faz as conversoes para saber o que cada comodo usa por hora
         comodos = gerarPesos()
@@ -60,10 +82,13 @@ def GerarCategorias(request):
             item['media_agua_semana'] = round(item['percent_agua'] * agua_semana / 100,2)
             item['media_agua_final'] = round(item['percent_agua'] * agua_final / 100,2)
 
-        #Aqui embaixo vou colocar vetor de categorias
-        PreencherCategorias(comodos)        
-        
-        
+        for comodo in comodos:
+            Comodo.objects.filter(id=comodo['id']).update(
+                meta_agua_semana = comodo['media_agua_semana'], 
+                meta_agua_feriado = comodo['media_agua_final'],         
+                meta_energia_semana = comodo['media_energia_semana'],              
+                meta_energia_feriado = comodo['media_energia_final']
+            )
         
         return redirect('/regressao-linear-multipla/coeficiente?casa_id={}&mes_id={}'.format(casa.id,mes.id))
     return redirect('/simular/casas/')
@@ -79,44 +104,7 @@ def getPosMes(mes):
 
 def calcularConsumo(consumoHora, tempo):
     return (consumoHora / 60) * tempo 
-        
-def PreencherCategorias(consumos):
-    global casa
-    global mes
-    if casa and mes:
-        comodos = Comodo.objects.filter(casa=casa)
-        #Elimina dados para n ficar dados que nao vao ser usados
-        for item in comodos:
-            ComodoCategoria.objects.filter(comodo=item).delete()
-
-        month = getPosMes(mes.mes) + 1
-        dia = date(mes.ano,month,1)
-        
-        while dia.month == month:
-            semana = dia.weekday()
-            data = DiaMes.objects.get(data=dia)
-            
-            pos = 0
-            for comodo in comodos:
-                if semana < 5:
-                    ComodoCategoria.objects.create(
-                        comodo=comodo,
-                        meta_energia= consumos[pos]['media_energia_semana'],
-                        meta_agua= consumos[pos]['media_agua_semana'],
-                        dia_mes=data
-                    )
-                else:
-                    ComodoCategoria.objects.create(
-                        comodo=comodo,
-                        meta_energia= consumos[pos]['media_energia_final'],
-                        meta_agua= consumos[pos]['media_agua_final'],
-                        dia_mes=data
-                    )   
-                pos = pos + 1     
-
-            dia = dia + timedelta(days=1)
-                
-#------------------------------------------------------------------------------------------------
+               
 def gerarPesos():
     #Retorna o percentual de cada comodo consome
     global casa

@@ -37,7 +37,7 @@ def GerarMes(request):
     id = request.GET.get('id')
     if id:
         casa = Casa.objects.get(id=id)
-        ConsumoMes.objects.filter(casa=casa).delete()
+        #ConsumoMes.objects.filter(casa=casa).delete()
         ini = time.time()
         GerarTestes(casa, 0)          
         fim = time.time()
@@ -48,7 +48,7 @@ def GerarAno(request):
     id = request.GET.get('id')
     if id:
         casa = Casa.objects.get(id=id)
-        ConsumoMes.objects.filter(casa=casa).delete()
+        #ConsumoMes.objects.filter(casa=casa).delete()
 
         for i in range(12):
             #ini = time.time()
@@ -73,32 +73,28 @@ def GerarTestes(casa, inicial):
     
 
     mes = getMes(inicio.month-1)
-    ConsumoMes.objects.create(
-        casa=casa,
-        mes=mes,
-        ano = inicio.year
-    )
-    
     consumoMes = ConsumoMes.objects.get(casa = casa,mes = mes,ano = inicio.year)
+    if consumoMes is None:
+        ConsumoMes.objects.create(
+            casa=casa,
+            mes=mes,
+            ano = inicio.year
+        )
+        consumoMes = ConsumoMes.objects.get(casa = casa,mes = mes,ano = inicio.year)
+    
     #gambiarra reduz acesso ao banco de ddos
     casa.comodos = Comodo.objects.filter(casa=casa)
     for comodo in casa.comodos:
         comodo.comodoSaidas = ComodoSaida.objects.filter(comodo=comodo)
 
+    #elimina historico anterior
+    for comodo_saida in comodo.comodoSaidas:
+        ConsumoHora.objects.filter(mes = consumoMes,comodo_saida=comodo_saida).delete()
+
     energia = energia_semana = energia_feriado = 0
     agua = agua_semana = agua_feriado = 0
-    semanas = feriados = 0
     while inicio.month == fim.month:
         semana = inicio.weekday()
-        if semana < 5:
-            semanas = semanas + 1
-        else:
-            feriados = feriados + 1
-
-        dia_mes = DiaMes.objects.create(
-            mes=consumoMes,
-            data=inicio,
-        )
 
         for comodo in casa.comodos:
             registradas = [] #Caso um equipamento esteja em duas listas
@@ -166,10 +162,12 @@ def GerarTestes(casa, inicial):
                                     dados.append({'tempo': tempo, 'hora': hora})
 
                                 ConsumoHora.objects.create(
-                                    dia_mes = dia_mes,
-                                    comodo_saida = terminal,
+                                    mes = consumoMes,
+                                    data = inicio,
+                                    hora = hora,
                                     tempo = tempo,
-                                    hora = hora
+                                    comodo_saida = terminal
+                                    
                                 )
 
                             hora = hora + 1
@@ -179,7 +177,8 @@ def GerarTestes(casa, inicial):
                             item = dados[pos]
 
                             ConsumoHora.objects.create(
-                                dia_mes = dia_mes,
+                                mes = consumoMes,
+                                data = inicio,
                                 comodo_saida = terminal,
                                 tempo = item['tempo'],
                                 hora = item['hora']
@@ -188,13 +187,11 @@ def GerarTestes(casa, inicial):
                             registradas.pop(pos)
                             dados.pop(pos)
         inicio = inicio + timedelta(days=1)
-    semanas = semanas / 5
-    feriados = feriados / 2
 
-    energia_semana = energia_semana / semanas
-    agua_semana = agua_semana / semanas
-    energia_feriado = energia_feriado / feriados
-    agua_feriado = agua_feriado / feriados
+    energia_semana = energia_semana / 4.3
+    agua_semana = agua_semana / 4.3
+    energia_feriado = energia_feriado / 4.3
+    agua_feriado = agua_feriado / 4.3
 
     ConsumoMes.objects.filter(casa = casa,mes = mes,
                     ano = fim.year).update(agua=agua, 

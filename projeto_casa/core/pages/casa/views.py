@@ -221,6 +221,11 @@ def ListarComodoEquipamento(request):
         consumo['agua_max'] = consumo['agua_max'] + aux['agua_max']
         consumo['energia_min'] = consumo['energia_min'] + aux['energia_min']
         consumo['energia_max'] = consumo['energia_max'] + aux['energia_max']
+    
+    consumo['agua_min'] = round(consumo['agua_min'],2)
+    consumo['agua_max'] = round(consumo['agua_max'],2)
+    consumo['energia_min'] = round(consumo['energia_min'],2)
+    consumo['energia_max'] = round(consumo['energia_max'],2)
 
     dados = {
         'titulo': 'Vincular comodo com terminais',

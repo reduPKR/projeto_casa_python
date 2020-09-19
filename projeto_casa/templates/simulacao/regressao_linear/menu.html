@@ -48,12 +48,11 @@
                         <div class="row">
                             <div class="col">
                                 <label>Semana </label>
-                                {{energia_semana_max}}
-                                <input type="number" name="energia_semana" value="{{mes.energia_semana}}" min="{{energia_semana}}" max="{{mes.energia_semana}}" required/> kWh
+                                <input type="number" name="energia_semana" value="{{reduzir.energia_semana}}" min="{{energia_semana}}" max="{{mes.energia_semana}}" required/> kWh
                             </div>
                             <div class="col">
                                 <label> Fim de semana </label>
-                                <input type="number" name="energia_final" value="{{mes.energia_feriado}}" min="{{energia_feriado}}" max="{{mes.energia_feriado}}"  required/> kWh
+                                <input type="number" name="energia_final" value="{{reduzir.energia_feriado}}" min="{{energia_feriado}}" max="{{mes.energia_feriado}}"  required/> kWh
                             </div>
                         </div><br>
                         <div align="center">
@@ -62,12 +61,12 @@
                         <div class="row">
                             <div class="col">
                                 <label>Semana </label>
-                                <input type="number" name="agua_semana" value="{{mes.agua_semana}}" min="{{agua_semana}}" max="{{mes.agua_semana}}" required/> 
+                                <input type="number" name="agua_semana" value="{{reduzir.agua_semana}}" min="{{agua_semana}}" max="{{mes.agua_semana}}" required/> 
                                 Litros
                             </div>
                             <div class="col">
                                 <label> Fim de semana </label>
-                                <input type="number" name="agua_final" value="{{mes.agua_feriado}}" min="{{agua_feriado}}" max="{{mes.agua_feriado}}" required/>
+                                <input type="number" name="agua_final" value="{{reduzir.agua_feriado}}" min="{{agua_feriado}}" max="{{mes.agua_feriado}}" required/>
                                 Litros
                             </div>
                         </div><br>
