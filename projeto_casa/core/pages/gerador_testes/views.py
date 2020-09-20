@@ -39,9 +39,11 @@ def GerarMes(request):
         casa = Casa.objects.get(id=id)
         #ConsumoMes.objects.filter(casa=casa).delete()
         ini = time.time()
-        GerarTestes(casa, 0)          
+        #GerarTestes(casa, 0)   
         fim = time.time()
         print("Tempo {}".format(fim-ini))
+
+        excluirCoeficientes(casa)
     return redirect('/gerar-testes/gerar/?id={}'.format(id))
 
 def GerarAno(request):
@@ -56,6 +58,7 @@ def GerarAno(request):
             #fim = time.time()
             mes = getMes(i)
         
+        excluirCoeficientes(casa)
     return redirect('/gerar-testes/gerar/?id={}'.format(id))
 
 def GerarTestes(casa, inicial):
@@ -203,3 +206,12 @@ def getMes(mes):
 
 def calcularConsumo(consumoHora, tempo):
     return (consumoHora / 60) * tempo 
+
+def excluirCoeficientes(casa):
+    grupos = GrupoCoeficiente.objects.filter(casa = casa)     
+    for grupo in grupos:
+        Coeficiente.objects.filter(grupo=grupo).delete()
+    GrupoCoeficiente.objects.filter(casa = casa).delete()
+    comodos = Comodo.objects.filter(casa=casa)
+    for comodo in comodos:
+        ComodoValorY.objects.filter(comodo=comodo).delete()
