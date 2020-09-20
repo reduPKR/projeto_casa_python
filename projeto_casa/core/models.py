@@ -58,7 +58,6 @@ class ComodoValorY(models.Model):
     class Meta:
         db_table = 'comodo_valor_y'
     
-
 class ComodoEquipamento(models.Model):
     apelido = models.IntegerField()
 
@@ -103,14 +102,10 @@ class ConsumoMes(models.Model):
     agua = models.IntegerField(default=0)
     agua_semana = models.IntegerField(default=0)
     agua_feriado = models.IntegerField(default=0)
-    reduzir_agua_semana = models.IntegerField(default=0)
-    reduzir_agua_feriado = models.IntegerField(default=0)
 
     energia = models.IntegerField(default=0)
     energia_semana = models.IntegerField(default=0)
     energia_feriado = models.IntegerField(default=0)
-    reduzir_energia_semana = models.IntegerField(default=0)
-    reduzir_energia_feriado = models.IntegerField(default=0)
 
     class Meta:
         db_table = 'consumo_mes'
@@ -138,25 +133,33 @@ class Clima(models.Model):
     class Meta:
         db_table = 'clima'
 
-class GrupoCoeficientes(models.Model):
+class GrupoCoeficiente(models.Model):
     casa = models.ForeignKey(Casa,on_delete=models.CASCADE)
     precisao = models.DecimalField(max_digits=4, decimal_places=1, default=0)
+
+    reduzir_agua_semana = models.FloatField(default=0)
+    reduzir_agua_feriado = models.FloatField(default=0)
+    
+    reduzir_energia_semana = models.FloatField(default=0)
+    reduzir_energia_feriado = models.FloatField(default=0)
 
     class Meta:
         db_table = 'grupo_coeficientes'
 
 class Coeficiente(models.Model):
     comodo = models.ForeignKey(Comodo, on_delete=models.CASCADE)
-    grupo = models.ForeignKey(GrupoCoeficientes,on_delete=models.CASCADE)
+    grupo = models.ForeignKey(GrupoCoeficiente,on_delete=models.CASCADE)
     precisao = models.DecimalField(max_digits=4, decimal_places=1, default=0)
-    feriado = models.BooleanField(default=False)
+
+    energia = models.BooleanField(default=True)
+    semana = models.BooleanField(default=True)
+    
+    constante = models.FloatField(default=0)
+    temperatura = models.FloatField(default=0)
+    umidade = models.FloatField(default=0)
+    vento = models.FloatField(default=0)
+    pressao = models.FloatField(default=0)
+    chuva = models.FloatField(default=0)
 
     class Meta:
         db_table = 'coeficientes'
-
-class CoeficienteValor(models.Model):
-    coeficiente = models.ForeignKey(Coeficiente, on_delete=models.CASCADE)
-    valor = models.DecimalField(max_digits=24,decimal_places=22)
-
-    class Meta:
-        db_table = 'coeficiente_valor'

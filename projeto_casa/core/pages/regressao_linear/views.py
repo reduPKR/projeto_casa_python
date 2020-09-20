@@ -20,12 +20,21 @@ def ListaCoeficientes(request):
         mes.energia_semana = round(mes.energia_semana /1000) #converto para Kwh
         mes.energia_feriado = round(mes.energia_feriado /1000)     
 
-        reduzir = {
-            'agua_semana': mes.reduzir_agua_semana,
-            'agua_feriado': mes.reduzir_agua_feriado,
-            'energia_semana': mes.reduzir_energia_semana,
-            'energia_feriado': mes.reduzir_energia_feriado
-        }   
+        grupo = GrupoCoeficiente.objects.filter(casa=casa).first()
+        if grupo:
+            reduzir = {
+                'agua_semana': grupo.reduzir_agua_semana * 100,
+                'agua_feriado': grupo.reduzir_agua_feriado * 100,
+                'energia_semana': grupo.reduzir_energia_semana * 100,
+                'energia_feriado': grupo.reduzir_energia_feriado * 100
+            } 
+        else:
+            reduzir = {
+                'agua_semana': 0,
+                'agua_feriado': 0,
+                'energia_semana': 0,
+                'energia_feriado': 0
+            } 
 
         data = date.today()
         data = data.replace(day=1)
@@ -60,15 +69,20 @@ def GerarCategorias(request):
         agua_final = float(request.GET.get('agua_final')) / 100
 
         if energia_semana  > 0 and energia_final  > 0 and agua_semana  > 0 and agua_final > 0:
-            # ConsumoMes.objects.filter(id=mes.id).update(
-            #     reduzir_agua_semana = agua_semana,
-            #     reduzir_agua_feriado = agua_final,
-            #     reduzir_energia_semana = energia_semana,
-            #     reduzir_energia_feriado = energia_final,
-            # )
+            grupo = GrupoCoeficiente.objects.filter(
+                casa = casa,
+                reduzir_agua_semana = agua_semana,
+                reduzir_agua_feriado = agua_final,
+                reduzir_energia_semana = energia_semana,
+                reduzir_energia_feriado = energia_final
+            )
 
-            # gerarPadrao(energia_semana, energia_final, agua_semana, agua_final)
-            gerarConstantes()
+            if grupo.count() == 0:
+                ini = time.time()
+                gerarPadrao(energia_semana, energia_final, agua_semana, agua_final)
+                gerarConstantes(energia_semana, energia_final, agua_semana, agua_final)       
+                fim = time.time()
+                print("Tempo {}".format(fim-ini))
 
         return redirect('/regressao-linear-multipla/coeficiente?casa_id={}&mes_id={}'.format(casa.id,mes.id))
     return redirect('/simular/casas/')
@@ -173,50 +187,155 @@ def gerarPadrao(energia_semana, energia_final, agua_semana, agua_final):
                         )
             data = data + timedelta(days=1)
 
-def gerarConstantes():
+def gerarConstantes(energia_semana, energia_final, agua_semana, agua_final):
     #teste()
+
+    GrupoCoeficiente.objects.create(
+        casa = casa,
+        reduzir_agua_semana = agua_semana,
+        reduzir_agua_feriado = agua_final,
+        reduzir_energia_semana = energia_semana,
+        reduzir_energia_feriado = energia_final
+    )
+
+    grupo = GrupoCoeficiente.objects.filter(
+        casa = casa,
+        reduzir_agua_semana = agua_semana,
+        reduzir_agua_feriado = agua_final,
+        reduzir_energia_semana = energia_semana,
+        reduzir_energia_feriado = energia_final
+    ).first()
+
     month = getPosMes(mes.mes) + 1
     clima = Clima.objects.filter(data__month=month)
     comodos = Comodo.objects.filter(casa=casa)
     
-    listaVetor = []
-    listaMatriz = []
-    listaMatrizT = [] #Transposta da matriz
-
     intervalo = ["2019-{}-01".format(month), "2019-{}-10".format(month)]
     for comodo in comodos:
         Y = ComodoValorY.objects.filter(comodo=comodo,data__range=intervalo)
+        vetYenergia = []
+        vetYagua = []
         matClima = []
-        matClimaT = []
-        matY = []
+
+        #Cria as constantes da semana
         for itemY in Y:
-            for itemC in clima:
-                if itemY.data == itemC.data and itemY.hora == itemC.hora:
-                    matY.append([itemY.meta_agua,itemY.meta_energia])
-                    matClima.append([
-                        itemC.temperatura,
-                        itemC.umidade,
-                        itemC.vento,
-                        itemC.pressao,
-                        itemC.chuva
-                    ])
-        listaMatriz.append(matClima)
-        listaMatrizT.append(transpor(matClima))
-        listaVetor.append(matY)
-    
+            if itemY.data.weekday() < 5:
+                for itemC in clima:
+                    if itemY.data == itemC.data and itemY.hora == itemC.hora:
+                        vetYenergia.append(itemY.meta_energia) 
+                        vetYagua.append(itemY.meta_agua)
+                        #Esse 1 gera a constante do calculo
+                        matClima.append([
+                            1,
+                            itemC.temperatura,
+                            itemC.umidade,
+                            itemC.vento,
+                            itemC.pressao,
+                            itemC.chuva
+                        ])
+        matTranspX = transposta(matClima)
+        matXTranspX = multiplicar(matClima,matTranspX)
+        matXTranspXInver = inversao(matXTranspX)
+        matXTranspEnergia = multiplicarVetor(vetYenergia,matTranspX)
+        matXTranspAgua = multiplicarVetor(vetYagua,matTranspX)
+
+        #coeficiantes
+        energiaB = multiplicarVetor(matXTranspEnergia,matXTranspXInver)
+        aguaB = multiplicarVetor(matXTranspAgua,matXTranspXInver)
+
+        Coeficiente.objects.create(
+            comodo = comodo,
+            grupo = grupo,
+            energia =True,
+            semana = True,
+            constante = energiaB[0],
+            temperatura = energiaB[1],
+            umidade = energiaB[2],
+            vento = energiaB[3],
+            pressao = energiaB[4],
+            chuva = energiaB[5]
+        )
+
+        Coeficiente.objects.create(
+            comodo = comodo,
+            grupo = grupo,
+            energia = False,
+            semana = True,
+            constante = aguaB[0],
+            temperatura = aguaB[1],
+            umidade = aguaB[2],
+            vento = aguaB[3],
+            pressao = aguaB[4],
+            chuva = aguaB[5]
+        )
+
+        #Cria as constantes do final de semana
+        for itemY in Y:
+            if itemY.data.weekday() >= 5:
+                for itemC in clima:
+                    if itemY.data == itemC.data and itemY.hora == itemC.hora:
+                        vetYenergia.append(itemY.meta_energia) 
+                        vetYagua.append(itemY.meta_agua)
+                        #Esse 1 gera a constante do calculo
+                        matClima.append([
+                            1,
+                            itemC.temperatura,
+                            itemC.umidade,
+                            itemC.vento,
+                            itemC.pressao,
+                            itemC.chuva
+                        ])
+        matTranspX = transposta(matClima)
+        matXTranspX = multiplicar(matClima,matTranspX)
+        matXTranspXInver = inversao(matXTranspX)
+        matXTranspEnergia = multiplicarVetor(vetYenergia,matTranspX)
+        matXTranspAgua = multiplicarVetor(vetYagua,matTranspX)
+
+        #coeficiantes
+        energiaB = multiplicarVetor(matXTranspEnergia,matXTranspXInver)
+        aguaB = multiplicarVetor(matXTranspAgua,matXTranspXInver)
+
+        Coeficiente.objects.create(
+            comodo = comodo,
+            grupo = grupo,
+            energia =True,
+            semana = False,
+            constante = energiaB[0],
+            temperatura = energiaB[1],
+            umidade = energiaB[2],
+            vento = energiaB[3],
+            pressao = energiaB[4],
+            chuva = energiaB[5]
+        )
+
+        Coeficiente.objects.create(
+            comodo = comodo,
+            grupo = grupo,
+            energia = False,
+            semana = False,
+            constante = aguaB[0],
+            temperatura = aguaB[1],
+            umidade = aguaB[2],
+            vento = aguaB[3],
+            pressao = aguaB[4],
+            chuva = aguaB[5]
+        )
+
+        
+     
     
 def teste():
     matx = [[1,5,118],[1,13,132],[1,20,119],[1,28,153],
             [1,41,91],[1,49,118],[1,61,132],[1,62,105]]
     vet = [8.1,6.8,7,7.4,7.7,7.5,7.6,8]
-    matt = transpor(matx)
+    matt = transposta(matx)
     matxt = multiplicar(matx,matt)
     matxti = inversao(matxt)
     matxty = multiplicarVetor(vet,matt)
     coef = multiplicarVetor(matxty,matxti)
     print(coef)
     
-def transpor(matriz):
+def transposta(matriz):
     transposta = []
 
     for i in range(len(matriz[0])):
@@ -251,9 +370,13 @@ def inversao(mat):
                 identidade[linha][coluna] = 1
             else:
                 identidade[linha][coluna] = 0
-
+    
     for coluna in range(len(mat)):
-        pivo = mat[coluna][coluna]
+        if mat[coluna][coluna] != 0:
+            pivo = mat[coluna][coluna]
+        else:
+            pivo = 1
+
         for k in range(len(mat)):
             mat[coluna][k] = (mat[coluna][k])/(pivo)
             identidade[coluna][k] = (identidade[coluna][k])/(pivo)
@@ -275,4 +398,5 @@ def multiplicarVetor(vet, mat):
         for j in range(len(mat[i])):
             val = val + mat[i][j] * vet[j]
         resp.append(val)
+    
     return resp
