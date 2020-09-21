@@ -19,9 +19,20 @@
                             <i class="fas fa-wave-square"></i> Regressão linear múltipla
                         </button>
                     </form><br>
-                    <a type="button" class="btn btn-warning btn-block" href="#">
-                        <i class="fas fa-dna"></i> Algoritmo genético 
-                    </a><br>
+                    <form action="/genetico" method="GET">
+                        <input type="text" name="casa_id" value="{{casa.id}}" hidden>
+                        <input type="text" name="mes_id" value="{{mes.id}}" hidden>
+                        <button type="submit" class="btn btn-warning btn-block">
+                            <i class="fas fa-dna"></i> Algoritmo genético 
+                        </button>
+                    </form><br>
+                    <form action="/simular/testar/" method="GET">
+                        <input type="text" name="casa_id" value="{{casa.id}}" hidden>
+                        <input type="text" name="mes_id" value="{{mes.id}}" hidden>
+                        <button type="submit" class="btn btn-warning btn-block">
+                            <i class="fas fa-vial"></i> Testar
+                        </button>
+                    </form><br>
                     <a type="button" class="btn btn-warning"style="position: absolute; left: 10px;" href="/simular/meses/?id={{casa.id}}">
                         <i class='fas fa-arrow-alt-circle-left'></i> Voltar
                     </a><br><br>

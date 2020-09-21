@@ -1,0 +1,45 @@
+{% extends "model-page.html" %}
+
+{% block content %}
+    <div align='center'>
+        <br>
+        <h3><i class="fas fa-home"></i> Regressão linear multipla </h3><br>
+        <div class="container">
+            <div class="row">
+                <div class="col col-6 col-sm-6 col-md-4 col-lg-5 col-xs-4 container box-gray">
+                    <br>
+                    {% if executar %}
+                        <label style="color: #ff4800">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            Ação nescessária: A regrassão linear multipla estabelece os parametros
+                            que o algoritmo genetico ira seguir, por favor crie pelo menos 1 grupo de 
+                            coeficientes com algorimo de regressão
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </label>
+                    {% else %}
+                        <label style="color: #30d646">
+                            <i class="fas fa-check-circle"></i>
+                            Etapa realizada
+                            <i class="fas fa-check-circle"></i>
+                        </label>
+                        <br><hr>
+                        <a type="button" class="btn btn-warning btn-block">
+                            <i class="fas fa-dna"></i> Gerar todos genes novos
+                        </a><br>
+                        <a type="button" class="btn btn-warning btn-block">
+                            <i class="fas fa-dna"></i> Gerar com um gene anterior
+                        </a><br>
+                        <a type="button" class="btn btn-warning btn-block">
+                            <i class="fas fa-dna"></i> Gerar com 10 genes anteriores
+                        </a>
+                        <br><hr>
+                    {% endif %}
+                    <br>
+                    <a type="button" class="btn btn-warning" style="position: absolute; left: 10px;" href="/simular/algoritmos/?casa_id={{casa.id}}&mes_id={{mes.id}}">
+                        <i class='fas fa-arrow-alt-circle-left'></i> Voltar
+                    </a><br><br>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -39,7 +39,7 @@ def GerarMes(request):
         casa = Casa.objects.get(id=id)
         #ConsumoMes.objects.filter(casa=casa).delete()
         ini = time.time()
-        #GerarTestes(casa, 0)   
+        GerarTestes(casa, 0)   
         fim = time.time()
         print("Tempo {}".format(fim-ini))
 

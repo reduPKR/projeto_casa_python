@@ -1,0 +1,65 @@
+{% extends "model-page.html" %}
+
+{% block content %}
+    <div align='center'>
+        <br>
+        <h3><i class="fas fa-home"></i> Seleção dos coeficientes </h3><br>
+        <div class="container">
+            <div class="row">
+                <div class="col col-6 col-sm-6 col-md-4 col-lg-5 col-xs-4 container box-gray">
+                    <br>
+                    {% if executar %}
+                        <label style="color: #ff4800">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            É nescessario criar pelo menos 1 coeficiente para que se possa simular
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </label>
+                    {% else %}
+                        <label style="color: #30d646">
+                            <i class="fas fa-check-circle"></i>
+                            Coeficientes gerados, etapa realizada.
+                            <i class="fas fa-check-circle"></i>
+                        </label><br>
+                        <br>
+                        <strong style="float: left;">Nome: {{casa.nome}} </strong>
+                        <br>
+                        <strong style="float: left;">Mes: {{mes.mes}} </strong>
+                        <br>
+                        <strong style="float: left;">Energia mes: {{mes.energia}} Kwh </strong>
+                        <strong >Água mes: {{mes.agua}} Litros</strong>
+                        <br><hr>
+                        {% if grupos != None %}
+                            <strong>Coeficientes</strong>
+                            <form action="">
+                                <br>
+                                <div class="form-group">
+                                    <label for="exampleFormControlSelect1">Example select</label>
+                                    <select class="form-control" id="coeficiente">
+                                        {% for item in grupos %}
+                                            <option value={{item.id}}>
+                                                {{item.gerador}}
+                                                acerto {{item.precisao}}% | 
+                                                Energia semana {{item.reduzir_energia_semana }}
+                                                Energia final de semana {{item.reduzir_energia_feriado}} | 
+                                                Agua semana {{item.reduzir_agua_semana }}
+                                                Agua final de semana {{item.reduzir_agua_feriado}}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <br>
+                                <button class="btn btn-warning btn-block" disabled>
+                                    <i class="fas fa-vial"></i> Simular
+                                </button>
+                            </form>
+                        {% endif %}
+                        <hr>
+                    {% endif %}
+                    <a type="button" class="btn btn-warning"style="position: absolute; left: 10px;" href="/simular/algoritmos/?casa_id={{casa.id}}&mes_id={{mes.id}}">
+                        <i class='fas fa-arrow-alt-circle-left'></i> Voltar
+                    </a><br><br>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

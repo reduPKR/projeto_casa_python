@@ -137,6 +137,8 @@ class GrupoCoeficiente(models.Model):
     casa = models.ForeignKey(Casa,on_delete=models.CASCADE)
     precisao = models.DecimalField(max_digits=4, decimal_places=1, default=0)
 
+    gerador = models.CharField(max_length=30)
+
     reduzir_agua_semana = models.FloatField(default=0)
     reduzir_agua_feriado = models.FloatField(default=0)
     

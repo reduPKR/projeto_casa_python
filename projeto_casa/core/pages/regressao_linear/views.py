@@ -6,7 +6,7 @@ import math
 
 casa = None
 mes = None
-def ListaCoeficientes(request):
+def Exibir(request):
     casa_id = request.GET.get('casa_id')
     mes_id = request.GET.get('mes_id')
 
@@ -20,20 +20,28 @@ def ListaCoeficientes(request):
         mes.energia_semana = round(mes.energia_semana /1000) #converto para Kwh
         mes.energia_feriado = round(mes.energia_feriado /1000)     
 
-        grupo = GrupoCoeficiente.objects.filter(casa=casa).first()
-        if grupo:
+        grupos = GrupoCoeficiente.objects.filter(casa=casa).first()
+        if grupos:
             reduzir = {
-                'agua_semana': grupo.reduzir_agua_semana * 100,
-                'agua_feriado': grupo.reduzir_agua_feriado * 100,
-                'energia_semana': grupo.reduzir_energia_semana * 100,
-                'energia_feriado': grupo.reduzir_energia_feriado * 100
+                'agua_semana': math.ceil(grupos.reduzir_agua_semana),
+                'agua_feriado': math.ceil(grupos.reduzir_agua_feriado),     
+                'energia_semana': math.ceil(grupos.reduzir_energia_semana / 1000),
+                'energia_feriado': math.ceil(grupos.reduzir_energia_feriado / 1000),
+                'agua_semana_min': math.ceil(mes.agua_semana - (mes.agua_semana * 0.3)),
+                'agua_feriado_min': math.ceil(mes.agua_feriado - (mes.agua_feriado * 0.3)),
+                'energia_semana_min': math.ceil(mes.energia_semana - (mes.energia_semana * 0.3)),
+                'energia_feriado_min': math.ceil(mes.energia_feriado - (mes.energia_feriado * 0.3))
             } 
         else:
             reduzir = {
-                'agua_semana': 0,
-                'agua_feriado': 0,
-                'energia_semana': 0,
-                'energia_feriado': 0
+                'agua_semana': math.ceil(mes.agua_semana),
+                'agua_feriado': math.ceil(mes.agua_feriado),
+                'energia_semana': math.ceil(mes.energia_semana),
+                'energia_feriado': math.ceil(mes.energia_feriado),
+                'agua_semana_min': math.ceil(mes.agua_semana - (mes.agua_semana * 0.3)),
+                'agua_feriado_min': math.ceil(mes.agua_feriado - (mes.agua_feriado * 0.3)),
+                'energia_semana_min': math.ceil(mes.energia_semana - (mes.energia_semana * 0.3)),
+                'energia_feriado_min': math.ceil(mes.energia_feriado - (mes.energia_feriado * 0.3))
             } 
 
         data = date.today()
@@ -47,9 +55,8 @@ def ListaCoeficientes(request):
             executar = False
 
     dados = {
-        'titulo':'Selecionar coeficiente', 
+        'titulo':'Regressão linear multipla', 
         'casa': casa,
-        'coeficientes': None,
         'mes': mes,
         'reduzir':reduzir,
         'executar': executar
@@ -63,23 +70,23 @@ def GerarCategorias(request):
     global mes
     
     if casa and mes:
-        energia_semana = float(request.GET.get('energia_semana')) / 100
-        energia_final = float(request.GET.get('energia_final')) / 100
-        agua_semana = float(request.GET.get('agua_semana')) / 100
-        agua_final = float(request.GET.get('agua_final')) / 100
+        energia_semana = float(request.GET.get('energia_semana')) * 1000
+        energia_final = float(request.GET.get('energia_final')) * 1000
+        agua_semana = float(request.GET.get('agua_semana')) 
+        agua_final = float(request.GET.get('agua_final')) 
 
         if energia_semana  > 0 and energia_final  > 0 and agua_semana  > 0 and agua_final > 0:
-            # grupo = GrupoCoeficiente.objects.filter(
-            #     casa = casa,
-            #     reduzir_agua_semana = agua_semana,
-            #     reduzir_agua_feriado = agua_final,
-            #     reduzir_energia_semana = energia_semana,
-            #     reduzir_energia_feriado = energia_final
-            # )
+            grupo = GrupoCoeficiente.objects.filter(
+                casa = casa,
+                reduzir_agua_semana = agua_semana,
+                reduzir_agua_feriado = agua_final,
+                reduzir_energia_semana = energia_semana,
+                reduzir_energia_feriado = energia_final
+            )
 
-            #if grupo.count() == 0:
+            if grupo.count() == 0:
                 ini = time.time()
-            #    gerarPadrao(energia_semana, energia_final, agua_semana, agua_final)
+                gerarPadrao(energia_semana, energia_final, agua_semana, agua_final)
                 gerarConstantes(energia_semana, energia_final, agua_semana, agua_final)       
                 fim = time.time()
                 print("Tempo cadastro {}".format(fim-ini))
@@ -109,24 +116,35 @@ def gerarPesos():
     #Retorna o percentual de cada comodo consome
     global casa
 
-    consumos = []
+    dados = []
     if casa:
         comodos = Comodo.objects.filter(casa=casa)
-        agua_total = energia_total = 0
         for comodo in comodos:
             terminais = ComodoSaida.objects.filter(comodo=comodo)
-            agua = energia = 0
-            for terminal in terminais:
-                if terminal.saida and terminal.comodo_equipamento:
-                    if terminal.saida.tipo_consumo.id == 1: #Valor Direto
-                        agua = agua + terminal.comodo_equipamento.equipamento.consumo_agua
-                    else:
-                        energia = energia + terminal.comodo_equipamento.equipamento.consumo_energia
+            comodo.terminais = terminais
+            for terminal in comodo.terminais:
+                consumos = ConsumoHora.objects.filter(comodo_saida = terminal, mes = mes)
+                terminal.consumos = consumos
+
+        agua_total = energia_total = 0
+        month = getPosMes(mes.mes) + 1
+        for comodo in comodos:
+            energia = agua = 0
+            data = date(2019,month, 1)
+            while data.month == month:
+                for hora in range(24):
+                    for terminal in comodo.terminais:
+                        for consumo in terminal.consumos:
+                            if data == consumo.data and hora == consumo.hora:
+                                agua = agua + calcularConsumo(terminal.comodo_equipamento.equipamento.consumo_agua, consumo.tempo)
+                                energia = energia + calcularConsumo(terminal.comodo_equipamento.equipamento.consumo_energia, consumo.tempo)
+                data = data + timedelta(days=1)
+
+            dados.append({'id': comodo.id, 'nome': comodo.nome,'agua': agua, 'energia': energia})
             energia_total = energia_total + energia
             agua_total = agua_total + agua
-            consumos.append({'id': comodo.id, 'nome': comodo.nome,'agua': agua, 'energia': energia})
-        
-        for item in consumos:
+
+        for item in dados:
             if item['agua'] == 0:
                 item['percent_agua'] = 0
             else:
@@ -136,8 +154,7 @@ def gerarPesos():
                 item['percent_energia'] = 0
             else:
                 item['percent_energia'] = round((item['energia']*100)/energia_total,2)
-
-    return consumos
+    return dados
 
 #Aqui vou pegar o padrao de consumo e gerar a saida Y reduzida, para que as previsoes gerem
 #os valores de comparacao.
@@ -146,8 +163,22 @@ def gerarPadrao(energia_semana, energia_final, agua_semana, agua_final):
     global mes
     
     if casa and mes:
+        #cada comodo consome diferente
+        energia_semana = energia_semana/360 #seria 720 porem a tendencia é mmetade do dia ter consumo
+        energia_final = energia_final/360
+        agua_semana = agua_semana/360
+        agua_final = agua_final/360
+
+        pesos = gerarPesos()
+        for item in pesos:
+            item['media_energia_semana'] = round(item['percent_energia'] * energia_semana / 100,2)
+            item['media_energia_final'] = round(item['percent_energia'] * energia_final / 100,2)
+            item['media_agua_semana'] = round(item['percent_agua'] * energia_semana / 100,2)
+            item['media_agua_final'] = round(item['percent_agua'] * energia_final / 100,2)
+
         #Elimina ficar buscando posteriormente
         comodos = Comodo.objects.filter(casa=casa)
+        pos = 0
         for comodo in comodos:
             terminais = ComodoSaida.objects.filter(comodo=comodo)
             comodo.terminais = terminais
@@ -155,12 +186,19 @@ def gerarPadrao(energia_semana, energia_final, agua_semana, agua_final):
                 consumos = ConsumoHora.objects.filter(comodo_saida = terminal, mes = mes)
                 terminal.consumos = consumos
 
+            #consumo segue a mesma orde dos comodos
+            comodo.media_energia_semana = pesos[pos]['media_energia_semana']
+            comodo.media_energia_final = pesos[pos]['media_energia_final']
+            comodo.media_agua_semana = pesos[pos]['media_agua_semana']
+            comodo.media_agua_final = pesos[pos]['media_agua_final']
+            pos =pos+1
+
         for comodo in comodos:
             ComodoValorY.objects.filter(comodo=comodo).delete()
 
         #Vou cadastrar o mes todo
         #Pois quando for verificar a presicao vou ter que usar valores
-        # Diferentes dos usados para treinar 
+        #Diferentes dos usados para treinar 
         month = getPosMes(mes.mes) + 1
         data = date(2019,month, 1)
         while data.month == month:
@@ -178,12 +216,14 @@ def gerarPadrao(energia_semana, energia_final, agua_semana, agua_final):
                         semana = data.weekday()
 
                         if semana < 5:
-                            energia = energia - (energia * energia_semana)
-                            agua = agua - (agua * agua_semana)
+                            energia = index(energia*100/comodo.media_energia_semana)
+                            if comodo.media_agua_semana > 0:
+                                agua = index(agua*100/comodo.media_agua_semana)
                         else:
-                            energia = energia - (energia * energia_final)
-                            agua = agua - (agua * agua_final)                            
-                            
+                            energia = index(energia*100/comodo.media_energia_final)
+                            if comodo.media_agua_semana > 0:
+                                agua = index(agua*100/comodo.media_agua_final)
+                        
                         ComodoValorY.objects.create(
                             comodo = comodo,
                             data = data,
@@ -193,11 +233,24 @@ def gerarPadrao(energia_semana, energia_final, agua_semana, agua_final):
                         )
             data = data + timedelta(days=1)
 
+def index(valor):
+    if valor < 35:
+        return 1
+    elif valor < 70:
+        return 2
+    elif valor < 105:
+        return 3
+    elif valor < 140:
+        return 4
+    else:
+        return 5
+
 def gerarConstantes(energia_semana, energia_final, agua_semana, agua_final):
     #teste()
 
     GrupoCoeficiente.objects.create(
         casa = casa,
+        gerador = "Regresão linear",
         reduzir_agua_semana = agua_semana,
         reduzir_agua_feriado = agua_final,
         reduzir_energia_semana = energia_semana,
@@ -224,12 +277,10 @@ def gerarConstantes(energia_semana, energia_final, agua_semana, agua_final):
         matClima = []
 
         #Cria as constantes da semana
-        qtde = 0 #mudei para contador, pois a precisao estava baixa
         for itemY in Y:
             if itemY.data.weekday() < 5:
                 for itemC in clima:
                     if itemY.data == itemC.data and itemY.hora == itemC.hora:
-                        qtde = qtde + 1
                         vetYenergia.append(itemY.meta_energia) 
                         vetYagua.append(itemY.meta_agua)
                         #Esse 1 gera a constante do calculo
@@ -281,7 +332,6 @@ def gerarConstantes(energia_semana, energia_final, agua_semana, agua_final):
             if itemY.data.weekday() >= 5:
                 for itemC in clima:
                     if itemY.data == itemC.data and itemY.hora == itemC.hora:
-                        qtde = qtde + 1
                         vetYenergia.append(itemY.meta_energia) 
                         vetYagua.append(itemY.meta_agua)
                         #Esse 1 gera a constante do calculo
@@ -437,16 +487,14 @@ def analisarPrecisao(energia_semana, energia_final, agua_semana, agua_final):
                             if coeficiente.semana and coeficiente.energia:
                                 total_sem_ene = total_sem_ene + 1
                                 energia = coeficiente.constante + (item.temperatura * coeficiente.temperatura) + (item.umidade * coeficiente.umidade) + (item.vento * coeficiente.vento) + (item.pressao * coeficiente.pressao) + (item.chuva * coeficiente.chuva)
-                                
-                                print("Esperado {} obtido {}".format(resultado.meta_energia, energia))
 
-                                if resultado.meta_energia == energia:
+                                if resultado.meta_energia == round(energia):
                                     acerto_sem_ene = acerto_sem_ene + 1
                             elif coeficiente.semana and coeficiente.energia is False:
                                 total_sem_agua = total_sem_agua + 1
                                 agua = coeficiente.constante + (item.temperatura * coeficiente.temperatura) + (item.umidade * coeficiente.umidade) + (item.vento * coeficiente.vento) + (item.pressao * coeficiente.pressao) + (item.chuva * coeficiente.chuva)
                                 
-                                if resultado.meta_agua == agua:
+                                if resultado.meta_agua == round(agua):
                                     acerto_sem_agua = acerto_sem_agua + 1
                     else:
                         for coeficiente in coeficientes:
@@ -454,13 +502,13 @@ def analisarPrecisao(energia_semana, energia_final, agua_semana, agua_final):
                                 total_fin_ene = total_fin_ene + 1
                                 energia = coeficiente.constante + (item.temperatura * coeficiente.temperatura) + (item.umidade * coeficiente.umidade) + (item.vento * coeficiente.vento) + (item.pressao * coeficiente.pressao) + (item.chuva * coeficiente.chuva)
                             
-                                if resultado.meta_energia == energia:
+                                if resultado.meta_energia == round(energia):
                                     acerto_fin_ene = acerto_fin_ene + 1
                             elif coeficiente.semana  is False and coeficiente.energia is False:
                                 total_fin_agua = total_fin_agua + 1
                                 agua = coeficiente.constante + (item.temperatura * coeficiente.temperatura) + (item.umidade * coeficiente.umidade) + (item.vento * coeficiente.vento) + (item.pressao * coeficiente.pressao) + (item.chuva * coeficiente.chuva)
 
-                                if resultado.meta_energia == energia:
+                                if resultado.meta_agua == round(agua):
                                     acerto_fin_agua = acerto_fin_agua + 1
 
         perc = (acerto_sem_ene * 100) / total_sem_ene
@@ -499,6 +547,5 @@ def analisarPrecisao(energia_semana, energia_final, agua_semana, agua_final):
         total = total + total_sem_agua + total_sem_ene + total_fin_agua + total_fin_ene           
     
     perc = (acertos * 100) / total
-    print("taxa de acerto {}".format(perc))
     GrupoCoeficiente.objects.filter(id=grupo.id).update(precisao = perc)
 

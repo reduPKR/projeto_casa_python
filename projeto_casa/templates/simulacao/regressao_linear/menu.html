@@ -3,29 +3,9 @@
 {% block content %}
     <div align='center'>
         <br>
-        <h3><i class="fas fa-home"></i> Seleção dos coeficientes </h3><br>
+        <h3><i class="fas fa-home"></i> Regressão linear multipla </h3><br>
         <div class="container">
             <div class="row">
-                <div class="col col-6 col-sm-6 col-md-4 col-lg-5 col-xs-4 container box-gray">
-                    <br>
-                    <strong style="float: left;">Nome: {{casa.nome}} </strong>
-                    <br>
-                    <strong style="float: left;">Mes: {{mes.mes}} </strong>
-                    <br>
-                    <strong style="float: left;">Energia mes: {{mes.energia}} Kwh </strong>
-                    <strong >Água mes: {{mes.agua}} Litros</strong>
-                    <br>
-                    {% if mes.categoria != None %}
-                        <hr><br>
-                        <button type="submit" class="btn btn-warning btn-block">
-                            <i class="fas fa-wave-square"></i> Gerar coeficiente
-                        </button>
-                    {% endif %}
-                    <hr>
-                    <a type="button" class="btn btn-warning"style="position: absolute; left: 10px;" href="/simular/algoritmos/?casa_id={{casa.id}}&mes_id={{mes.id}}">
-                        <i class='fas fa-arrow-alt-circle-left'></i> Voltar
-                    </a><br><br>
-                </div>
                 <div class="col col-6 col-sm-6 col-md-4 col-lg-5 col-xs-4 container box-gray">
                     <br>
                     {% if executar %}
@@ -48,13 +28,13 @@
                         <div class="row">
                             <div class="col">
                                 <label>Semana </label>
-                                <input type="number" name="energia_semana" value="{{reduzir.energia_semana}}" min="1" max="30" required/>
-                                <label> % </label>
+                                <input type="number" name="energia_semana" value="{{reduzir.energia_semana}}" min="{{reduzir.energia_semana_min}}" max="{{reduzir.energia_semana}}" required/>
+                                <label> kWh </label>
                             </div>
                             <div class="col">
                                 <label> Fim de semana </label>
-                                <input type="number" name="energia_final" value="{{reduzir.energia_feriado}}" min="1" max="30"  required/>
-                                <label> % </label>
+                                <input type="number" name="energia_final" value="{{reduzir.energia_feriado}}" min="{{reduzir.energia_feriado_min}}" max="{{reduzir.energia_feriado}}"  required/>
+                                <label> kWh </label>
                             </div>
                         </div><br>
                         <div align="center">
@@ -63,13 +43,13 @@
                         <div class="row">
                             <div class="col">
                                 <label>Semana </label>
-                                <input type="number" name="agua_semana" value="{{reduzir.agua_semana}}" min="1"  max="30" required/>
-                                <label> % </label>
+                                <input type="number" name="agua_semana" value="{{reduzir.agua_semana}}" min="{{reduzir.agua_semana_min}}"  max="{{reduzir.agua_semana}}" required/>
+                                <label> Litros </label>
                             </div>
                             <div class="col">
                                 <label> Fim de semana </label>
-                                <input type="number" name="agua_final" value="{{reduzir.agua_feriado}}" min="1" max="30" required/>
-                                <label> % </label>
+                                <input type="number" name="agua_final" value="{{reduzir.agua_feriado}}" min="{{reduzir.agua_feriado_min}}" max="{{reduzir.agua_feriado}}" required/>
+                                <label> Litros</label>
                             </div>
                         </div><br>
                         <button type="submit" class="btn btn-warning btn-block">
@@ -77,6 +57,9 @@
                         </button>
                     </form>
                     <br>
+                    <a type="button" class="btn btn-warning"style="position: absolute; left: 10px;" href="/simular/algoritmos/?casa_id={{casa.id}}&mes_id={{mes.id}}">
+                        <i class='fas fa-arrow-alt-circle-left'></i> Voltar
+                    </a><br><br>
                 </div>
             </div>
         </div>
