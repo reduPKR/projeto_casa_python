@@ -17,21 +17,36 @@
                             <i class="fas fa-exclamation-triangle"></i>
                         </label>
                     {% else %}
-                        <label style="color: #30d646">
-                            <i class="fas fa-check-circle"></i>
-                            Etapa realizada
-                            <i class="fas fa-check-circle"></i>
-                        </label>
-                        <br><hr>
-                        <a type="button" class="btn btn-warning btn-block">
-                            <i class="fas fa-dna"></i> Gerar todos genes novos
-                        </a><br>
-                        <a type="button" class="btn btn-warning btn-block">
-                            <i class="fas fa-dna"></i> Gerar com um gene anterior
-                        </a><br>
-                        <a type="button" class="btn btn-warning btn-block">
-                            <i class="fas fa-dna"></i> Gerar com 10 genes anteriores
-                        </a>
+                        {% if grupos != None %}
+                            <strong>Coeficientes</strong>
+                            <form action="/genetico/novos" method="POST"> {% csrf_token %}
+                                <input type="text" name="casa_id" value="{{casa.id}}" hidden>
+                                <input type="text" name="mes_id" value="{{mes.id}}" hidden>
+                                <br>
+                                <div class="form-group">
+                                    <select class="form-control" name="grupo_id">
+                                        {% for item in grupos %}
+                                            <option value={{item.id}}>
+                                                Energia semana {{item.reduzir_energia_semana }}
+                                                Energia final de semana {{item.reduzir_energia_feriado}} | 
+                                                Agua semana {{item.reduzir_agua_semana }}
+                                                Agua final de semana {{item.reduzir_agua_feriado}}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <br>
+                                <button type="submit" name="acao" value="0"  type="button" class="btn btn-warning btn-block">
+                                    <i class="fas fa-dna"></i> Gerar todos genes novos
+                                </button><br>
+                                <button type="submit" name="acao" value="1"  class="btn btn-warning btn-block">
+                                    <i class="fas fa-dna"></i> Gerar com um gene anterior
+                                </button><br>
+                                <button type="submit" name="acao" value="10" class="btn btn-warning btn-block">
+                                    <i class="fas fa-dna"></i> Gerar com 10 genes anteriores
+                                </button>
+                            </form> 
+                        {% endif %}
                         <br><hr>
                     {% endif %}
                     <br>
