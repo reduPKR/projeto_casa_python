@@ -301,8 +301,8 @@ def selecao(comodo):
 def cruzamento(comodo):
     global genes
 
-    cromosomos = comodo['energia_semana'].copy()
     #Energia semana
+    cromosomos = comodo['energia_semana'].copy()
     while len(comodo['energia_semana']) > 0:
         pos = random.randint(0,len(comodo['energia_semana'])-1)
         gene1 = comodo['energia_semana'].pop(pos)
@@ -330,6 +330,8 @@ def cruzamento(comodo):
     comodo['energia_semana'] = cromosomos.copy()
 
     #agua semana
+    cromosomos.clear()
+    cromosomos = comodo['agua_semana'].copy()
     while len(comodo['agua_semana']) > 0:
         pos = random.randint(0,len(comodo['agua_semana'])-1)
         gene1 = comodo['agua_semana'].pop(pos)
@@ -357,6 +359,8 @@ def cruzamento(comodo):
     comodo['agua_semana'] = cromosomos.copy()
 
     #Energia final de semana
+    # cromosomos.clear() 
+    cromosomos = comodo['energia_feriado'].copy()
     while len(comodo['energia_feriado']) > 0:
         pos = random.randint(0,len(comodo['energia_feriado'])-1)
         gene1 = comodo['energia_feriado'].pop(pos)
@@ -384,6 +388,8 @@ def cruzamento(comodo):
     comodo['energia_feriado'] = cromosomos.copy()
 
     #Agua final de semana
+    cromosomos.clear()
+    cromosomos = comodo['agua_feriado'].copy()
     while len(comodo['agua_feriado']) > 0:
         pos = random.randint(0,len(comodo['agua_feriado'])-1)
         gene1 = comodo['agua_feriado'].pop(pos)
@@ -431,10 +437,10 @@ def percentualGeral(listaComodos):
     while pos < len(listaComodos):
         comodo = listaComodos[pos]
 
-        total += comodo['energia_semana'][0]['acerto']
-        total += comodo['agua_semana'][0]['acerto']
-        total += comodo['energia_feriado'][0]['acerto']
-        total += comodo['agua_feriado'][0]['acerto']
+        total += float(comodo['energia_semana'][0]['acerto'])
+        total += float(comodo['agua_semana'][0]['acerto'])
+        total += float(comodo['energia_feriado'][0]['acerto'])
+        total += float(comodo['agua_feriado'][0]['acerto'])
         
         pos += 1
     
