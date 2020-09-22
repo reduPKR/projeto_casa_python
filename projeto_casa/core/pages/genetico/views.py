@@ -4,7 +4,8 @@ from datetime import date
 import random
 import time
 
-genes = 10
+genes = 1000
+percParada = 90
 casa = None
 mes = None
 grupo = None
@@ -50,7 +51,7 @@ def Exibir(request):
 
     return render(request, 'simulacao/genetico/menu.html',dados)
 
-def gerarLista(request):
+def genetico(request):
     global casa
     global mes
     global listaComodos
@@ -224,86 +225,218 @@ def gerarAnalise():
 def executarGenetico():
     pos = 0 #comodo
     perc = 0 #media de acerto de todos comodos
-    repet = 0 #vezes executadas
+    geracao = 0 #vezes executadas
 
-    while perc < 90 and repet < 100:
+    while perc < percParada and geracao < 100:
         while pos < len(listaComodos):
-            calcularAptidao(listaComodos[pos])
+            calcularAptidao(listaComodos[pos],listaSemana[pos],listaFinalSemana[pos])
             selecao(listaComodos[pos]) #elimina 50% com piores reultados
-            #cruzamento()
+            cruzamento(listaComodos[pos])
 
             pos += 1
-        repet += 1
+        perc = percentualGeral(listaComodos)
+        geracao += 1
+        pos = 0
+        print("Geraçao {} Tx. acerto{}".format(geracao,perc))
 
-def calcularAptidao(comodo):
-    global listaSemana
-    global listaFinalSemana
+def calcularAptidao(comodo,listaSemana,listaFinalSemana):
     total = len(listaSemana)
+    if comodo['energia_semana'][0]['acerto'] > percParada:
+        for item in comodo['energia_semana']:
+            perc = acerto = 0
 
-    for item in comodo['energia_semana']:
-        perc = acerto = 0
-       
-        if item['acerto'] >= 90:
-            print(item)
-            for semana in listaSemana:
-                print(semana)
+            for semana in listaSemana:        
                 resp = item['temperatura'] * semana['temperatura'] + item['umidade'] * semana['umidade'] + item['vento'] * semana['vento'] + item['pressao'] * semana['pressao'] + item['chuva'] * semana['chuva']
-                print(round(resp))
-            time.sleep(300)
-
-        for semana in listaSemana:        
-            resp = item['temperatura'] * semana['temperatura'] + item['umidade'] * semana['umidade'] + item['vento'] * semana['vento'] + item['pressao'] * semana['pressao'] + item['chuva'] * semana['chuva']
-            if semana['energia'] == round(resp):
-                acerto += 1
-        perc = acerto * 100 / total
-        item['acerto'] = perc
+                if semana['energia'] == round(resp):
+                    acerto += 1
+            perc = acerto * 100 / total
+            item['acerto'] = perc
     
-    for item in comodo['agua_semana']:
-        perc = acerto = 0
-        for semana in listaSemana:        
-            resp = item['temperatura'] * semana['temperatura'] + item['umidade'] * semana['umidade'] + item['vento'] * semana['vento'] + item['pressao'] * semana['pressao'] + item['chuva'] * semana['chuva']
-            if semana['energia'] == round(resp):
-                acerto += 1
-        perc = acerto * 100 / total
-        item['acerto'] = perc
+    if comodo['agua_semana'][0]['acerto'] > percParada:
+        for item in comodo['agua_semana']:
+            perc = acerto = 0
+            for semana in listaSemana:        
+                resp = item['temperatura'] * semana['temperatura'] + item['umidade'] * semana['umidade'] + item['vento'] * semana['vento'] + item['pressao'] * semana['pressao'] + item['chuva'] * semana['chuva']
+                if semana['agua'] == round(resp):
+                    acerto += 1
+            perc = acerto * 100 / total
+            item['acerto'] = perc
 
-    for item in comodo['energia_feriado']:
-        perc = acerto = 0
-        for semana in listaSemana:        
-            resp = item['temperatura'] * semana['temperatura'] + item['umidade'] * semana['umidade'] + item['vento'] * semana['vento'] + item['pressao'] * semana['pressao'] + item['chuva'] * semana['chuva']
-            if semana['energia'] == round(resp):
-                acerto += 1
-        perc = acerto * 100 / total
-        item['acerto'] = perc
-    
-    for item in comodo['agua_feriado']:
-        perc = acerto = 0
-        for semana in listaSemana:        
-            resp = item['temperatura'] * semana['temperatura'] + item['umidade'] * semana['umidade'] + item['vento'] * semana['vento'] + item['pressao'] * semana['pressao'] + item['chuva'] * semana['chuva']
-            if semana['energia'] == round(resp):
-                acerto += 1
-        perc = acerto * 100 / total
-        item['acerto'] = perc
-    
+    total = len(listaFinalSemana)
 
-    # for item in comodo['energia_semana']:
-    #     print(item)
+    if comodo['energia_feriado'][0]['acerto'] > percParada:
+        for item in comodo['energia_feriado']:
+            perc = acerto = 0
+            for final in listaFinalSemana:        
+                resp = item['temperatura'] * final['temperatura'] + item['umidade'] * final['umidade'] + item['vento'] * final['vento'] + item['pressao'] * final['pressao'] + item['chuva'] * final['chuva']
+                if semana['energia'] == round(resp):
+                    acerto += 1
+            perc = acerto * 100 / total
+            item['acerto'] = perc
+    
+    if comodo['agua_feriado'][0]['acerto'] > percParada:
+        for item in comodo['agua_feriado']:
+            perc = acerto = 0
+            for  final in listaFinalSemana:        
+                resp = item['temperatura'] * final['temperatura'] + item['umidade'] * final['umidade'] + item['vento'] * final['vento'] + item['pressao'] * final['pressao'] + item['chuva'] * final['chuva']
+                if semana['agua'] == round(resp):
+                    acerto += 1
+            perc = acerto * 100 / total
+            item['acerto'] = perc
 
     comodo['energia_semana'] = sorted(comodo['energia_semana'], key=lambda row:row['acerto'], reverse=True)
     comodo['agua_semana'] = sorted(comodo['agua_semana'], key=lambda row:row['acerto'], reverse=True)
     comodo['energia_feriado'] = sorted(comodo['energia_feriado'], key=lambda row:row['acerto'], reverse=True)
     comodo['agua_feriado'] = sorted(comodo['agua_feriado'], key=lambda row:row['acerto'], reverse=True)
- 
-    # for item in comodo['energia_semana']:
-    #     print(item)
-    # time.sleep(300)
 
 def selecao(comodo):
     global genes
 
-    while len(comodo['energia_semana']) > genes/2:
+    while len(comodo['energia_semana']) > genes * .4:
         comodo['energia_semana'].pop()
         comodo['agua_semana'].pop()
         comodo['energia_feriado'].pop()
         comodo['agua_feriado'].pop()
+        
+def cruzamento(comodo):
+    global genes
+
+    cromosomos = comodo['energia_semana'].copy()
+    #Energia semana
+    while len(comodo['energia_semana']) > 0:
+        pos = random.randint(0,len(comodo['energia_semana'])-1)
+        gene1 = comodo['energia_semana'].pop(pos)
+
+        pos = random.randint(0,len(comodo['energia_semana'])-1)
+        gene2 = comodo['energia_semana'].pop(pos)
+
+        filho1 = {'acerto': 0, 
+            'temperatura': (gene1['temperatura'] * .6) + (gene2['temperatura'] * .4),
+            'umidade': (gene1['umidade'] * .6) + (gene2['umidade'] * .4),
+            'vento': (gene1['vento'] * .6) + (gene2['vento'] * .4),
+            'pressao': (gene1['pressao'] * .6) + (gene2['pressao'] * .4),
+            'chuva': (gene1['chuva'] * .6) + (gene2['chuva'] * .4)}
+
+        filho2 = {'acerto': 0, 
+            'temperatura': (gene1['temperatura'] * .4) + (gene2['temperatura'] * .6),
+            'umidade': (gene1['umidade'] * .4) + (gene2['umidade'] * .6),
+            'vento': (gene1['vento'] * .4) + (gene2['vento'] * .6),
+            'pressao': (gene1['pressao'] * .4) + (gene2['pressao'] * .6),
+            'chuva': (gene1['chuva'] * .4) + (gene2['chuva'] * .6)}
+
+        cromosomos.append(filho1)
+        cromosomos.append(filho2)
+
+    comodo['energia_semana'] = cromosomos.copy()
+
+    #agua semana
+    while len(comodo['agua_semana']) > 0:
+        pos = random.randint(0,len(comodo['agua_semana'])-1)
+        gene1 = comodo['agua_semana'].pop(pos)
+
+        pos = random.randint(0,len(comodo['agua_semana'])-1)
+        gene2 = comodo['agua_semana'].pop(pos)
+
+        filho1 = {'acerto': 0, 
+            'temperatura': (gene1['temperatura'] * .6) + (gene2['temperatura'] * .4),
+            'umidade': (gene1['umidade'] * .6) + (gene2['umidade'] * .4),
+            'vento': (gene1['vento'] * .6) + (gene2['vento'] * .4),
+            'pressao': (gene1['pressao'] * .6) + (gene2['pressao'] * .4),
+            'chuva': (gene1['chuva'] * .6) + (gene2['chuva'] * .4)}
+
+        filho2 = {'acerto': 0, 
+            'temperatura': (gene1['temperatura'] * .4) + (gene2['temperatura'] * .6),
+            'umidade': (gene1['umidade'] * .4) + (gene2['umidade'] * .6),
+            'vento': (gene1['vento'] * .4) + (gene2['vento'] * .6),
+            'pressao': (gene1['pressao'] * .4) + (gene2['pressao'] * .6),
+            'chuva': (gene1['chuva'] * .4) + (gene2['chuva'] * .6)}
+
+        cromosomos.append(filho1)
+        cromosomos.append(filho2)
+
+    comodo['agua_semana'] = cromosomos.copy()
+
+    #Energia final de semana
+    while len(comodo['energia_feriado']) > 0:
+        pos = random.randint(0,len(comodo['energia_feriado'])-1)
+        gene1 = comodo['energia_feriado'].pop(pos)
+
+        pos = random.randint(0,len(comodo['energia_feriado'])-1)
+        gene2 = comodo['energia_feriado'].pop(pos)
+
+        filho1 = {'acerto': 0, 
+            'temperatura': (gene1['temperatura'] * .6) + (gene2['temperatura'] * .4),
+            'umidade': (gene1['umidade'] * .6) + (gene2['umidade'] * .4),
+            'vento': (gene1['vento'] * .6) + (gene2['vento'] * .4),
+            'pressao': (gene1['pressao'] * .6) + (gene2['pressao'] * .4),
+            'chuva': (gene1['chuva'] * .6) + (gene2['chuva'] * .4)}
+
+        filho2 = {'acerto': 0, 
+            'temperatura': (gene1['temperatura'] * .4) + (gene2['temperatura'] * .6),
+            'umidade': (gene1['umidade'] * .4) + (gene2['umidade'] * .6),
+            'vento': (gene1['vento'] * .4) + (gene2['vento'] * .6),
+            'pressao': (gene1['pressao'] * .4) + (gene2['pressao'] * .6),
+            'chuva': (gene1['chuva'] * .4) + (gene2['chuva'] * .6)}
+
+        cromosomos.append(filho1)
+        cromosomos.append(filho2)
+
+    comodo['energia_feriado'] = cromosomos.copy()
+
+    #Agua final de semana
+    while len(comodo['agua_feriado']) > 0:
+        pos = random.randint(0,len(comodo['agua_feriado'])-1)
+        gene1 = comodo['agua_feriado'].pop(pos)
+
+        pos = random.randint(0,len(comodo['agua_feriado'])-1)
+        gene2 = comodo['agua_feriado'].pop(pos)
+
+        filho1 = {'acerto': 0, 
+            'temperatura': (gene1['temperatura'] * .6) + (gene2['temperatura'] * .4),
+            'umidade': (gene1['umidade'] * .6) + (gene2['umidade'] * .4),
+            'vento': (gene1['vento'] * .6) + (gene2['vento'] * .4),
+            'pressao': (gene1['pressao'] * .6) + (gene2['pressao'] * .4),
+            'chuva': (gene1['chuva'] * .6) + (gene2['chuva'] * .4)}
+
+        filho2 = {'acerto': 0, 
+            'temperatura': (gene1['temperatura'] * .4) + (gene2['temperatura'] * .6),
+            'umidade': (gene1['umidade'] * .4) + (gene2['umidade'] * .6),
+            'vento': (gene1['vento'] * .4) + (gene2['vento'] * .6),
+            'pressao': (gene1['pressao'] * .4) + (gene2['pressao'] * .6),
+            'chuva': (gene1['chuva'] * .4) + (gene2['chuva'] * .6)}
+
+        cromosomos.append(filho1)
+        cromosomos.append(filho2)
+
+    comodo['agua_feriado'] = cromosomos.copy()
+
+    while len(comodo['energia_semana']) < genes:
+        tipo = random.randint(0,10)
+
+        if tipo < 5:
+            valores = {'acerto': 0, 'temperatura': random.random() , 'umidade': random.random() , 'vento': random.random() , 'pressao': random.random() , 'chuva': random.random() }
+        elif tipo < 8:
+            valores = {'acerto': 0, 'temperatura': random.random() * 10 , 'umidade': random.random() * 10 , 'vento': random.random() * 10 , 'pressao': random.random() * 10 , 'chuva': random.random() * 10 }
+        else:
+            valores = {'acerto': 0, 'temperatura': random.random() * 100 , 'umidade': random.random() * 100 , 'vento': random.random() * 100 , 'pressao': random.random() * 100 , 'chuva': random.random() * 100 }
+
+        comodo['energia_semana'].append(valores)
+        comodo['agua_semana'].append(valores)
+        comodo['energia_feriado'].append(valores)
+        comodo['agua_feriado'].append(valores)
+
+def percentualGeral(listaComodos):
+    total = 0
+    pos = 0
+    while pos < len(listaComodos):
+        comodo = listaComodos[pos]
+
+        total += comodo['energia_semana'][0]['acerto']
+        total += comodo['agua_semana'][0]['acerto']
+        total += comodo['energia_feriado'][0]['acerto']
+        total += comodo['agua_feriado'][0]['acerto']
+        
+        pos += 1
+    
+    return total / (len(listaComodos)*4)
         

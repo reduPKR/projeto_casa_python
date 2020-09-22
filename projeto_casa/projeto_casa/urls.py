@@ -88,7 +88,7 @@ urlpatterns = [
 
     #Algoritmo genetico
     path('genetico/', genetico.Exibir),
-    path('genetico/novos', genetico.gerarLista),
+    path('genetico/novos', genetico.genetico),
 
 
 ]

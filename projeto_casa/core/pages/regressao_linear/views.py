@@ -287,7 +287,6 @@ def gerarConstantes(energia_semana, energia_final, agua_semana, agua_final):
                         vetYagua.append(itemY.meta_agua)
                         #Esse 1 gera a constante do calculo
                         matClima.append([
-                            0,
                             itemC.temperatura,
                             itemC.umidade,
                             itemC.vento,
@@ -309,12 +308,11 @@ def gerarConstantes(energia_semana, energia_final, agua_semana, agua_final):
             grupo = grupo,
             energia =True,
             semana = True,
-            constante = energiaB[0],
-            temperatura = energiaB[1],
-            umidade = energiaB[2],
-            vento = energiaB[3],
-            pressao = energiaB[4],
-            chuva = energiaB[5]
+            temperatura = energiaB[0],
+            umidade = energiaB[1],
+            vento = energiaB[2],
+            pressao = energiaB[3],
+            chuva = energiaB[4]
         )
 
         Coeficiente.objects.create(
@@ -322,12 +320,11 @@ def gerarConstantes(energia_semana, energia_final, agua_semana, agua_final):
             grupo = grupo,
             energia = False,
             semana = True,
-            constante = aguaB[0],
-            temperatura = aguaB[1],
-            umidade = aguaB[2],
-            vento = aguaB[3],
-            pressao = aguaB[4],
-            chuva = aguaB[5]
+            temperatura = aguaB[0],
+            umidade = aguaB[1],
+            vento = aguaB[2],
+            pressao = aguaB[3],
+            chuva = aguaB[4]
         )
 
         #Cria as constantes do final de semana
@@ -339,7 +336,6 @@ def gerarConstantes(energia_semana, energia_final, agua_semana, agua_final):
                         vetYagua.append(itemY.meta_agua)
                         #Esse 1 gera a constante do calculo
                         matClima.append([
-                            0,
                             itemC.temperatura,
                             itemC.umidade,
                             itemC.vento,
@@ -361,12 +357,11 @@ def gerarConstantes(energia_semana, energia_final, agua_semana, agua_final):
             grupo = grupo,
             energia =True,
             semana = False,
-            constante = energiaB[0],
-            temperatura = energiaB[1],
-            umidade = energiaB[2],
-            vento = energiaB[3],
-            pressao = energiaB[4],
-            chuva = energiaB[5]
+            temperatura = energiaB[0],
+            umidade = energiaB[1],
+            vento = energiaB[2],
+            pressao = energiaB[3],
+            chuva = energiaB[4]
         )
 
         Coeficiente.objects.create(
@@ -374,12 +369,11 @@ def gerarConstantes(energia_semana, energia_final, agua_semana, agua_final):
             grupo = grupo,
             energia = False,
             semana = False,
-            constante = aguaB[0],
-            temperatura = aguaB[1],
-            umidade = aguaB[2],
-            vento = aguaB[3],
-            pressao = aguaB[4],
-            chuva = aguaB[5]
+            temperatura = aguaB[0],
+            umidade = aguaB[1],
+            vento = aguaB[2],
+            pressao = aguaB[3],
+            chuva = aguaB[4]
         )
    
 def teste():
