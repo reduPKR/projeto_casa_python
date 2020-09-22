@@ -4,7 +4,7 @@ from datetime import date
 import random
 import time
 
-genes = 100000
+genes = 1000
 percParada = 95
 casa = None
 mes = None
@@ -77,6 +77,24 @@ def genetico(request):
 
     return redirect('/genetico/?casa_id=1&mes_id=1')
 
+def sortearValor():
+    tipo = random.randint(0,100)
+    if tipo < 60:
+        valores = {'acerto': 0, 'temperatura': random.random() , 'umidade': random.random() , 'vento': random.random() , 'pressao': random.random() , 'chuva': random.random() }
+    elif tipo < 80:
+        valores = {'acerto': 0, 'temperatura': random.random() * 10 , 'umidade': random.random() * 10 , 'vento': random.random() * 10 , 'pressao': random.random() * 10 , 'chuva': random.random() * 10 }
+    elif tipo < 90:
+        valores = {'acerto': 0, 'temperatura': random.random() * 100 , 'umidade': random.random() * 100 , 'vento': random.random() * 100 , 'pressao': random.random() * 100 , 'chuva': random.random() * 100 }
+    else:
+        tipo = random.randint(0,100)
+        if tipo < 50:
+            valores = {'acerto': 0, 'temperatura':  .5 - random.random() , 'umidade':  .5 - random.random() , 'vento':  .5 - random.random() , 'pressao':  .5 - random.random() , 'chuva':  .5 - random.random() }
+        elif tipo < 70:
+            valores = {'acerto': 0, 'temperatura': 10  - random.random() * 20 , 'umidade': 10  - random.random() * 20 , 'vento': 10  - random.random() * 20 , 'pressao': 10  - random.random() * 20 , 'chuva': 10  - random.random() * 20 }
+        else:
+            valores = {'acerto': 0, 'temperatura': 100 - random.random() * 200 , 'umidade': 100 - random.random() * 200 , 'vento': 100 - random.random() * 200 , 'pressao': 100 - random.random() * 200 , 'chuva': 100 - random.random() * 200 }
+    return valores
+
 def gerar1():
     global genes
 
@@ -90,22 +108,7 @@ def gerar1():
         agua_feriado = []
 
         for i in range(genes):
-            tipo = random.randint(0,100)
-
-            if tipo < 60:
-                valores = {'acerto': 0, 'temperatura': random.random() , 'umidade': random.random() , 'vento': random.random() , 'pressao': random.random() , 'chuva': random.random() }
-            elif tipo < 80:
-                valores = {'acerto': 0, 'temperatura': random.random() * 10 , 'umidade': random.random() * 10 , 'vento': random.random() * 10 , 'pressao': random.random() * 10 , 'chuva': random.random() * 10 }
-            elif tipo < 90:
-                valores = {'acerto': 0, 'temperatura': random.random() * 100 , 'umidade': random.random() * 100 , 'vento': random.random() * 100 , 'pressao': random.random() * 100 , 'chuva': random.random() * 100 }
-            else:
-                tipo = random.randint(0,100)
-                if tipo < 50:
-                    valores = {'acerto': 0, 'temperatura':  .5 - random.random() , 'umidade':  .5 - random.random() , 'vento':  .5 - random.random() , 'pressao':  .5 - random.random() , 'chuva':  .5 - random.random() }
-                elif tipo < 70:
-                    valores = {'acerto': 0, 'temperatura': 10  - random.random() * 20 , 'umidade': 10  - random.random() * 20 , 'vento': 10  - random.random() * 20 , 'pressao': 10  - random.random() * 20 , 'chuva': 10  - random.random() * 20 }
-                else:
-                    valores = {'acerto': 0, 'temperatura': 100 - random.random() * 200 , 'umidade': 100 - random.random() * 200 , 'vento': 100 - random.random() * 200 , 'pressao': 100 - random.random() * 200 , 'chuva': 100 - random.random() * 200 }
+            valores = sortearValor()
 
             energia_semana.append(valores)
             energia_feriado.append(valores)
@@ -162,24 +165,8 @@ def gerar2(qtde):
 
             dados = genes - len(energia_semana)
             for i in range(dados):
-                tipo = random.randint(0,100)
+                valores = sortearValor()
 
-                if tipo < 60:
-                    valores = {'acerto': 0, 'temperatura': random.random() , 'umidade': random.random() , 'vento': random.random() , 'pressao': random.random() , 'chuva': random.random() }
-                elif tipo < 80:
-                    valores = {'acerto': 0, 'temperatura': random.random() * 10 , 'umidade': random.random() * 10 , 'vento': random.random() * 10 , 'pressao': random.random() * 10 , 'chuva': random.random() * 10 }
-                elif tipo < 90:
-                    valores = {'acerto': 0, 'temperatura': random.random() * 100 , 'umidade': random.random() * 100 , 'vento': random.random() * 100 , 'pressao': random.random() * 100 , 'chuva': random.random() * 100 }
-                else:
-                    tipo = random.randint(0,100)
-                    if tipo < 50:
-                        valores = {'acerto': 0, 'temperatura':  .5 - random.random() , 'umidade':  .5 - random.random() , 'vento':  .5 - random.random() , 'pressao':  .5 - random.random() , 'chuva':  .5 - random.random() }
-                    elif tipo < 70:
-                        valores = {'acerto': 0, 'temperatura': 10  - random.random() * 20 , 'umidade': 10  - random.random() * 20 , 'vento': 10  - random.random() * 20 , 'pressao': 10  - random.random() * 20 , 'chuva': 10  - random.random() * 20 }
-                    else:
-                        valores = {'acerto': 0, 'temperatura': 100 - random.random() * 200 , 'umidade': 100 - random.random() * 200 , 'vento': 100 - random.random() * 200 , 'pressao': 100 - random.random() * 200 , 'chuva': 100 - random.random() * 200 }
-
-                
                 energia_semana.append(valores)
                 energia_feriado.append(valores)
                 agua_semana.append(valores)
@@ -244,16 +231,19 @@ def executarGenetico():
     perc = 0 #media de acerto de todos comodos
     geracao = 0 #vezes executadas
 
-    while perc < percParada and geracao < 100:
-        while pos < len(listaComodos):
-            calcularAptidao(listaComodos[pos],listaSemana[pos],listaFinalSemana[pos])
-            selecao(listaComodos[pos]) #elimina 40% com piores reultados
-            cruzamento(listaComodos[pos])
+    while pos < len(listaComodos):
+        calcularAptidao(listaComodos[pos],listaSemana[pos],listaFinalSemana[pos])
+        pos += 1
 
+    while perc < percParada and geracao < 100:
+        pos = 0
+        while pos < len(listaComodos):
+            selecao(listaComodos[pos]) #elimina 90% com piores reultados
+            cruzamento(listaComodos[pos])
+            calcularAptidao(listaComodos[pos],listaSemana[pos],listaFinalSemana[pos])
             pos += 1
         perc = percentualGeral(listaComodos)
         geracao += 1
-        pos = 0
         print("Geraçao {} Tx. acerto {}".format(geracao,perc))
 
 def calcularAptidao(comodo,listaSemana,listaFinalSemana):
@@ -262,7 +252,6 @@ def calcularAptidao(comodo,listaSemana,listaFinalSemana):
     if comodo['energia_semana'][0]['acerto'] < 99:
         for item in comodo['energia_semana']:
             perc = acerto = 0
-
             for semana in listaSemana:        
                 resp = item['temperatura'] * semana['temperatura'] + item['umidade'] * semana['umidade'] + item['vento'] * semana['vento'] + item['pressao'] * semana['pressao'] + item['chuva'] * semana['chuva']
                 if semana['energia'] == round(resp):
@@ -309,176 +298,197 @@ def calcularAptidao(comodo,listaSemana,listaFinalSemana):
 
 def selecao(comodo):
     global genes
+    perc = .1
 
-    while len(comodo['energia_semana']) > genes * .4:
-        comodo['energia_semana'].pop()
-        comodo['agua_semana'].pop()
-        comodo['energia_feriado'].pop()
-        comodo['agua_feriado'].pop()
+    if comodo['energia_semana'][0]['acerto'] < 99 and comodo['agua_semana'][0]['acerto'] < 99 and comodo['energia_feriado'][0]['acerto'] < 99 and comodo['agua_feriado'][0]['acerto'] < 99:
+        while len(comodo['energia_semana']) > genes * perc:
+            comodo['energia_semana'].pop()
+            comodo['agua_semana'].pop()
+            comodo['energia_feriado'].pop()
+            comodo['agua_feriado'].pop()
+    else:
+        if comodo['energia_semana'][0]['acerto'] < 99:
+            while len(comodo['energia_semana']) > genes * perc:
+                comodo['energia_semana'].pop()
+
+        if comodo['agua_semana'][0]['acerto'] < 99:
+            while len(comodo['agua_semana']) > genes * perc:
+                comodo['agua_semana'].pop()
+
+        if comodo['energia_feriado'][0]['acerto'] < 99:
+            while len(comodo['energia_feriado']) > genes * perc:
+                comodo['energia_feriado'].pop()
+        
+        if comodo['agua_feriado'][0]['acerto'] < 99:
+            while len(comodo['agua_feriado']) > genes * perc:
+                comodo['agua_feriado'].pop()
         
 def cruzamento(comodo):
     global genes
 
     #Energia semana
-    cromosomos = comodo['energia_semana'].copy()
-    while len(comodo['energia_semana']) > 0:
-        pos = random.randint(0,len(comodo['energia_semana'])-1)
-        gene1 = comodo['energia_semana'].pop(pos)
+    if comodo['energia_semana'][0]['acerto'] < 99:             
+        cromosomos = comodo['energia_semana'].copy()
+        while len(comodo['energia_semana']) > 0:
+            pos = random.randint(0,len(comodo['energia_semana'])-1)
+            gene1 = comodo['energia_semana'].pop(pos)
 
-        pos = random.randint(0,len(comodo['energia_semana'])-1)
-        gene2 = comodo['energia_semana'].pop(pos)
+            pos = random.randint(0,len(comodo['energia_semana'])-1)
+            gene2 = comodo['energia_semana'].pop(pos)
 
-        filho1 = {'acerto': 0, 
-            'temperatura': (gene1['temperatura'] * .6) + (gene2['temperatura'] * .4),
-            'umidade': (gene1['umidade'] * .6) + (gene2['umidade'] * .4),
-            'vento': (gene1['vento'] * .6) + (gene2['vento'] * .4),
-            'pressao': (gene1['pressao'] * .6) + (gene2['pressao'] * .4),
-            'chuva': (gene1['chuva'] * .6) + (gene2['chuva'] * .4)}
+            filho1 = {'acerto': 0, 
+                'temperatura': (gene1['temperatura'] * .6) + (gene2['temperatura'] * .4),
+                'umidade': (gene1['umidade'] * .6) + (gene2['umidade'] * .4),
+                'vento': (gene1['vento'] * .6) + (gene2['vento'] * .4),
+                'pressao': (gene1['pressao'] * .6) + (gene2['pressao'] * .4),
+                'chuva': (gene1['chuva'] * .6) + (gene2['chuva'] * .4)}
 
-        filho2 = {'acerto': 0, 
-            'temperatura': (gene1['temperatura'] * .4) + (gene2['temperatura'] * .6),
-            'umidade': (gene1['umidade'] * .4) + (gene2['umidade'] * .6),
-            'vento': (gene1['vento'] * .4) + (gene2['vento'] * .6),
-            'pressao': (gene1['pressao'] * .4) + (gene2['pressao'] * .6),
-            'chuva': (gene1['chuva'] * .4) + (gene2['chuva'] * .6)}
-        
-        chance = random.randint(0,1000)
-        if chance >= 995:
-            mutacao(filho1)
-        elif chance >= 990:
-            mutacao(filho2)
+            filho2 = {'acerto': 0, 
+                'temperatura': (gene1['temperatura'] * .4) + (gene2['temperatura'] * .6),
+                'umidade': (gene1['umidade'] * .4) + (gene2['umidade'] * .6),
+                'vento': (gene1['vento'] * .4) + (gene2['vento'] * .6),
+                'pressao': (gene1['pressao'] * .4) + (gene2['pressao'] * .6),
+                'chuva': (gene1['chuva'] * .4) + (gene2['chuva'] * .6)}
+            
+            chance = random.randint(0,1000)
+            if chance >= 995:
+                mutacao(filho1)
+            elif chance >= 990:
+                mutacao(filho2)
 
-        cromosomos.append(filho1)
-        cromosomos.append(filho2)
+            cromosomos.append(filho1)
+            cromosomos.append(filho2)
 
-    comodo['energia_semana'] = cromosomos.copy()
+        comodo['energia_semana'] = cromosomos.copy()
 
     #agua semana
-    cromosomos.clear()
-    cromosomos = comodo['agua_semana'].copy()
-    while len(comodo['agua_semana']) > 0:
-        pos = random.randint(0,len(comodo['agua_semana'])-1)
-        gene1 = comodo['agua_semana'].pop(pos)
+    if comodo['agua_semana'][0]['acerto'] < 99:
+        cromosomos.clear()
+        cromosomos = comodo['agua_semana'].copy()
+        while len(comodo['agua_semana']) > 0:
+            pos = random.randint(0,len(comodo['agua_semana'])-1)
+            gene1 = comodo['agua_semana'].pop(pos)
 
-        pos = random.randint(0,len(comodo['agua_semana'])-1)
-        gene2 = comodo['agua_semana'].pop(pos)
+            pos = random.randint(0,len(comodo['agua_semana'])-1)
+            gene2 = comodo['agua_semana'].pop(pos)
 
-        filho1 = {'acerto': 0, 
-            'temperatura': (gene1['temperatura'] * .6) + (gene2['temperatura'] * .4),
-            'umidade': (gene1['umidade'] * .6) + (gene2['umidade'] * .4),
-            'vento': (gene1['vento'] * .6) + (gene2['vento'] * .4),
-            'pressao': (gene1['pressao'] * .6) + (gene2['pressao'] * .4),
-            'chuva': (gene1['chuva'] * .6) + (gene2['chuva'] * .4)}
+            filho1 = {'acerto': 0, 
+                'temperatura': (gene1['temperatura'] * .6) + (gene2['temperatura'] * .4),
+                'umidade': (gene1['umidade'] * .6) + (gene2['umidade'] * .4),
+                'vento': (gene1['vento'] * .6) + (gene2['vento'] * .4),
+                'pressao': (gene1['pressao'] * .6) + (gene2['pressao'] * .4),
+                'chuva': (gene1['chuva'] * .6) + (gene2['chuva'] * .4)}
 
-        filho2 = {'acerto': 0, 
-            'temperatura': (gene1['temperatura'] * .4) + (gene2['temperatura'] * .6),
-            'umidade': (gene1['umidade'] * .4) + (gene2['umidade'] * .6),
-            'vento': (gene1['vento'] * .4) + (gene2['vento'] * .6),
-            'pressao': (gene1['pressao'] * .4) + (gene2['pressao'] * .6),
-            'chuva': (gene1['chuva'] * .4) + (gene2['chuva'] * .6)}
+            filho2 = {'acerto': 0, 
+                'temperatura': (gene1['temperatura'] * .4) + (gene2['temperatura'] * .6),
+                'umidade': (gene1['umidade'] * .4) + (gene2['umidade'] * .6),
+                'vento': (gene1['vento'] * .4) + (gene2['vento'] * .6),
+                'pressao': (gene1['pressao'] * .4) + (gene2['pressao'] * .6),
+                'chuva': (gene1['chuva'] * .4) + (gene2['chuva'] * .6)}
 
-        chance = random.randint(0,1000)
-        if chance >= 995:
-            mutacao(filho1)
-        elif chance >= 990:
-            mutacao(filho2)
+            chance = random.randint(0,1000)
+            if chance >= 995:
+                mutacao(filho1)
+            elif chance >= 990:
+                mutacao(filho2)
 
 
-        cromosomos.append(filho1)
-        cromosomos.append(filho2)
+            cromosomos.append(filho1)
+            cromosomos.append(filho2)
 
-    comodo['agua_semana'] = cromosomos.copy()
+        comodo['agua_semana'] = cromosomos.copy()
 
     #Energia final de semana
-    cromosomos.clear() 
-    cromosomos = comodo['energia_feriado'].copy()
-    while len(comodo['energia_feriado']) > 0:
-        pos = random.randint(0,len(comodo['energia_feriado'])-1)
-        gene1 = comodo['energia_feriado'].pop(pos)
+    if comodo['energia_feriado'][0]['acerto'] < 99:
+        cromosomos.clear() 
+        cromosomos = comodo['energia_feriado'].copy()
+        while len(comodo['energia_feriado']) > 0:
+            pos = random.randint(0,len(comodo['energia_feriado'])-1)
+            gene1 = comodo['energia_feriado'].pop(pos)
 
-        pos = random.randint(0,len(comodo['energia_feriado'])-1)
-        gene2 = comodo['energia_feriado'].pop(pos)
+            pos = random.randint(0,len(comodo['energia_feriado'])-1)
+            gene2 = comodo['energia_feriado'].pop(pos)
 
-        filho1 = {'acerto': 0, 
-            'temperatura': (gene1['temperatura'] * .6) + (gene2['temperatura'] * .4),
-            'umidade': (gene1['umidade'] * .6) + (gene2['umidade'] * .4),
-            'vento': (gene1['vento'] * .6) + (gene2['vento'] * .4),
-            'pressao': (gene1['pressao'] * .6) + (gene2['pressao'] * .4),
-            'chuva': (gene1['chuva'] * .6) + (gene2['chuva'] * .4)}
+            filho1 = {'acerto': 0, 
+                'temperatura': (gene1['temperatura'] * .6) + (gene2['temperatura'] * .4),
+                'umidade': (gene1['umidade'] * .6) + (gene2['umidade'] * .4),
+                'vento': (gene1['vento'] * .6) + (gene2['vento'] * .4),
+                'pressao': (gene1['pressao'] * .6) + (gene2['pressao'] * .4),
+                'chuva': (gene1['chuva'] * .6) + (gene2['chuva'] * .4)}
 
-        filho2 = {'acerto': 0, 
-            'temperatura': (gene1['temperatura'] * .4) + (gene2['temperatura'] * .6),
-            'umidade': (gene1['umidade'] * .4) + (gene2['umidade'] * .6),
-            'vento': (gene1['vento'] * .4) + (gene2['vento'] * .6),
-            'pressao': (gene1['pressao'] * .4) + (gene2['pressao'] * .6),
-            'chuva': (gene1['chuva'] * .4) + (gene2['chuva'] * .6)}
+            filho2 = {'acerto': 0, 
+                'temperatura': (gene1['temperatura'] * .4) + (gene2['temperatura'] * .6),
+                'umidade': (gene1['umidade'] * .4) + (gene2['umidade'] * .6),
+                'vento': (gene1['vento'] * .4) + (gene2['vento'] * .6),
+                'pressao': (gene1['pressao'] * .4) + (gene2['pressao'] * .6),
+                'chuva': (gene1['chuva'] * .4) + (gene2['chuva'] * .6)}
 
-        chance = random.randint(0,1000)
-        if chance >= 995:
-            mutacao(filho1)
-        elif chance >= 990:
-            mutacao(filho2)
+            chance = random.randint(0,1000)
+            if chance >= 995:
+                mutacao(filho1)
+            elif chance >= 990:
+                mutacao(filho2)
 
-        cromosomos.append(filho1)
-        cromosomos.append(filho2)
+            cromosomos.append(filho1)
+            cromosomos.append(filho2)
 
-    comodo['energia_feriado'] = cromosomos.copy()
+        comodo['energia_feriado'] = cromosomos.copy()
 
     #Agua final de semana
-    cromosomos.clear()
-    cromosomos = comodo['agua_feriado'].copy()
-    while len(comodo['agua_feriado']) > 0:
-        pos = random.randint(0,len(comodo['agua_feriado'])-1)
-        gene1 = comodo['agua_feriado'].pop(pos)
+    if comodo['agua_feriado'][0]['acerto'] < 99:
+        cromosomos.clear()
+        cromosomos = comodo['agua_feriado'].copy()
+        while len(comodo['agua_feriado']) > 0:
+            pos = random.randint(0,len(comodo['agua_feriado'])-1)
+            gene1 = comodo['agua_feriado'].pop(pos)
 
-        pos = random.randint(0,len(comodo['agua_feriado'])-1)
-        gene2 = comodo['agua_feriado'].pop(pos)
+            pos = random.randint(0,len(comodo['agua_feriado'])-1)
+            gene2 = comodo['agua_feriado'].pop(pos)
 
-        filho1 = {'acerto': 0, 
-            'temperatura': (gene1['temperatura'] * .6) + (gene2['temperatura'] * .4),
-            'umidade': (gene1['umidade'] * .6) + (gene2['umidade'] * .4),
-            'vento': (gene1['vento'] * .6) + (gene2['vento'] * .4),
-            'pressao': (gene1['pressao'] * .6) + (gene2['pressao'] * .4),
-            'chuva': (gene1['chuva'] * .6) + (gene2['chuva'] * .4)}
+            filho1 = {'acerto': 0, 
+                'temperatura': (gene1['temperatura'] * .6) + (gene2['temperatura'] * .4),
+                'umidade': (gene1['umidade'] * .6) + (gene2['umidade'] * .4),
+                'vento': (gene1['vento'] * .6) + (gene2['vento'] * .4),
+                'pressao': (gene1['pressao'] * .6) + (gene2['pressao'] * .4),
+                'chuva': (gene1['chuva'] * .6) + (gene2['chuva'] * .4)}
 
-        filho2 = {'acerto': 0, 
-            'temperatura': (gene1['temperatura'] * .4) + (gene2['temperatura'] * .6),
-            'umidade': (gene1['umidade'] * .4) + (gene2['umidade'] * .6),
-            'vento': (gene1['vento'] * .4) + (gene2['vento'] * .6),
-            'pressao': (gene1['pressao'] * .4) + (gene2['pressao'] * .6),
-            'chuva': (gene1['chuva'] * .4) + (gene2['chuva'] * .6)}
+            filho2 = {'acerto': 0, 
+                'temperatura': (gene1['temperatura'] * .4) + (gene2['temperatura'] * .6),
+                'umidade': (gene1['umidade'] * .4) + (gene2['umidade'] * .6),
+                'vento': (gene1['vento'] * .4) + (gene2['vento'] * .6),
+                'pressao': (gene1['pressao'] * .4) + (gene2['pressao'] * .6),
+                'chuva': (gene1['chuva'] * .4) + (gene2['chuva'] * .6)}
 
-        chance = random.randint(0,1000)
-        if chance >= 995:
-            mutacao(filho1)
-        elif chance >= 990:
-            mutacao(filho2)
+            chance = random.randint(0,1000)
+            if chance >= 995:
+                mutacao(filho1)
+            elif chance >= 990:
+                mutacao(filho2)
 
-        cromosomos.append(filho1)
-        cromosomos.append(filho2)
+            cromosomos.append(filho1)
+            cromosomos.append(filho2)
 
-    comodo['agua_feriado'] = cromosomos.copy()
+        comodo['agua_feriado'] = cromosomos.copy()
+
+    completarPopulacao(comodo)
+
+def completarPopulacao(comodo):
+    global genes
 
     while len(comodo['energia_semana']) < genes:
-        tipo = random.randint(0,100)
-        if tipo < 60:
-            valores = {'acerto': 0, 'temperatura': random.random() , 'umidade': random.random() , 'vento': random.random() , 'pressao': random.random() , 'chuva': random.random() }
-        elif tipo < 80:
-            valores = {'acerto': 0, 'temperatura': random.random() * 10 , 'umidade': random.random() * 10 , 'vento': random.random() * 10 , 'pressao': random.random() * 10 , 'chuva': random.random() * 10 }
-        elif tipo < 90:
-            valores = {'acerto': 0, 'temperatura': random.random() * 100 , 'umidade': random.random() * 100 , 'vento': random.random() * 100 , 'pressao': random.random() * 100 , 'chuva': random.random() * 100 }
-        else:
-            tipo = random.randint(0,100)
-            if tipo < 50:
-                valores = {'acerto': 0, 'temperatura':  .5 - random.random() , 'umidade':  .5 - random.random() , 'vento':  .5 - random.random() , 'pressao':  .5 - random.random() , 'chuva':  .5 - random.random() }
-            elif tipo < 70:
-                valores = {'acerto': 0, 'temperatura': 10  - random.random() * 20 , 'umidade': 10  - random.random() * 20 , 'vento': 10  - random.random() * 20 , 'pressao': 10  - random.random() * 20 , 'chuva': 10  - random.random() * 20 }
-            else:
-                valores = {'acerto': 0, 'temperatura': 100 - random.random() * 200 , 'umidade': 100 - random.random() * 200 , 'vento': 100 - random.random() * 200 , 'pressao': 100 - random.random() * 200 , 'chuva': 100 - random.random() * 200 }
-
+        valores = sortearValor()
         comodo['energia_semana'].append(valores)
+    
+    while len(comodo['agua_semana']) < genes:
+        valores = sortearValor()
         comodo['agua_semana'].append(valores)
+
+    while len(comodo['energia_feriado']) < genes:
+        valores = sortearValor()
         comodo['energia_feriado'].append(valores)
+    
+    while len(comodo['agua_feriado']) < genes:
+        valores = sortearValor()
         comodo['agua_feriado'].append(valores)
 
 def percentualGeral(listaComodos):
@@ -498,7 +508,7 @@ def percentualGeral(listaComodos):
         
 def mutacao(filho):
     gene = random.randint(0,5)
-    valor = random.randint(0,100)
+    valor = random.random() * 100
 
     if gene == 0:
         filho['temperatura'] = valor - (random.random() * (valor * 2))
