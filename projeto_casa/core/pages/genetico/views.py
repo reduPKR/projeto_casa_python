@@ -28,7 +28,7 @@ def Exibir(request):
         data = date.today()
         data = data.replace(day=1)
         data = data.replace(year=2019)
-        comodo = Comodo.objects.filter(casa=casa).first();
+        comodo = Comodo.objects.filter(casa=casa).first()
         comodoY = ComodoValorY.objects.filter(comodo=comodo,data=data).first()
         if comodoY == None:
             executar = True
@@ -64,6 +64,7 @@ def genetico(request):
         acao = int(request.POST.get('acao'))
 
         grupo = GrupoCoeficiente.objects.get(id=grupo_id)
+
         if acao == 0:
             gerar1()
         else:
@@ -240,11 +241,13 @@ def executarGenetico():
         while pos < len(listaComodos):
             selecao(listaComodos[pos]) #elimina 90% com piores reultados
             cruzamento(listaComodos[pos])
-            calcularAptidao(listaComodos[pos],listaSemana[pos],listaFinalSemana[pos])
+            calcularAptidao(listaComodos[pos],listaSemana[pos],listaFinalSemana[pos]) 
             pos += 1
         perc = percentualGeral(listaComodos)
         geracao += 1
         print("Geraçao {} Tx. acerto {}".format(geracao,perc))
+
+    salvarResultados(listaComodos)
 
 def calcularAptidao(comodo,listaSemana,listaFinalSemana):
     total = len(listaSemana)
@@ -327,6 +330,7 @@ def cruzamento(comodo):
     global genes
 
     #Energia semana
+    cromosomos = []
     if comodo['energia_semana'][0]['acerto'] < 99:             
         cromosomos = comodo['energia_semana'].copy()
         while len(comodo['energia_semana']) > 0:
@@ -521,3 +525,79 @@ def mutacao(filho):
     else:
         filho['chuva'] = valor - (random.random() * (valor * 2))
         
+def salvarResultados(listaComodos):
+    global grupo
+    global casa
+
+    GrupoCoeficiente.objects.create(
+        casa = casa,
+        gerador = "Algoritmo genetico",
+        reduzir_agua_semana = grupo.reduzir_agua_semana,
+        reduzir_agua_feriado = grupo.reduzir_agua_feriado,
+        reduzir_energia_semana = grupo.reduzir_energia_semana,
+        reduzir_energia_feriado = grupo.reduzir_energia_feriado
+    )
+
+    novo = GrupoCoeficiente.objects.filter(
+        casa = casa,
+        gerador = "Algoritmo genetico",
+        reduzir_agua_semana = grupo.reduzir_agua_semana,
+        reduzir_agua_feriado = grupo.reduzir_agua_feriado,
+        reduzir_energia_semana = grupo.reduzir_energia_semana,
+        reduzir_energia_feriado = grupo.reduzir_energia_feriado
+    ).last()
+
+    comodos = Comodo.objects.filter(casa=casa)
+    pos = 0
+    for comodo in comodos:
+        dados = listaComodos[pos]
+
+        Coeficiente.objects.create(
+            comodo = comodo,
+            grupo = novo,
+            energia =True,
+            semana = True,
+            temperatura = dados['energia_semana'][0]['temperatura'],
+            umidade = dados['energia_semana'][0]['umidade'],
+            vento = dados['energia_semana'][0]['vento'],
+            pressao = dados['energia_semana'][0]['pressao'],
+            chuva = dados['energia_semana'][0]['chuva']
+        )
+
+        Coeficiente.objects.create(
+            comodo = comodo,
+            grupo = novo,
+            energia = False,
+            semana = True,
+            temperatura = dados['agua_semana'][0]['temperatura'],
+            umidade = dados['agua_semana'][0]['umidade'],
+            vento = dados['agua_semana'][0]['vento'],
+            pressao = dados['agua_semana'][0]['pressao'],
+            chuva = dados['agua_semana'][0]['chuva']
+        )
+
+        Coeficiente.objects.create(
+            comodo = comodo,
+            grupo = novo,
+            energia =True,
+            semana = False,
+            temperatura = dados['energia_feriado'][0]['temperatura'],
+            umidade = dados['energia_feriado'][0]['umidade'],
+            vento = dados['energia_feriado'][0]['vento'],
+            pressao = dados['energia_feriado'][0]['pressao'],
+            chuva = dados['energia_feriado'][0]['chuva']
+        )
+
+        Coeficiente.objects.create(
+            comodo = comodo,
+            grupo = novo,
+            energia = False,
+            semana = False,
+            temperatura = dados['agua_feriado'][0]['temperatura'],
+            umidade = dados['agua_feriado'][0]['umidade'],
+            vento = dados['agua_feriado'][0]['vento'],
+            pressao = dados['agua_feriado'][0]['pressao'],
+            chuva = dados['agua_feriado'][0]['chuva']
+        )
+        pos += 1
+

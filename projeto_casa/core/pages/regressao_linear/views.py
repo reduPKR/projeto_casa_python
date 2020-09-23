@@ -78,6 +78,7 @@ def GerarCategorias(request):
         if energia_semana  > 0 and energia_final  > 0 and agua_semana  > 0 and agua_final > 0:
             grupo = GrupoCoeficiente.objects.filter(
                 casa = casa,
+                gerador = "Regresão linear",
                 reduzir_agua_semana = agua_semana,
                 reduzir_agua_feriado = agua_final,
                 reduzir_energia_semana = energia_semana,
@@ -261,6 +262,7 @@ def gerarConstantes(energia_semana, energia_final, agua_semana, agua_final):
 
     grupo = GrupoCoeficiente.objects.filter(
         casa = casa,
+        gerador = "Regresão linear",
         reduzir_agua_semana = agua_semana,
         reduzir_agua_feriado = agua_final,
         reduzir_energia_semana = energia_semana,
@@ -456,6 +458,7 @@ def multiplicarVetor(vet, mat):
 def analisarPrecisao(energia_semana, energia_final, agua_semana, agua_final):
     grupo = GrupoCoeficiente.objects.filter(
         casa = casa,
+        gerador = "Regresão linear",
         reduzir_agua_semana = agua_semana,
         reduzir_agua_feriado = agua_final,
         reduzir_energia_semana = energia_semana,
