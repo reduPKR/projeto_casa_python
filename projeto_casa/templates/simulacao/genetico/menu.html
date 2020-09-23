@@ -27,6 +27,8 @@
                                     <select class="form-control" name="grupo_id">
                                         {% for item in grupos %}
                                             <option value={{item.id}}>
+                                                {{item.gerador}}
+                                                acerto {{item.precisao}}% |
                                                 Energia semana {{item.reduzir_energia_semana }}
                                                 Energia final de semana {{item.reduzir_energia_feriado}} | 
                                                 Agua semana {{item.reduzir_agua_semana }}

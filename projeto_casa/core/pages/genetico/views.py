@@ -4,7 +4,7 @@ from datetime import date
 import random
 import time
 
-genes = 1000
+genes = 10000
 percParada = 95
 casa = None
 mes = None
@@ -141,8 +141,11 @@ def gerar2(qtde):
             agua_feriado = []
 
             comodo = comodos[pos]
-            coeficientes = Coeficiente.objects.filter(comodo=comodo,grupo=grupo)
-            
+            if qtde == 1:
+                coeficientes = Coeficiente.objects.filter(comodo=comodo,grupo=grupo)
+            else:
+                coeficientes = Coeficiente.objects.filter(comodo=comodo)
+
             for coeficiente in coeficientes:
                 if coeficiente.semana and coeficiente.energia:
                     energia_semana.append({'acerto': coeficiente.precisao, 'temperatura': coeficiente.temperatura , 'umidade': coeficiente.umidade , 'vento': coeficiente.vento , 'pressao': coeficiente.pressao , 'chuva': coeficiente.chuva })
@@ -163,7 +166,7 @@ def gerar2(qtde):
                 agua_semana.pop()
                 energia_feriado.pop()
                 agua_feriado.pop()
-
+                
             dados = genes - len(energia_semana)
             for i in range(dados):
                 valores = sortearValor()
@@ -247,7 +250,7 @@ def executarGenetico():
         geracao += 1
         print("Geraçao {} Tx. acerto {}".format(geracao,perc))
 
-    salvarResultados(listaComodos)
+    salvarResultados(listaComodos,perc)
 
 def calcularAptidao(comodo,listaSemana,listaFinalSemana):
     total = len(listaSemana)
@@ -525,13 +528,14 @@ def mutacao(filho):
     else:
         filho['chuva'] = valor - (random.random() * (valor * 2))
         
-def salvarResultados(listaComodos):
+def salvarResultados(listaComodos,perc):
     global grupo
     global casa
 
     GrupoCoeficiente.objects.create(
         casa = casa,
         gerador = "Algoritmo genetico",
+        precisao = perc,
         reduzir_agua_semana = grupo.reduzir_agua_semana,
         reduzir_agua_feriado = grupo.reduzir_agua_feriado,
         reduzir_energia_semana = grupo.reduzir_energia_semana,
@@ -555,6 +559,7 @@ def salvarResultados(listaComodos):
         Coeficiente.objects.create(
             comodo = comodo,
             grupo = novo,
+            precisao = dados['energia_semana'][0]['acerto'],
             energia =True,
             semana = True,
             temperatura = dados['energia_semana'][0]['temperatura'],
@@ -567,6 +572,7 @@ def salvarResultados(listaComodos):
         Coeficiente.objects.create(
             comodo = comodo,
             grupo = novo,
+            precisao = dados['agua_semana'][0]['acerto'],
             energia = False,
             semana = True,
             temperatura = dados['agua_semana'][0]['temperatura'],
@@ -579,6 +585,7 @@ def salvarResultados(listaComodos):
         Coeficiente.objects.create(
             comodo = comodo,
             grupo = novo,
+            precisao = dados['energia_feriado'][0]['acerto'],
             energia =True,
             semana = False,
             temperatura = dados['energia_feriado'][0]['temperatura'],
@@ -591,6 +598,7 @@ def salvarResultados(listaComodos):
         Coeficiente.objects.create(
             comodo = comodo,
             grupo = novo,
+            precisao = dados['agua_feriado'][0]['acerto'],
             energia = False,
             semana = False,
             temperatura = dados['agua_feriado'][0]['temperatura'],
