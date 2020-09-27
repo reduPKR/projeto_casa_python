@@ -84,13 +84,17 @@ def GerarCategorias(request):
                 reduzir_energia_semana = energia_semana,
                 reduzir_energia_feriado = energia_final
             )
-
+            
             if grupo.count() == 0:
                 ini = time.time()
                 gerarPadrao(energia_semana, energia_final, agua_semana, agua_final)
+                fim = time.time()
+                print("Tempo estabelecer entrada x saida {}".format(fim-ini))
+
+                ini = time.time()
                 gerarConstantes(energia_semana, energia_final, agua_semana, agua_final)       
                 fim = time.time()
-                print("Tempo cadastro {}".format(fim-ini))
+                print("Tempo treino dos neuronios{}".format(fim-ini))
 
                 ini = time.time()
                 analisarPrecisao(energia_semana, energia_final, agua_semana, agua_final) 

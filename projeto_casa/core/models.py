@@ -74,7 +74,6 @@ class ComodoSaida(models.Model):
 
     comodo = models.ForeignKey(Comodo, on_delete=models.CASCADE)
     saida = models.ForeignKey(Saida, on_delete=models.CASCADE)
-    #equipamento = models.ForeignKey(Equipamento, on_delete=models.CASCADE, null=True)
     comodo_equipamento = models.ForeignKey(ComodoEquipamento,on_delete=models.CASCADE,null=True)
     essencial = models.BooleanField(default=False)
     status = models.BooleanField(default=True)
@@ -119,6 +118,15 @@ class ConsumoHora(models.Model):
 
     class Meta:
         db_table = 'consumo_hora'
+
+class consumoHoraManual(models.Model):
+    #Aqui registra a lista de horarios que um equipamento fica ligados
+    comodo_saida = models.ForeignKey(ComodoSaida,on_delete=models.CASCADE)
+    hora_liga = models.IntegerField()
+    hora_desliga = models.IntegerField()
+
+    class Meta:
+        db_table = 'consumo_hora_manual'
 
 class Clima(models.Model):
     data = models.DateField()

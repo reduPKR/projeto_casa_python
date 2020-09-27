@@ -33,50 +33,36 @@ def Gerar(request):
 
     return render(request, 'gerador_testes/gerar.html',dados)
 
-def GerarMes(request):
+def GerarManual(request):
     id = request.GET.get('id')
     if id:
         casa = Casa.objects.get(id=id)
         #ConsumoMes.objects.filter(casa=casa).delete()
         ini = time.time()
-        GerarTestes(casa, 0)   
+        #GerarTestes(casa, 0)   
         fim = time.time()
         print("Tempo {}".format(fim-ini))
 
         excluirCoeficientes(casa)
     return redirect('/gerar-testes/gerar/?id={}'.format(id))
 
-def GerarAno(request):
+def GerarAutomatico(request):
     id = request.GET.get('id')
     if id:
         casa = Casa.objects.get(id=id)
         #ConsumoMes.objects.filter(casa=casa).delete()
-
         for i in range(12):
-            #ini = time.time()
-            GerarTestes(casa, i+1)
-            #fim = time.time()
-            mes = getMes(i)
-        
+            GerarTestesAutomatico(casa, date(2019,i+1,1))
+                  
         excluirCoeficientes(casa)
     return redirect('/gerar-testes/gerar/?id={}'.format(id))
 
-def GerarTestes(casa, inicial):
-    inicio = fim = date.today()
-    inicio = inicio.replace(day=1)
-    fim = fim.replace(day=1)
-    #O banco de dados que eu obtive foi de 2019
-    inicio = inicio.replace(year=2019)
-    fim = fim.replace(year=2019)
-    
-    #se nao for mes atual
-    if inicial != 0:
-        inicio = inicio.replace(month=inicial)
-        fim = fim.replace(month=inicial)
-    
+def GerarTestesAutomatico(casa, inicio):
+    final = inicio    
 
     mes = getMes(inicio.month-1)
-    consumoMes = ConsumoMes.objects.get(casa = casa,mes = mes,ano = inicio.year)
+    consumoMes = ConsumoMes.objects.filter(casa = casa,mes = mes,ano = 2019).first()
+
     if consumoMes is None:
         ConsumoMes.objects.create(
             casa=casa,
@@ -96,7 +82,7 @@ def GerarTestes(casa, inicial):
 
     energia = energia_semana = energia_feriado = 0
     agua = agua_semana = agua_feriado = 0
-    while inicio.month == fim.month:
+    while inicio.month == final.month:
         semana = inicio.weekday()
 
         for comodo in casa.comodos:
@@ -177,20 +163,14 @@ def GerarTestes(casa, inicial):
                         pos = registradas.index(terminal.comodo_equipamento)  
                         item = dados[pos]
 
-                        # ConsumoHora.objects.create(
-                        #     mes = consumoMes,
-                        #     data = inicio,
-                        #     comodo_saida = terminal,
-                        #     tempo = item['tempo'],
-                        #     hora = item['hora']
-                        # )
+                        
 
                         registradas.pop(pos)
                         dados.pop(pos)
         inicio = inicio + timedelta(days=1)
     
         ConsumoMes.objects.filter(casa = casa,mes = mes,
-                    ano = fim.year).update(
+                    ano = 2019).update(
                     agua=agua, 
                     energia=energia,
                     energia_semana=energia_semana,
