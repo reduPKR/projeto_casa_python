@@ -50,6 +50,8 @@
     </div>
 
     <script>
+        var aux = [];
+
         function adicionar() {
             var lista = document.getElementById('lista');
             var ini = document.getElementById('horaIni').value;
@@ -62,17 +64,18 @@
             document.getElementById('horaIni').value='12:00';
             document.getElementById('horaFim').value='12:00';
 
-            //teste
-            var casa = "{{casa.nome}}";            
-            var dados = document.getElementsByName('dados');
-            console.log(casa)
-            console.log(dados)
+            //teste           
+            var dados = (document.getElementsByName('dados').length > 0)?document.getElementsByName('dados')[0]:null;
 
-            // dados.append(ini)
-            // dados.append(fim)
-            var aux = dados.values();
-            aux.append(ini)
-            console.log(aux)
+            if(aux.length == 0){
+                aux = aux.concat(dados.value)
+                aux.pop();
+            }
+                
+            aux.push(ini)
+            aux.push(fim)
+            dados.value = aux;
+            console.log(dados.value)
         }
         
     </script>
