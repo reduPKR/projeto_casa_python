@@ -36,7 +36,7 @@
             <br>
             <form action="/gerar-testes/gerar/manual/selecionar/cadastar" method="POST"> {% csrf_token %}
                 <input type="text" name="casa_id" value="{{casa.id}}" hidden>
-                <input type="text" id="dados" name="dados" hidden>
+                <input type="text" id="dados" name="dados" value="{{dados}}" hidden> 
                 <button type="submit" class="btn btn-warning btn-block">
                     Finalizar
                 </button>
@@ -51,21 +51,29 @@
 
     <script>
         function adicionar() {
-            var p = document.getElementById('lista');
+            var lista = document.getElementById('lista');
             var ini = document.getElementById('horaIni').value;
             var fim = document.getElementById('horaFim').value;
-            var dados = document.getElementsByName('dados');
 
             var li = document.createElement('li');
             li.innerHTML = ini+" - "+fim;
-            p.appendChild(li);
-
-            dados.append(ini)
-            dados.append(fim)
-            console.log(dados)
+            lista.appendChild(li);
 
             document.getElementById('horaIni').value='12:00';
             document.getElementById('horaFim').value='12:00';
+
+            //teste
+            var casa = "{{casa.nome}}";            
+            var dados = document.getElementsByName('dados');
+            console.log(casa)
+            console.log(dados)
+
+            // dados.append(ini)
+            // dados.append(fim)
+            var aux = dados.values();
+            aux.append(ini)
+            console.log(aux)
         }
+        
     </script>
 {% endblock %}

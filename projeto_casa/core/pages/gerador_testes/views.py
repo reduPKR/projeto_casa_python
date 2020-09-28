@@ -79,8 +79,9 @@ def GerarManualSelecionar(request):
 
 def GerarManualCadastrar(request):
     casa_id = request.POST.get('casa_id')
-    lista = request.POST.get('lista')
-    print(lista)
+    dados = request.POST.get('dados')
+
+    print(dados)
 
     return redirect('/gerar-testes/gerar/manual/?id={}'.format(casa_id))
 
