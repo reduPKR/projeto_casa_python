@@ -56,6 +56,34 @@ def GerarManual(request):
 
     return render(request, 'gerador_testes/manual/gerar.html',dados)
 
+def GerarManualSelecionar(request):
+    casa_id = request.GET.get('casa_id')
+    comodo_id = request.GET.get('comodo_id')
+    terminal_id = request.GET.get('terminal_id')
+    
+    if casa_id:
+        casa = Casa.objects.get(id=casa_id)
+        comodo = Comodo.objects.get(id=comodo_id)
+        terminal = ComodoSaida.objects.get(id=terminal_id)
+
+        casa.comodo = comodo
+        casa.terminal = terminal
+
+    dados = {
+        'titulo':'Cadastro manual', 
+        'casa':casa,
+        'dados': []
+        }
+
+    return render(request, 'gerador_testes/manual/selecionado.html',dados)
+
+def GerarManualCadastrar(request):
+    casa_id = request.POST.get('casa_id')
+    lista = request.POST.get('lista')
+    print(lista)
+
+    return redirect('/gerar-testes/gerar/manual/?id={}'.format(casa_id))
+
 def GerarAutomatico(request):
     id = request.GET.get('id')
     if id:

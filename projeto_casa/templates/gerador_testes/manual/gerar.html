@@ -18,6 +18,17 @@
                             <td>
                                 {{terminal.comodo_equipamento.equipamento.nome}}
                             </td>
+                            <td>
+                                <form action="/gerar-testes/gerar/manual/selecionar/" method="GET">
+                                    <input type="text" name="casa_id" value="{{casa.id}}" hidden>
+                                    <input type="text" name="comodo_id" value="{{comodo.id}}" hidden>
+                                    <input type="text" name="terminal_id" value="{{terminal.id}}" hidden>
+                                    <button type="submit" class="btn btn-secondary">
+                                        <i class="fas fa-check-circle"></i>
+                                        Selecionar
+                                    </button>
+                                </form>
+                            </td>
                         </tr>
                     {% endfor %}
                 </table>

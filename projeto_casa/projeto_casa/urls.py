@@ -75,6 +75,8 @@ urlpatterns = [
     path('gerar-testes/gerar/', gerarTeste.Gerar),    
     path('gerar-testes/gerar/automatico/', gerarTeste.GerarAutomatico),
     path('gerar-testes/gerar/manual/', gerarTeste.GerarManual),
+    path('gerar-testes/gerar/manual/selecionar/', gerarTeste.GerarManualSelecionar),
+    path('gerar-testes/gerar/manual/selecionar/cadastar', gerarTeste.GerarManualCadastrar),
 
     #Simulacao
     path('simular/casas/', simular.ListarCasas),
