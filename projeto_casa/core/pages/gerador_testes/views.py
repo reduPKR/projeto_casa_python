@@ -37,14 +37,24 @@ def GerarManual(request):
     id = request.GET.get('id')
     if id:
         casa = Casa.objects.get(id=id)
-        #ConsumoMes.objects.filter(casa=casa).delete()
-        ini = time.time()
-        #GerarTestes(casa, 0)   
-        fim = time.time()
-        print("Tempo {}".format(fim-ini))
+        comodos = Comodo.objects.filter(casa=casa)
+        for comodo in comodos:
+            lista = []
+            vinculados = []
+            terminais = ComodoSaida.objects.filter(comodo=comodo)
+            for terminal in terminais:
+                if terminal.comodo_equipamento is not None:
+                    if terminal.comodo_equipamento not in vinculados:
+                        lista.append(terminal)
+            comodo.terminais = lista
+        casa.comodos = comodos
 
-        excluirCoeficientes(casa)
-    return redirect('/gerar-testes/gerar/?id={}'.format(id))
+    dados = {
+        'titulo':'Cadastro manual', 
+        'casa':casa
+        }
+
+    return render(request, 'gerador_testes/manual/gerar.html',dados)
 
 def GerarAutomatico(request):
     id = request.GET.get('id')

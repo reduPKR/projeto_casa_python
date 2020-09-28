@@ -48,7 +48,8 @@ def Exibir(request):
         data = data.replace(day=1)
         data = data.replace(year=2019)
         comodo = Comodo.objects.filter(casa=casa).first();
-        comodoY = ComodoValorY.objects.filter(comodo=comodo,data=data).first()
+        #Se houver 1 mes cadastrado nao precisa mais
+        comodoY = ComodoValorY.objects.filter(comodo=comodo).first()
         if comodoY == None:
             executar = True
         else:
