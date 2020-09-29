@@ -4,7 +4,7 @@ from datetime import date
 import random
 import time
 
-genes = 100000
+genes = 10000
 percParada = 95
 casa = None
 mes = None
@@ -231,10 +231,11 @@ def executarGenetico():
     perc = 0 #media de acerto de todos comodos
     geracao = 0 #vezes executadas
 
+    ini = time.time()
     while pos < len(listaComodos):
         calcularAptidao(listaComodos[pos],listaSemana[pos],listaFinalSemana[pos])
         pos += 1
-
+    print("Geraçao 0")
     while perc < percParada and geracao < 100:
         pos = 0
         while pos < len(listaComodos):
@@ -245,8 +246,8 @@ def executarGenetico():
         perc = percentualGeral(listaComodos)
         geracao += 1
         print("Geraçao {} Tx. acerto {}".format(geracao,perc))
-
-    salvarResultados(listaComodos,perc)
+    fim = time.time()
+    salvarResultados(listaComodos,perc, (fim-ini))
 
 def calcularAptidao(comodo,listaSemana,listaFinalSemana):
     total = len(listaSemana)
@@ -293,14 +294,19 @@ def calcularAptidao(comodo,listaSemana,listaFinalSemana):
             perc = acerto * 100 / total
             item['acerto'] = perc
 
-    comodo['energia_semana'] = sorted(comodo['energia_semana'], key=lambda row:row['acerto'], reverse=True)
-    comodo['agua_semana'] = sorted(comodo['agua_semana'], key=lambda row:row['acerto'], reverse=True)
-    comodo['energia_feriado'] = sorted(comodo['energia_feriado'], key=lambda row:row['acerto'], reverse=True)
-    comodo['agua_feriado'] = sorted(comodo['agua_feriado'], key=lambda row:row['acerto'], reverse=True)
+    # comodo['energia_semana'] = sorted(comodo['energia_semana'], key=lambda row:row['acerto'], reverse=True)
+    # comodo['agua_semana'] = sorted(comodo['agua_semana'], key=lambda row:row['acerto'], reverse=True)
+    # comodo['energia_feriado'] = sorted(comodo['energia_feriado'], key=lambda row:row['acerto'], reverse=True)
+    # comodo['agua_feriado'] = sorted(comodo['agua_feriado'], key=lambda row:row['acerto'], reverse=True)
 
 def selecao(comodo):
     global genes
     perc = .1
+
+    comodo['energia_semana'] = sorted(comodo['energia_semana'], key=lambda row:row['acerto'], reverse=True)
+    comodo['agua_semana'] = sorted(comodo['agua_semana'], key=lambda row:row['acerto'], reverse=True)
+    comodo['energia_feriado'] = sorted(comodo['energia_feriado'], key=lambda row:row['acerto'], reverse=True)
+    comodo['agua_feriado'] = sorted(comodo['agua_feriado'], key=lambda row:row['acerto'], reverse=True)
 
     if comodo['energia_semana'][0]['acerto'] < 99 and comodo['agua_semana'][0]['acerto'] < 99 and comodo['energia_feriado'][0]['acerto'] < 99 and comodo['agua_feriado'][0]['acerto'] < 99:
         while len(comodo['energia_semana']) > genes * perc:
@@ -524,20 +530,22 @@ def mutacao(filho):
     else:
         filho['chuva'] = valor - (random.random() * (valor * 2))
         
-def salvarResultados(listaComodos,perc):
+def salvarResultados(listaComodos,perc,tempo):
     global meta
     global casa
-
-    grupo = GrupoCoeficiente.objects.filter(
+    
+    GrupoCoeficiente.objects.create(
         meta_treino = meta,
         gerador = "Algoritmo genetico",
         precisao = perc,
-    ).first()
+        tempo_treino= tempo
+    )
 
     novo = GrupoCoeficiente.objects.filter(
         meta_treino = meta,
         gerador = "Algoritmo genetico",
         precisao = perc,
+        tempo_treino= tempo
     ).last()
 
     comodos = Comodo.objects.filter(casa=casa)
