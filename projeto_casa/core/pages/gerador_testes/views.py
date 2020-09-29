@@ -38,6 +38,8 @@ def GerarManual(request):
     if id:
         casa = Casa.objects.get(id=id)
         comodos = Comodo.objects.filter(casa=casa)
+        
+        casa.next = False
         for comodo in comodos:
             lista = []
             vinculados = []
@@ -46,8 +48,15 @@ def GerarManual(request):
                 if terminal.comodo_equipamento is not None:
                     if terminal.comodo_equipamento not in vinculados:
                         lista.append(terminal)
+                        vinculados.append(terminal.comodo_equipamento)
+                
+                if casa.next == False:
+                    chm = ConsumoHoraManual.objects.filter(comodo_saida=terminal)
+                    if chm is not None:
+                        casa.next = True
+
             comodo.terminais = lista
-        casa.comodos = comodos
+        casa.comodos = comodos            
 
     dados = {
         'titulo':'Cadastro manual', 
@@ -90,27 +99,87 @@ def GerarManualCadastrar(request):
         final = final.split(',')
 
         ConsumoHoraManual.objects.filter(comodo_saida=terminal).delete()
+        
         i = 0
         while i < len(semana):
-            ConsumoHoraManual.objects.create(
-                comodo_saida=terminal, 
-                hora_liga = semana[i],
-                hora_desliga = semana[i+1]
-            )
+            ini = semana[i].split(":")
+            fim = semana[i+1].split(":")
+
+            if ini[0] == fim[0]:
+                ConsumoHoraManual.objects.create(
+                    comodo_saida=terminal, 
+                    hora_liga = semana[i],
+                    hora_desliga = semana[i+1]
+                )
+            else:
+                j = int(ini[0])+1
+                k = int(fim[0])
+
+                ConsumoHoraManual.objects.create(
+                    comodo_saida=terminal, 
+                    hora_liga = semana[i],
+                    hora_desliga = str(j)+":00"
+                )
+
+                while j < k:
+                    ConsumoHoraManual.objects.create(
+                        comodo_saida=terminal, 
+                        hora_liga = str(j)+":00",
+                        hora_desliga = str(j+1)+":00"
+                    )
+                    j += 1
+
+                if str(k)+":00" != semana[i+1]:
+                    ConsumoHoraManual.objects.create(
+                        comodo_saida=terminal, 
+                        hora_liga = str(k)+":00",
+                        hora_desliga = semana[i+1]
+                    )
             i += 2
 
         i = 0
         while i < len(final):
-            ConsumoHoraManual.objects.create(
-                comodo_saida=terminal, 
-                hora_liga = final[i],
-                hora_desliga = final[i+1],
-                semana = False
-            )
+            ini = final[i].split(":")
+            fim = final[i+1].split(":")
+
+            if ini[0] == fim[0]:
+                ConsumoHoraManual.objects.create(
+                    comodo_saida=terminal, 
+                    hora_liga = final[i],
+                    hora_desliga = final[i+1],
+                    semana = False
+                )
+            else:
+                j = int(ini[0])+1
+                k = int(fim[0])
+
+                ConsumoHoraManual.objects.create(
+                    comodo_saida=terminal, 
+                    hora_liga = final[i],
+                    hora_desliga = str(j)+":00",
+                    semana = False
+                )
+
+                while j < k:
+                    ConsumoHoraManual.objects.create(
+                        comodo_saida=terminal, 
+                        hora_liga = str(j)+":00",
+                        hora_desliga = str(j+1)+":00",
+                        semana = False
+                    )
+                    j += 1
+
+                
+                if str(k)+":00" != final[i+1]:
+                    ConsumoHoraManual.objects.create(
+                        comodo_saida=terminal, 
+                        hora_liga = str(k)+":00",
+                        hora_desliga = final[i+1],
+                        semana = False
+                    )
+
             i += 2
 
-
-    return redirect('/gerar-testes/gerar/manual/selecionar/?casa_id=1&comodo_id=1&terminal_id=1')
     return redirect('/gerar-testes/gerar/manual/?id={}'.format(casa_id))
 
 def GerarAutomatico(request):
