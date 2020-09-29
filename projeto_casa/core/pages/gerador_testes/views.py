@@ -79,10 +79,38 @@ def GerarManualSelecionar(request):
 
 def GerarManualCadastrar(request):
     casa_id = request.POST.get('casa_id')
-    dados = request.POST.get('dados')
+    terminal_id = request.POST.get('terminal_id')
+    semana = request.POST.get('dadosSemana')
+    final = request.POST.get('dadosFinal')
 
-    print(dados)
+    if terminal_id != None:
+        terminal = ComodoSaida.objects.get(id=terminal_id)
+        
+        semana = semana.split(',')
+        final = final.split(',')
 
+        ConsumoHoraManual.objects.filter(comodo_saida=terminal).delete()
+        i = 0
+        while i < len(semana):
+            ConsumoHoraManual.objects.create(
+                comodo_saida=terminal, 
+                hora_liga = semana[i],
+                hora_desliga = semana[i+1]
+            )
+            i += 2
+
+        i = 0
+        while i < len(final):
+            ConsumoHoraManual.objects.create(
+                comodo_saida=terminal, 
+                hora_liga = final[i],
+                hora_desliga = final[i+1],
+                semana = False
+            )
+            i += 2
+
+
+    return redirect('/gerar-testes/gerar/manual/selecionar/?casa_id=1&comodo_id=1&terminal_id=1')
     return redirect('/gerar-testes/gerar/manual/?id={}'.format(casa_id))
 
 def GerarAutomatico(request):

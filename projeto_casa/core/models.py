@@ -119,11 +119,12 @@ class ConsumoHora(models.Model):
     class Meta:
         db_table = 'consumo_hora'
 
-class consumoHoraManual(models.Model):
+class ConsumoHoraManual(models.Model):
     #Aqui registra a lista de horarios que um equipamento fica ligados
     comodo_saida = models.ForeignKey(ComodoSaida,on_delete=models.CASCADE)
-    hora_liga = models.IntegerField()
-    hora_desliga = models.IntegerField()
+    hora_liga = models.TimeField()
+    hora_desliga = models.TimeField()
+    semana = models.BooleanField(default=True)
 
     class Meta:
         db_table = 'consumo_hora_manual'
@@ -143,6 +144,7 @@ class Clima(models.Model):
 
 class GrupoCoeficiente(models.Model):
     casa = models.ForeignKey(Casa,on_delete=models.CASCADE)
+    mes = models.CharField(max_length=30)
     precisao = models.DecimalField(max_digits=4, decimal_places=1, default=0)
 
     gerador = models.CharField(max_length=30)

@@ -22,21 +22,40 @@
             </div><br>
             <div class="row">
                 <div class="col">
+                    <label>Semana</label><br>
                     <strong>Inicio: </strong>
-                    <input type="time" id="horaIni" name="horaIni" value="12:00">
+                    <input type="time" id="horaIniSem" name="horaIniSem" value="12:00">
                     <strong>Fim: </strong>
-                    <input type="time" id="horaFim" name="horaFim" value="12:00">
-                    <button type="button" class="btn btn-secondary" onclick="adicionar()" >Adicionar</button>         
+                    <input type="time" id="horaFimSem" name="horaFimSem" value="12:00">
+                    <br><br>
+                    <button type="button" class="btn btn-secondary" onclick="semana()" >Adicionar</button>         
+                </div>
+                <div class="col">
+                    <label>Final de semana</label><br>
+                    <strong>Inicio: </strong>
+                    <input type="time" id="horaIniFinal" name="horaIniFinal" value="12:00">
+                    <strong>Fim: </strong>
+                    <input type="time" id="horaFimFinal" name="horaFimFinal" value="12:00">
+                    <br><br>
+                    <button type="button" class="btn btn-secondary" onclick="final()" >Adicionar</button>         
                 </div>
             </div>
             <div class="row">
-                <ul id="lista">
-                </ul>              
+                <div class="col">
+                    <ul id="semana">
+                    </ul>              
+                </div>
+                <div class="col">
+                    <ul id="final">
+                    </ul>              
+                </div>
             </div>
             <br>
             <form action="/gerar-testes/gerar/manual/selecionar/cadastar" method="POST"> {% csrf_token %}
                 <input type="text" name="casa_id" value="{{casa.id}}" hidden>
-                <input type="text" id="dados" name="dados" value="{{dados}}" hidden> 
+                <input type="text" name="terminal_id" value="{{casa.terminal.id}}" hidden>
+                <input type="text" id="dadosSemana" name="dadosSemana" value="{{dadosSemana}}" hidden> 
+                <input type="text" id="dadosFinal" name="dadosFinal" value="{{dadosFinal}}" hidden> 
                 <button type="submit" class="btn btn-warning btn-block">
                     Finalizar
                 </button>
@@ -50,31 +69,58 @@
     </div>
 
     <script>
-        var aux = [];
+        var auxSem = [];
+        var auxFinal = [];
 
-        function adicionar() {
-            var lista = document.getElementById('lista');
-            var ini = document.getElementById('horaIni').value;
-            var fim = document.getElementById('horaFim').value;
+        function semana() {
+            var lista = document.getElementById('semana');
+            var ini = document.getElementById('horaIniSem').value;
+            var fim = document.getElementById('horaFimSem').value;
 
             var li = document.createElement('li');
             li.innerHTML = ini+" - "+fim;
             lista.appendChild(li);
 
-            document.getElementById('horaIni').value='12:00';
-            document.getElementById('horaFim').value='12:00';
+            document.getElementById('horaIniSem').value='12:00';
+            document.getElementById('horaFimSem').value='12:00';
 
             //teste           
-            var dados = (document.getElementsByName('dados').length > 0)?document.getElementsByName('dados')[0]:null;
+            var dados = (document.getElementsByName('dadosSemana').length > 0)?document.getElementsByName('dadosSemana')[0]:null;
 
-            if(aux.length == 0){
-                aux = aux.concat(dados.value)
-                aux.pop();
+            if(auxSem.length == 0){
+                auxSem = auxSem.concat(dados.value)
+                auxSem.pop();
             }
                 
-            aux.push(ini)
-            aux.push(fim)
-            dados.value = aux;
+            auxSem.push(ini)
+            auxSem.push(fim)
+            dados.value = auxSem;
+            console.log(dados.value)
+        }
+
+        function final() {
+            var lista = document.getElementById('final');
+            var ini = document.getElementById('horaIniFinal').value;
+            var fim = document.getElementById('horaFimFinal').value;
+
+            var li = document.createElement('li');
+            li.innerHTML = ini+" - "+fim;
+            lista.appendChild(li);
+
+            document.getElementById('horaIniFinal').value='12:00';
+            document.getElementById('horaFimFinal').value='12:00';
+
+            //teste           
+            var dados = (document.getElementsByName('dadosFinal').length > 0)?document.getElementsByName('dadosFinal')[0]:null;
+
+            if(auxFinal.length == 0){
+                auxFinal = auxFinal.concat(dados.value)
+                auxFinal.pop();
+            }
+                
+            auxFinal.push(ini)
+            auxFinal.push(fim)
+            dados.value = auxFinal;
             console.log(dados.value)
         }
         
