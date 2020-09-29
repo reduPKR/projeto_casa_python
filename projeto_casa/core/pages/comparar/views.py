@@ -106,16 +106,18 @@ def analise(casa,meta,grupo,precisao,tempo):
             clima = Clima.objects.filter(data__month=(month+1))
             for comodo in comodos:
                 comodo.resultados = ComodoValorY.objects.filter(comodo=comodo,data__month=month)
-
+                print(comodo.resultados)
             total = 0
             acerto = 0
             ini = time.time()
-
+            print("\n\n\n")
             for comodo in comodos:
-                for resultado in comodo.resultados:                
+                print(comodo)
+                for resultado in comodo.resultados:    
+                    print(resultado)            
                     for item in clima:
+                        print(item) 
                         if resultado.data == item.data and resultado.hora == item.hora:
-                            
                             if resultado.data.weekday() < 5:
                                 energia = (item.temperatura * comodo.energia_semana.temperatura) + (item.umidade * comodo.energia_semana.umidade) + (item.vento * comodo.energia_semana.vento) + (item.pressao * comodo.energia_semana.pressao) + (item.chuva * comodo.energia_semana.chuva)
                                 agua = (item.temperatura * comodo.agua_semana.temperatura) + (item.umidade * comodo.agua_semana.umidade) + (item.vento * comodo.agua_semana.vento) + (item.pressao * comodo.agua_semana.pressao) + (item.chuva * comodo.agua_semana.chuva)                                
@@ -128,6 +130,8 @@ def analise(casa,meta,grupo,precisao,tempo):
                                 acerto += 1
                             if resultado.meta_agua == round(agua):
                                 acerto += 1
+                            print(total) 
+                            print(acerto) 
             
             fim = time.time()
             precisao.append((acerto*100)/total)

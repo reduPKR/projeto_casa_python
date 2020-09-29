@@ -136,9 +136,10 @@ def gerarPesos():
 
 def gerarPadrao(energia_semana, energia_final, agua_semana, agua_final):
     global casa
-    global mes
+    #global mes
     
-    if casa and mes:
+    #o CY tem que ser carregado para todos os meses
+    if casa:
         #cada comodo consome diferente
         energia_semana = energia_semana/360 #seria 720 porem a tendencia é mmetade do dia ter consumo
         energia_final = energia_final/360
@@ -156,58 +157,63 @@ def gerarPadrao(energia_semana, energia_final, agua_semana, agua_final):
         comodos = Comodo.objects.filter(casa=casa)
         pos = 0
         for comodo in comodos:
-            terminais = ComodoSaida.objects.filter(comodo=comodo)
-            comodo.terminais = terminais
-            for terminal in comodo.terminais:
-                consumos = ConsumoHora.objects.filter(comodo_saida = terminal, mes = mes)
-                terminal.consumos = consumos
+            ComodoValorY.objects.filter(comodo=comodo).delete()
 
-            #consumo segue a mesma orde dos comodos
+            comodo.terminais = ComodoSaida.objects.filter(comodo=comodo)
+
             comodo.media_energia_semana = pesos[pos]['media_energia_semana']
             comodo.media_energia_final = pesos[pos]['media_energia_final']
             comodo.media_agua_semana = pesos[pos]['media_agua_semana']
             comodo.media_agua_final = pesos[pos]['media_agua_final']
             pos =pos+1
 
-        for comodo in comodos:
-            ComodoValorY.objects.filter(comodo=comodo).delete()
+    
+        meses = ConsumoMes.objects.all()
+        for mes in meses:
+            for comodo in comodos:              
+                for terminal in comodo.terminais:
+                    terminal.consumos = ConsumoHora.objects.filter(comodo_saida = terminal, mes = mes)                
 
-        #Vou cadastrar o mes todo
-        #Pois quando for verificar a presicao vou ter que usar valores
-        #Diferentes dos usados para treinar 
-        month = getPosMes(mes.mes) + 1
-        data = date(2019,month, 1)
-        while data.month == month:
-            for hora in range(24):
-                for comodo in comodos:
-                    energia = agua = 0
-                    for terminal in comodo.terminais:
-                        for consumo in terminal.consumos:
-                            if data == consumo.data and hora == consumo.hora:
-                                agua = agua + calcularConsumo(terminal.comodo_equipamento.equipamento.consumo_agua, consumo.tempo)
-                                energia = energia + calcularConsumo(terminal.comodo_equipamento.equipamento.consumo_energia, consumo.tempo)                              
-                    
-                    #Se nao tem nada vai atrapalhar
-                    if agua > 0 or energia > 0:
-                        semana = data.weekday()
+            #Vou cadastrar o mes todo
+            #Pois quando for verificar a presicao vou ter que usar valores
+            #Diferentes dos usados para treinar 
+            month = getPosMes(mes.mes) + 1
+            data = date(2019,month, 1)
+            while data.month == month:
+                for hora in range(24):
+                    for comodo in comodos:
+                        energia = agua = 0
+                        for terminal in comodo.terminais:
+                            for consumo in terminal.consumos:
+                                if data == consumo.data and hora == consumo.hora:
+                                    agua = agua + calcularConsumo(terminal.comodo_equipamento.equipamento.consumo_agua, consumo.tempo)
+                                    energia = energia + calcularConsumo(terminal.comodo_equipamento.equipamento.consumo_energia, consumo.tempo)                              
+                                elif data == consumo.data and hora < consumo.hora:
+                                    break
+                                elif data < consumo.data:
+                                    break
 
-                        if semana < 5:
-                            energia = index(energia*100/comodo.media_energia_semana)
-                            if comodo.media_agua_semana > 0:
-                                agua = index(agua*100/comodo.media_agua_semana)
-                        else:
-                            energia = index(energia*100/comodo.media_energia_final)
-                            if comodo.media_agua_semana > 0:
-                                agua = index(agua*100/comodo.media_agua_final)
-                        
-                        ComodoValorY.objects.create(
-                            comodo = comodo,
-                            data = data,
-                            hora = hora,
-                            meta_agua = agua,
-                            meta_energia = energia
-                        )
-            data = data + timedelta(days=1)
+                        #Se nao tem nada vai atrapalhar
+                        if agua > 0 or energia > 0:
+                            semana = data.weekday()
+
+                            if semana < 5:
+                                energia = index(energia*100/comodo.media_energia_semana)
+                                if comodo.media_agua_semana > 0:
+                                    agua = index(agua*100/comodo.media_agua_semana)
+                            else:
+                                energia = index(energia*100/comodo.media_energia_final)
+                                if comodo.media_agua_semana > 0:
+                                    agua = index(agua*100/comodo.media_agua_final)
+                            
+                            ComodoValorY.objects.create(
+                                comodo = comodo,
+                                data = data,
+                                hora = hora,
+                                meta_agua = agua,
+                                meta_energia = energia
+                            )
+                data = data + timedelta(days=1)
 
 def index(valor):
     if valor == 0:
