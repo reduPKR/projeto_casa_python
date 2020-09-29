@@ -182,6 +182,20 @@ def GerarManualCadastrar(request):
 
     return redirect('/gerar-testes/gerar/manual/?id={}'.format(casa_id))
 
+def GerarAnoManual(request):
+    id = request.POST.get('id')
+    if id:
+        casa = Casa.objects.get(id=id)
+        #ConsumoMes.objects.filter(casa=casa).delete()
+        for i in range(12):
+            GerarTestesManual(casa, date(2019,i+1,1))
+            print("Finalizado {}".format(getMes(i)))
+            
+        excluirCoeficientes(casa)
+        return redirect('/gerar-testes/gerar/?id={}'.format(id))
+    return redirect('/')
+
+
 def GerarAutomatico(request):
     id = request.GET.get('id')
     if id:
@@ -314,6 +328,85 @@ def GerarTestesAutomatico(casa, inicio):
                     energia_feriado=energia_feriado,
                     agua_feriado=agua_feriado,
                     )
+
+def GerarTestesManual(casa, inicio):
+    final = inicio    
+    mes = getMes(inicio.month-1)
+    consumoMes = ConsumoMes.objects.filter(casa = casa,mes = mes,ano = 2019).first()
+
+    if consumoMes is None:
+        ConsumoMes.objects.create(
+            casa=casa,
+            mes=mes,
+            ano = inicio.year
+        )
+        consumoMes = ConsumoMes.objects.get(casa = casa,mes = mes,ano = inicio.year)
+    
+    #gambiarra reduz acesso ao banco de ddos
+    casa.comodos = Comodo.objects.filter(casa=casa)
+    for comodo in casa.comodos:
+        comodo.comodoSaidas = ComodoSaida.objects.filter(comodo=comodo)
+
+    for comodo in casa.comodos:
+        for comodo_saida in comodo.comodoSaidas:
+            ConsumoHora.objects.filter(mes = consumoMes,comodo_saida=comodo_saida).delete()
+            comodo_saida.semana = ConsumoHoraManual.objects.filter(comodo_saida=comodo_saida,semana=True)
+            comodo_saida.feriado = ConsumoHoraManual.objects.filter(comodo_saida=comodo_saida,semana=False)
+
+    energia = energia_semana = energia_feriado = 0
+    agua = agua_semana = agua_feriado = 0
+    while inicio.month == final.month:
+        print(inicio)
+        semana = inicio.weekday()
+        for comodo in casa.comodos:
+            for terminal in comodo.comodoSaidas:
+                if semana < 5:
+                    chm = terminal.semana 
+                else:
+                    chm = terminal.feriado
+                
+                for item in chm:
+                    tempo = ((item.hora_desliga.hour - item.hora_liga.hour) * 60) + (item.hora_desliga.minute - item.hora_liga.minute)
+
+                    if tempo == 0 and terminal.tempo_min_semana == 7200:
+                        tempo = 60
+                    consumoAgua = consumoEnergia = 0
+                    if terminal.comodo_equipamento.equipamento.tipo_consumo.id == 1:
+                        consumoAgua = calcularConsumo(terminal.comodo_equipamento.equipamento.consumo_agua, tempo)
+                    elif terminal.comodo_equipamento.equipamento.tipo_consumo.id == 2:
+                        consumoEnergia = calcularConsumo(terminal.comodo_equipamento.equipamento.consumo_energia, tempo)
+                    else:
+                        consumoAgua = calcularConsumo(terminal.comodo_equipamento.equipamento.consumo_agua, tempo)
+                        consumoEnergia = calcularConsumo(terminal.comodo_equipamento.equipamento.consumo_energia, tempo)
+                    
+                    energia = energia + consumoEnergia
+                    agua = agua + consumoAgua
+                    if semana < 5:
+                        energia_semana = energia_semana + consumoEnergia
+                        agua_semana = agua_semana + consumoAgua
+                    else:
+                        energia_feriado = energia_feriado + consumoEnergia
+                        agua_feriado = agua_feriado + consumoAgua
+
+                    ConsumoHora.objects.create(
+                        mes = consumoMes,
+                        data = inicio,
+                        hora = item.hora_liga.hour,
+                        tempo = tempo,
+                        comodo_saida = terminal
+                    )
+                
+        inicio = inicio + timedelta(days=1)
+    
+    ConsumoMes.objects.filter(casa = casa,mes = mes,
+        ano = 2019).update(
+        agua=agua, 
+        energia=energia,
+        energia_semana=energia_semana,
+        agua_semana=agua_semana,
+        energia_feriado=energia_feriado,
+        agua_feriado=agua_feriado,
+        )
 
 #Metodos
 def getMes(mes):
