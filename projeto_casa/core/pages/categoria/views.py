@@ -34,7 +34,7 @@ def Exibir(request):
             item.reduzir_energia_feriado = round(item.reduzir_energia_feriado /1000)
 
     dados = {
-        'titulo':'Regressão linear multipla', 
+        'titulo':'Gerador de ponto medio', 
         'casa': casa,
         'mes': mes,
         'metas': metas

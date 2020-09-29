@@ -4,11 +4,11 @@ from datetime import date
 import random
 import time
 
-genes = 10000
+genes = 100000
 percParada = 95
 casa = None
 mes = None
-grupo = None
+meta = None
 listaComodos = []
 listaSemana = []
 listaFinalSemana = []
@@ -25,30 +25,28 @@ def Exibir(request):
         casa = Casa.objects.get(id=casa_id)
         mes = ConsumoMes.objects.get(id=mes_id)
 
-        data = date.today()
-        data = data.replace(day=1)
-        data = data.replace(year=2019)
-        comodo = Comodo.objects.filter(casa=casa).first()
-        #se 1 mes estiver registrado ja houve o treino
-        comodoY = ComodoValorY.objects.filter(comodo=comodo).first()
-        if comodoY == None:
-            executar = True
-        else:
-            executar = False
+        metas = MetaTreino.objects.filter(
+            casa = casa,
+            mes = mes.mes
+        )
 
-        grupos = GrupoCoeficiente.objects.filter(casa=casa)
-        for grupo in grupos:
-            grupo.reduzir_energia_semana = round(grupo.reduzir_energia_semana/1000,2)
-            grupo.reduzir_energia_feriado = round(grupo.reduzir_energia_feriado /1000,2)
+        for item in metas:
+            item.reduzir_energia_semana = round(item.reduzir_energia_semana /1000) #converto para Kwh
+            item.reduzir_energia_feriado = round(item.reduzir_energia_feriado /1000)
+            
+            grupo = GrupoCoeficiente.objects.filter(meta_treino = item, gerador = "Algoritmo genetico").first()
+            
+            if grupo is None:
+                item.treino = False
+            else:
+                item.treino = True
 
-        dados = {
-            'titulo':'Algoritmo genético', 
-            'casa': casa,
-            'mes': mes,
-            'executar': executar,
-            'grupos': grupos
-        }
-
+    dados = {
+        'titulo':'Algoritmo genetico', 
+        'casa': casa,
+        'mes': mes,
+        'metas': metas,
+    }
 
     return render(request, 'simulacao/genetico/menu.html',dados)
 
@@ -56,15 +54,15 @@ def genetico(request):
     global casa
     global mes
     global listaComodos
-    global grupo
+    global meta
 
     if casa:
         listaComodos.clear()
         
-        grupo_id = request.POST.get('grupo_id')
+        meta_id = request.POST.get('meta_id')
         acao = int(request.POST.get('acao'))
 
-        grupo = GrupoCoeficiente.objects.get(id=grupo_id)
+        meta = MetaTreino.objects.get(id=meta_id)
 
         if acao == 0:
             gerar1()
@@ -72,10 +70,8 @@ def genetico(request):
             gerar2(acao)
         
         gerarAnalise()
-        ini = time.time()
         executarGenetico()
-        fim = time.time()
-        print("Tempo {}".format(fim-ini))
+        
 
     return redirect('/genetico/?casa_id=1&mes_id=1')
 
@@ -128,7 +124,7 @@ def gerar1():
 
 def gerar2(qtde):
     global casa
-    global grupo
+    global meta
     global genes
 
     if casa:
@@ -142,20 +138,20 @@ def gerar2(qtde):
             agua_feriado = []
 
             comodo = comodos[pos]
-            if qtde == 1:
-                coeficientes = Coeficiente.objects.filter(comodo=comodo,grupo=grupo)
-            else:
-                coeficientes = Coeficiente.objects.filter(comodo=comodo)
 
-            for coeficiente in coeficientes:
-                if coeficiente.semana and coeficiente.energia:
-                    energia_semana.append({'acerto': coeficiente.precisao, 'temperatura': coeficiente.temperatura , 'umidade': coeficiente.umidade , 'vento': coeficiente.vento , 'pressao': coeficiente.pressao , 'chuva': coeficiente.chuva })
-                elif coeficiente.semana and coeficiente.energia is False:
-                    agua_semana.append({'acerto': coeficiente.precisao, 'temperatura': coeficiente.temperatura , 'umidade': coeficiente.umidade , 'vento': coeficiente.vento , 'pressao': coeficiente.pressao , 'chuva': coeficiente.chuva })
-                elif coeficiente.semana is False and coeficiente.energia:
-                    energia_feriado.append({'acerto': coeficiente.precisao, 'temperatura': coeficiente.temperatura , 'umidade': coeficiente.umidade , 'vento': coeficiente.vento , 'pressao': coeficiente.pressao , 'chuva': coeficiente.chuva })
-                elif coeficiente.semana is False and coeficiente.energia is False:
-                    agua_feriado.append({'acerto': coeficiente.precisao, 'temperatura': coeficiente.temperatura , 'umidade': coeficiente.umidade , 'vento': coeficiente.vento , 'pressao': coeficiente.pressao , 'chuva': coeficiente.chuva })
+            grupos = GrupoCoeficiente.objects.filter(meta_treino = meta)
+            for grupo in grupos:
+                coeficientes = Coeficiente.objects.filter(comodo=comodo,grupo=grupo)
+
+                for coeficiente in coeficientes:
+                    if coeficiente.semana and coeficiente.energia:
+                        energia_semana.append({'acerto': coeficiente.precisao, 'temperatura': coeficiente.temperatura , 'umidade': coeficiente.umidade , 'vento': coeficiente.vento , 'pressao': coeficiente.pressao , 'chuva': coeficiente.chuva })
+                    elif coeficiente.semana and coeficiente.energia is False:
+                        agua_semana.append({'acerto': coeficiente.precisao, 'temperatura': coeficiente.temperatura , 'umidade': coeficiente.umidade , 'vento': coeficiente.vento , 'pressao': coeficiente.pressao , 'chuva': coeficiente.chuva })
+                    elif coeficiente.semana is False and coeficiente.energia:
+                        energia_feriado.append({'acerto': coeficiente.precisao, 'temperatura': coeficiente.temperatura , 'umidade': coeficiente.umidade , 'vento': coeficiente.vento , 'pressao': coeficiente.pressao , 'chuva': coeficiente.chuva })
+                    elif coeficiente.semana is False and coeficiente.energia is False:
+                        agua_feriado.append({'acerto': coeficiente.precisao, 'temperatura': coeficiente.temperatura , 'umidade': coeficiente.umidade , 'vento': coeficiente.vento , 'pressao': coeficiente.pressao , 'chuva': coeficiente.chuva })
 
             energia_semana = sorted(energia_semana, key=lambda row:row['acerto'], reverse=True)
             agua_semana = sorted(agua_semana, key=lambda row:row['acerto'], reverse=True)
@@ -191,12 +187,11 @@ def getPosMes(mes):
 
 def gerarAnalise():
     global casa
-    global grupo
+    global meta
     global listaSemana
     global listaFinalSemana
     
     if casa:
-        
         month = getPosMes(mes.mes) + 1
         clima = Clima.objects.filter(data__month=month)
         
@@ -530,26 +525,19 @@ def mutacao(filho):
         filho['chuva'] = valor - (random.random() * (valor * 2))
         
 def salvarResultados(listaComodos,perc):
-    global grupo
+    global meta
     global casa
 
-    GrupoCoeficiente.objects.create(
-        casa = casa,
+    grupo = GrupoCoeficiente.objects.filter(
+        meta_treino = meta,
         gerador = "Algoritmo genetico",
         precisao = perc,
-        reduzir_agua_semana = grupo.reduzir_agua_semana,
-        reduzir_agua_feriado = grupo.reduzir_agua_feriado,
-        reduzir_energia_semana = grupo.reduzir_energia_semana,
-        reduzir_energia_feriado = grupo.reduzir_energia_feriado
-    )
+    ).first()
 
     novo = GrupoCoeficiente.objects.filter(
-        casa = casa,
+        meta_treino = meta,
         gerador = "Algoritmo genetico",
-        reduzir_agua_semana = grupo.reduzir_agua_semana,
-        reduzir_agua_feriado = grupo.reduzir_agua_feriado,
-        reduzir_energia_semana = grupo.reduzir_energia_semana,
-        reduzir_energia_feriado = grupo.reduzir_energia_feriado
+        precisao = perc,
     ).last()
 
     comodos = Comodo.objects.filter(casa=casa)
