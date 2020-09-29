@@ -241,7 +241,7 @@ def executarGenetico():
         pos += 1
     while perc < percParada and geracao < 100:
         if geracao % 20 != 0:
-            x = .1 #mantem 10% da populacao
+            x = .2 #mantem 20% da populacao
         else:
             x = .01 #mantem 1%
 

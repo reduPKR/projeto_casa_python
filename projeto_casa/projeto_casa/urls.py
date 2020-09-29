@@ -94,6 +94,7 @@ urlpatterns = [
     #comparacoes
     path('simular/selecionar/meta', comparar.Exibir),
     path('simular/selecionar/coeficientes', comparar.Selecionar),
+    path('simular/selecionar/comparar', comparar.Comparar),
 
     #regressao linear
     path('regressao-linear-multipla/coeficiente', regressao.Exibir),
