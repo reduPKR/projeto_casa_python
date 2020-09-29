@@ -6,57 +6,59 @@
         <h3><i class="fas fa-home"></i> Regressão linear multipla </h3><br>
         <div class="container">
             <div class="row">
-                <div class="col col-6 col-sm-6 col-md-4 col-lg-5 col-xs-4 container box-gray">
+                <div class="col col-6 col-sm-6 col-md-4 col-lg-8 col-xs-4 container box-gray">
                     <br>
-                    {% if executar %}
-                        <label style="color: #ff4800">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            Ação nescessária
-                            <i class="fas fa-exclamation-triangle"></i>
-                        </label>
+                    {% if metas %}
+                        <table class="table table-striped table-dark">
+                            <thead>
+                                <tr align="center">
+                                    <th colspan="5">Metas cadastradas para treino {{mes.mes}}</th>
+                                </tr>
+                                <tr align="center">
+                                    <th>Semana</th>
+                                    <th>Fim semana</th>
+                                    <th>Semana</th>
+                                    <th>Fim semana</th>
+                                </tr>
+                             </thead>
+                            {% for item in metas %}
+                                <tr>
+                                    <td>
+                                        {{item.reduzir_energia_semana}} KwH
+                                    </td>
+                                    <td>
+                                        {{item.reduzir_energia_feriado}} KwH
+                                    </td>
+                                    <td>
+                                        {{item.reduzir_agua_semana}} Litros
+                                    </td>
+                                    <td>
+                                        {{item.reduzir_agua_feriado}} Litros
+                                    </td>
+                                    <td>
+                                        {% if item.treino %}
+                                            <form action="/regressao-linear-multipla/coeficiente/treinar" method="GET">
+                                                <input type="text" name="meta_id" value="{{item.id}}" hidden>
+                                                <button type="submit" class="btn btn-secondary">
+                                                    <i class="fas fa-check-circle"></i>
+                                                    Treinar
+                                                </button>
+                                            </form>
+                                        {% else %}
+                                            <label>
+                                                Treino executado > {{item.precisao}}%
+                                            </label>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </table>  
                     {% else %}
-                        <label style="color: #30d646">
-                            <i class="fas fa-check-circle"></i>
-                            Etapa realizada
-                            <i class="fas fa-check-circle"></i>
-                        </label>
+                        <strong>
+                            Ação nescessaria, gerar categorias para executar o treino
+                        </strong>
                     {% endif %}
-                    <form action="/regressao-linear-multipla/coeficiente/categorizar" method="GET">
-                        <div align="center">
-                            <strong>Reduzir energia </strong>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                <label>Semana </label>
-                                <input type="number" name="energia_semana" value="{{reduzir.energia_semana}}" min="{{reduzir.energia_semana_min}}" max="{{reduzir.energia_semana}}" required/>
-                                <label> kWh </label>
-                            </div>
-                            <div class="col">
-                                <label> Fim de semana </label>
-                                <input type="number" name="energia_final" value="{{reduzir.energia_feriado}}" min="{{reduzir.energia_feriado_min}}" max="{{reduzir.energia_feriado}}"  required/>
-                                <label> kWh </label>
-                            </div>
-                        </div><br>
-                        <div align="center">
-                            <strong>Reduzir água </strong>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                <label>Semana </label>
-                                <input type="number" name="agua_semana" value="{{reduzir.agua_semana}}" min="{{reduzir.agua_semana_min}}"  max="{{reduzir.agua_semana}}" required/>
-                                <label> Litros </label>
-                            </div>
-                            <div class="col">
-                                <label> Fim de semana </label>
-                                <input type="number" name="agua_final" value="{{reduzir.agua_feriado}}" min="{{reduzir.agua_feriado_min}}" max="{{reduzir.agua_feriado}}" required/>
-                                <label> Litros</label>
-                            </div>
-                        </div><br>
-                        <button type="submit" class="btn btn-warning btn-block">
-                            <i class="fas fa-layer-group"></i> Categorizar
-                        </button>
-                    </form>
-                    <br>
+                    <br><br>
                     <a type="button" class="btn btn-warning"style="position: absolute; left: 10px;" href="/simular/algoritmos/?casa_id={{casa.id}}&mes_id={{mes.id}}">
                         <i class='fas fa-arrow-alt-circle-left'></i> Voltar
                     </a><br><br>

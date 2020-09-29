@@ -1,0 +1,96 @@
+{% extends "model-page.html" %}
+
+{% block content %}
+    <div align='center'>
+        <br>
+        <h3><i class="fas fa-home"></i> Gerar ponto medio </h3><br>
+        <div class="container">
+            <div class="row">
+                <div class="col col-6 col-sm-6 col-md-4 col-lg-6 col-xs-4 container box-gray">
+                    <br>
+                    <strong style="float: left;">Energia: {{mes.energia}} Kwh </strong>
+                    <br>
+                    <strong style="float: left;">Agua: {{mes.agua}} Litros </strong>
+                    <br>
+                    <br>
+                    <form action="/simular/categorizar" method="GET">
+                        <div align="center">
+                            <strong>Reduzir energia </strong>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <label>Semana </label>
+                                <input type="number" name="energia_semana" value="{{mes.energia_semana}}" min="{{mes.energia_semana_min}}" max="{{mes.energia_semana}}" required/>
+                                <label> kWh </label>
+                            </div>
+                            <div class="col">
+                                <label> Fim de semana </label>
+                                <input type="number" name="energia_final" value="{{mes.energia_feriado}}" min="{{mes.energia_feriado_min}}" max="{{mes.energia_feriado}}"  required/>
+                                <label> kWh </label>
+                            </div>
+                        </div><br>
+                        <div align="center">
+                            <strong>Reduzir água </strong>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <label>Semana </label>
+                                <input type="number" name="agua_semana" value="{{mes.agua_semana}}" min="{{mes.agua_semana_min}}"  max="{{mes.agua_semana}}" required/>
+                                <label> Litros </label>
+                            </div>
+                            <div class="col">
+                                <label> Fim de semana </label>
+                                <input type="number" name="agua_final" value="{{mes.agua_feriado}}" min="{{mes.agua_feriado_min}}" max="{{mes.agua_feriado}}" required/>
+                                <label> Litros</label>
+                            </div>
+                        </div><br>
+                        <button type="submit" class="btn btn-warning btn-block">
+                            <i class="fas fa-layer-group"></i> Categorizar
+                        </button>
+                    </form>
+                    <br>
+                    <a type="button" class="btn btn-warning"style="position: absolute; left: 10px;" href="/simular/algoritmos/?casa_id={{casa.id}}&mes_id={{mes.id}}">
+                        <i class='fas fa-arrow-alt-circle-left'></i> Voltar
+                    </a><br><br>
+                </div>
+                {% if metas %}
+                    <div class="col col-6 col-sm-6 col-md-4 col-lg-6 col-xs-4 container box-gray">
+                        <table class="table table-striped table-dark">
+                            <thead>
+                                <tr align="center">
+                                    <th colspan="5">Metas cadastradas</th>
+                                </tr>
+                                <tr align="center">
+                                    <th>Mes</th>
+                                    <th>Semana</th>
+                                    <th>Fim semana</th>
+                                    <th>Semana</th>
+                                    <th>Fim semana</th>
+                                </tr>
+                             </thead>
+                            {% for item in metas %}
+                                <tr>
+                                    <td>
+                                        {{item.mes}}
+                                    </td>
+                                    <td>
+                                        {{item.reduzir_energia_semana}} KwH
+                                    </td>
+                                    <td>
+                                        {{item.reduzir_energia_feriado}} KwH
+                                    </td>
+                                    <td>
+                                        {{item.reduzir_agua_semana}} Litros
+                                    </td>
+                                    <td>
+                                        {{item.reduzir_agua_feriado}} Litros
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </table>  
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

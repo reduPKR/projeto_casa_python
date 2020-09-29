@@ -142,18 +142,25 @@ class Clima(models.Model):
     class Meta:
         db_table = 'clima'
 
-class GrupoCoeficiente(models.Model):
+class MetaTreino(models.Model):
     casa = models.ForeignKey(Casa,on_delete=models.CASCADE)
     mes = models.CharField(max_length=30)
-    precisao = models.DecimalField(max_digits=4, decimal_places=1, default=0)
-
-    gerador = models.CharField(max_length=30)
 
     reduzir_agua_semana = models.FloatField(default=0)
     reduzir_agua_feriado = models.FloatField(default=0)
     
     reduzir_energia_semana = models.FloatField(default=0)
     reduzir_energia_feriado = models.FloatField(default=0)
+
+    class Meta:
+        db_table = 'meta_treino'
+
+class GrupoCoeficiente(models.Model):
+    meta_treino = models.ForeignKey(MetaTreino,on_delete=models.CASCADE)
+    precisao = models.DecimalField(max_digits=4, decimal_places=1, default=0)
+    gerador = models.CharField(max_length=30)
+
+    tempo_treino = models.FloatField(default=0)
 
     class Meta:
         db_table = 'grupo_coeficientes'

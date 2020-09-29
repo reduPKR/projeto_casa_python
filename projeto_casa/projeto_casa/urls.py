@@ -23,6 +23,7 @@ from core.pages.gerador_testes import views as gerarTeste
 from core.pages.simulacao import views as simular
 from core.pages.regressao_linear import views as regressao
 from core.pages.genetico import views as genetico
+from core.pages.categoria import views as categoria
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -85,9 +86,13 @@ urlpatterns = [
     path('simular/algoritmos/', simular.Algoritmos),
     path('simular/testar/', simular.ListaCoeficientes),
 
+    #categorias
+    path('simular/gerar/categoria', categoria.Exibir),
+    path('simular/categorizar', categoria.GerarCategorias),
+
     #regressao linear
     path('regressao-linear-multipla/coeficiente', regressao.Exibir),
-    path('regressao-linear-multipla/coeficiente/categorizar', regressao.GerarCategorias),
+    path('regressao-linear-multipla/coeficiente/treinar', regressao.Treinar),
 
     #Algoritmo genetico
     path('genetico/', genetico.Exibir),
