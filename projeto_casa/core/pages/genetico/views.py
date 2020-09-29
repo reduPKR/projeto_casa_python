@@ -76,22 +76,27 @@ def genetico(request):
     return redirect('/genetico/?casa_id=1&mes_id=1')
 
 def sortearValor():
-    tipo = random.randint(0,100)
-    if tipo < 60:
-        valores = {'acerto': 0, 'temperatura': random.random() , 'umidade': random.random() , 'vento': random.random() , 'pressao': random.random() , 'chuva': random.random() }
-    elif tipo < 80:
-        valores = {'acerto': 0, 'temperatura': random.random() * 10 , 'umidade': random.random() * 10 , 'vento': random.random() * 10 , 'pressao': random.random() * 10 , 'chuva': random.random() * 10 }
-    elif tipo < 90:
-        valores = {'acerto': 0, 'temperatura': random.random() * 100 , 'umidade': random.random() * 100 , 'vento': random.random() * 100 , 'pressao': random.random() * 100 , 'chuva': random.random() * 100 }
-    else:
+    lista = []
+    i = 0;
+    while i < 5:
         tipo = random.randint(0,100)
-        if tipo < 50:
-            valores = {'acerto': 0, 'temperatura':  .5 - random.random() , 'umidade':  .5 - random.random() , 'vento':  .5 - random.random() , 'pressao':  .5 - random.random() , 'chuva':  .5 - random.random() }
+        if tipo < 40:
+            lista.append(random.random())
         elif tipo < 70:
-            valores = {'acerto': 0, 'temperatura': 10  - random.random() * 20 , 'umidade': 10  - random.random() * 20 , 'vento': 10  - random.random() * 20 , 'pressao': 10  - random.random() * 20 , 'chuva': 10  - random.random() * 20 }
+            lista.append((random.random()*10))
+        elif tipo < 90:
+            lista.append((random.random()*100))
         else:
-            valores = {'acerto': 0, 'temperatura': 100 - random.random() * 200 , 'umidade': 100 - random.random() * 200 , 'vento': 100 - random.random() * 200 , 'pressao': 100 - random.random() * 200 , 'chuva': 100 - random.random() * 200 }
-    return valores
+            tipo = random.randint(0,100)
+            if tipo < 50:
+                lista.append(-random.random())
+            elif tipo < 90:
+                lista.append((random.random()*-10))
+            else:
+                lista.append((random.random()*-100))
+        i += 1
+    
+    return {'acerto': 0, 'temperatura': lista[0] , 'umidade': lista[1] , 'vento': lista[2] , 'pressao': lista[3] , 'chuva': lista[4] }
 
 def gerar1():
     global genes
@@ -237,9 +242,14 @@ def executarGenetico():
         pos += 1
     print("Geraçao 0")
     while perc < percParada and geracao < 100:
+        if geracao % 20 != 0:
+            x = .1 #mantem 10% da populacao
+        else:
+            x = .01 #mantem 1%
+
         pos = 0
         while pos < len(listaComodos):
-            selecao(listaComodos[pos]) #elimina 90% com piores reultados
+            selecao(listaComodos[pos], x) #elimina 90% com piores reultados
             cruzamento(listaComodos[pos])
             calcularAptidao(listaComodos[pos],listaSemana[pos],listaFinalSemana[pos]) 
             pos += 1
@@ -247,7 +257,7 @@ def executarGenetico():
         geracao += 1
         print("Geraçao {} Tx. acerto {}".format(geracao,perc))
     fim = time.time()
-    salvarResultados(listaComodos,perc, (fim-ini))
+    # salvarResultados(listaComodos,perc, (fim-ini))
 
 def calcularAptidao(comodo,listaSemana,listaFinalSemana):
     total = len(listaSemana)
@@ -299,9 +309,8 @@ def calcularAptidao(comodo,listaSemana,listaFinalSemana):
     # comodo['energia_feriado'] = sorted(comodo['energia_feriado'], key=lambda row:row['acerto'], reverse=True)
     # comodo['agua_feriado'] = sorted(comodo['agua_feriado'], key=lambda row:row['acerto'], reverse=True)
 
-def selecao(comodo):
-    global genes
-    perc = .1
+def selecao(comodo,perc):
+    global genes 
 
     comodo['energia_semana'] = sorted(comodo['energia_semana'], key=lambda row:row['acerto'], reverse=True)
     comodo['agua_semana'] = sorted(comodo['agua_semana'], key=lambda row:row['acerto'], reverse=True)
@@ -484,19 +493,19 @@ def cruzamento(comodo):
 def completarPopulacao(comodo):
     global genes
 
-    while len(comodo['energia_semana']) < genes:
+    while len(comodo['energia_semana']) < genes and comodo['energia_semana'][0]['acerto'] < 99:
         valores = sortearValor()
         comodo['energia_semana'].append(valores)
     
-    while len(comodo['agua_semana']) < genes:
+    while len(comodo['agua_semana']) < genes and comodo['agua_semana'][0]['acerto'] < 99:
         valores = sortearValor()
         comodo['agua_semana'].append(valores)
 
-    while len(comodo['energia_feriado']) < genes:
+    while len(comodo['energia_feriado']) < genes and comodo['energia_feriado'][0]['acerto'] < 99:
         valores = sortearValor()
         comodo['energia_feriado'].append(valores)
     
-    while len(comodo['agua_feriado']) < genes:
+    while len(comodo['agua_feriado']) < genes and comodo['agua_feriado'] [0]['acerto'] < 99:
         valores = sortearValor()
         comodo['agua_feriado'].append(valores)
 
@@ -533,21 +542,14 @@ def mutacao(filho):
 def salvarResultados(listaComodos,perc,tempo):
     global meta
     global casa
-    
-    GrupoCoeficiente.objects.create(
+
+    novo = GrupoCoeficiente.objects.create(
         meta_treino = meta,
         gerador = "Algoritmo genetico",
         precisao = perc,
         tempo_treino= tempo
     )
-
-    novo = GrupoCoeficiente.objects.filter(
-        meta_treino = meta,
-        gerador = "Algoritmo genetico",
-        precisao = perc,
-        tempo_treino= tempo
-    ).last()
-
+    
     comodos = Comodo.objects.filter(casa=casa)
     pos = 0
     for comodo in comodos:
