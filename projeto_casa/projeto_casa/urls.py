@@ -24,6 +24,7 @@ from core.pages.simulacao import views as simular
 from core.pages.regressao_linear import views as regressao
 from core.pages.genetico import views as genetico
 from core.pages.categoria import views as categoria
+from core.pages.comparar import views as comparar
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -89,6 +90,10 @@ urlpatterns = [
     #categorias
     path('simular/gerar/categoria', categoria.Exibir),
     path('simular/categorizar', categoria.GerarCategorias),
+
+    #comparacoes
+    path('simular/selecionar/meta', comparar.Exibir),
+    path('simular/selecionar/coeficientes', comparar.Selecionar),
 
     #regressao linear
     path('regressao-linear-multipla/coeficiente', regressao.Exibir),

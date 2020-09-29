@@ -72,23 +72,22 @@ def genetico(request):
         gerarAnalise()
         executarGenetico()
         
-
-    return redirect('/genetico/?casa_id=1&mes_id=1')
+    return redirect('/simular/meses/?id={}'.format(casa.id))
 
 def sortearValor():
     lista = []
     i = 0;
     while i < 5:
         tipo = random.randint(0,100)
-        if tipo < 40:
+        if tipo < 50:
             lista.append(random.random())
-        elif tipo < 70:
+        elif tipo < 80:
             lista.append((random.random()*10))
-        elif tipo < 90:
+        elif tipo < 95:
             lista.append((random.random()*100))
         else:
             tipo = random.randint(0,100)
-            if tipo < 50:
+            if tipo < 60:
                 lista.append(-random.random())
             elif tipo < 90:
                 lista.append((random.random()*-10))
@@ -240,7 +239,6 @@ def executarGenetico():
     while pos < len(listaComodos):
         calcularAptidao(listaComodos[pos],listaSemana[pos],listaFinalSemana[pos])
         pos += 1
-    print("Geraçao 0")
     while perc < percParada and geracao < 100:
         if geracao % 20 != 0:
             x = .1 #mantem 10% da populacao
@@ -257,7 +255,7 @@ def executarGenetico():
         geracao += 1
         print("Geraçao {} Tx. acerto {}".format(geracao,perc))
     fim = time.time()
-    # salvarResultados(listaComodos,perc, (fim-ini))
+    salvarResultados(listaComodos,perc, (fim-ini))
 
 def calcularAptidao(comodo,listaSemana,listaFinalSemana):
     total = len(listaSemana)
