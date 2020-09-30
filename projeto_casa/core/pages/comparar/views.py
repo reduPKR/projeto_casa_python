@@ -4,7 +4,6 @@ from datetime import date
 import random
 import time
 
-
 def Exibir(request):
     casa_id = request.GET.get('casa_id')
 

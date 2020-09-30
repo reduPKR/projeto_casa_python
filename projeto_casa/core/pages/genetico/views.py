@@ -82,9 +82,9 @@ def sortearValor():
     while i < 5:
         if misto == 0 or i == 0:
             tipo = random.randint(0,100)
-            val = random.randint(0,100)
+        val = random.randint(0,10)
        
-        if val != 99:
+        if val != 1:
             if tipo < 60:
                 lista.append(random.random())
             elif tipo < 95:

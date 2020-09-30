@@ -184,15 +184,12 @@ def gerarPadrao(energia_semana, energia_final, agua_semana, agua_final):
                     for comodo in comodos:
                         energia = agua = 0
                         for terminal in comodo.terminais:
-                            for consumo in terminal.consumos:
-                                if data == consumo.data and hora == consumo.hora:
-                                    agua = agua + calcularConsumo(terminal.comodo_equipamento.equipamento.consumo_agua, consumo.tempo)
-                                    energia = energia + calcularConsumo(terminal.comodo_equipamento.equipamento.consumo_energia, consumo.tempo)                              
-                                elif data == consumo.data and hora < consumo.hora:
-                                    break
-                                elif data < consumo.data:
-                                    break
-
+                            teste = filter(lambda consumo: data == consumo.data and hora == consumo.hora, terminal.consumos)
+                            if teste != None:
+                                for item in teste:
+                                    agua = agua + calcularConsumo(terminal.comodo_equipamento.equipamento.consumo_agua, item.tempo)
+                                    energia = energia + calcularConsumo(terminal.comodo_equipamento.equipamento.consumo_energia, item.tempo)                              
+                        
                         #Se nao tem nada vai atrapalhar
                         if agua > 0 or energia > 0:
                             semana = data.weekday()
