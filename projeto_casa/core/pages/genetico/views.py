@@ -4,7 +4,7 @@ from datetime import date
 import random
 import time
 
-genes = 10000
+genes = 15000
 percParada = 95
 casa = None
 mes = None
@@ -76,20 +76,25 @@ def genetico(request):
 
 def sortearValor():
     lista = []
-    i = 0;
+    i = 0
+
+    misto = random.randint(0,10) #evita ter valores muito embaralhados
     while i < 5:
-        tipo = random.randint(0,100)
-        if tipo < 50:
-            lista.append(random.random())
-        elif tipo < 80:
-            lista.append((random.random()*10))
-        elif tipo < 95:
-            lista.append((random.random()*100))
-        else:
+        if misto == 0 or i == 0:
             tipo = random.randint(0,100)
+            val = random.randint(0,100)
+       
+        if val != 99:
             if tipo < 60:
-                lista.append(-random.random())
-            elif tipo < 90:
+                lista.append(random.random())
+            elif tipo < 95:
+                lista.append((random.random()*10))
+            else:
+                lista.append((random.random()*100))
+        else:
+            if tipo < 60:
+                lista.append(random.random()*-1)
+            elif tipo < 95:
                 lista.append((random.random()*-10))
             else:
                 lista.append((random.random()*-100))
@@ -239,15 +244,15 @@ def executarGenetico():
     while pos < len(listaComodos):
         calcularAptidao(listaComodos[pos],listaSemana[pos],listaFinalSemana[pos])
         pos += 1
-    while perc < percParada and geracao < 100:
+    while perc < percParada and geracao < 200:
         if geracao % 20 != 0:
-            x = .2 #mantem 20% da populacao
+            x = .1 #mantem 20% da populacao
         else:
             x = .01 #mantem 1%
 
         pos = 0
         while pos < len(listaComodos):
-            selecao(listaComodos[pos], x) #elimina 90% com piores reultados
+            selecao(listaComodos[pos], x) 
             cruzamento(listaComodos[pos])
             calcularAptidao(listaComodos[pos],listaSemana[pos],listaFinalSemana[pos]) 
             pos += 1
@@ -367,9 +372,9 @@ def cruzamento(comodo):
                 'chuva': (gene1['chuva'] * .4) + (gene2['chuva'] * .6)}
             
             chance = random.randint(0,1000)
-            if chance >= 995:
+            if chance == 999:
                 mutacao(filho1)
-            elif chance >= 990:
+            elif chance == 998:
                 mutacao(filho2)
 
             cromosomos.append(filho1)
@@ -403,9 +408,9 @@ def cruzamento(comodo):
                 'chuva': (gene1['chuva'] * .4) + (gene2['chuva'] * .6)}
 
             chance = random.randint(0,1000)
-            if chance >= 995:
+            if chance == 999:
                 mutacao(filho1)
-            elif chance >= 990:
+            elif chance == 998:
                 mutacao(filho2)
 
 
@@ -440,9 +445,9 @@ def cruzamento(comodo):
                 'chuva': (gene1['chuva'] * .4) + (gene2['chuva'] * .6)}
 
             chance = random.randint(0,1000)
-            if chance >= 995:
+            if chance == 999:
                 mutacao(filho1)
-            elif chance >= 990:
+            elif chance == 998:
                 mutacao(filho2)
 
             cromosomos.append(filho1)
@@ -476,9 +481,9 @@ def cruzamento(comodo):
                 'chuva': (gene1['chuva'] * .4) + (gene2['chuva'] * .6)}
 
             chance = random.randint(0,1000)
-            if chance >= 995:
+            if chance == 999:
                 mutacao(filho1)
-            elif chance >= 990:
+            elif chance == 998:
                 mutacao(filho2)
 
             cromosomos.append(filho1)
@@ -524,18 +529,34 @@ def percentualGeral(listaComodos):
         
 def mutacao(filho):
     gene = random.randint(0,5)
-    valor = random.random() * 100
+    tipo = random.randint(0,10)
+
 
     if gene == 0:
-        filho['temperatura'] = valor - (random.random() * (valor * 2))
+        if tipo != 0:
+            filho['temperatura'] = filho['temperatura'] + random.random()
+        else:
+            filho['temperatura'] = filho['temperatura'] - random.random()
     elif gene == 1:
-        filho['umidade'] = valor - (random.random() * (valor * 2))
+        if tipo != 0:
+            filho['umidade'] = filho['umidade'] + random.random()
+        else:
+            filho['umidade'] = filho['umidade'] - random.random()
     elif gene == 2:
-        filho['vento'] = valor - (random.random() * (valor * 2))
+        if tipo != 0:
+            filho['vento'] = filho['vento'] + random.random()
+        else:
+            filho['vento'] = filho['vento'] - random.random()
     elif gene == 3:
-        filho['pressao']  = valor - (random.random() * (valor * 2))
+        if tipo != 0:
+            filho['pressao']  = filho['pressao'] + random.random()
+        else:
+            filho['pressao']  = filho['pressao'] - random.random()
     else:
-        filho['chuva'] = valor - (random.random() * (valor * 2))
+        if tipo != 0:
+            filho['chuva'] = filho['chuva'] + random.random()
+        else:
+            filho['chuva'] = filho['chuva'] - random.random()
         
 def salvarResultados(listaComodos,perc,tempo):
     global meta
