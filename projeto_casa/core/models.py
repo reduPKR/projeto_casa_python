@@ -47,8 +47,23 @@ class Comodo(models.Model):
     class Meta:
         db_table = 'comodo'
 
+class MetaTreino(models.Model):
+    casa = models.ForeignKey(Casa,on_delete=models.CASCADE)
+    mes = models.CharField(max_length=30)
+
+    reduzir_agua_semana = models.FloatField(default=0)
+    reduzir_agua_feriado = models.FloatField(default=0)
+    
+    reduzir_energia_semana = models.FloatField(default=0)
+    reduzir_energia_feriado = models.FloatField(default=0)
+
+    class Meta:
+        db_table = 'meta_treino'
+
+
 class ComodoValorY(models.Model):
     comodo = models.ForeignKey(Comodo,on_delete=models.CASCADE)
+    meta = models.ForeignKey(MetaTreino, on_delete=models.CASCADE)
     data = models.DateField()
     hora = models.IntegerField()
 
@@ -141,19 +156,6 @@ class Clima(models.Model):
 
     class Meta:
         db_table = 'clima'
-
-class MetaTreino(models.Model):
-    casa = models.ForeignKey(Casa,on_delete=models.CASCADE)
-    mes = models.CharField(max_length=30)
-
-    reduzir_agua_semana = models.FloatField(default=0)
-    reduzir_agua_feriado = models.FloatField(default=0)
-    
-    reduzir_energia_semana = models.FloatField(default=0)
-    reduzir_energia_feriado = models.FloatField(default=0)
-
-    class Meta:
-        db_table = 'meta_treino'
 
 class GrupoCoeficiente(models.Model):
     meta_treino = models.ForeignKey(MetaTreino,on_delete=models.CASCADE)

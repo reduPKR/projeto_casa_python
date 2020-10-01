@@ -7,11 +7,12 @@
         <div class="container">
             <div class="row">
                 <div class="col col-6 col-sm-6 col-md-4 col-lg-6 col-xs-4 container box-gray">
-                    <br><br>
-                    <strong>Regressão linear multipla</strong><br>
-                    <label>
+                    <br>
+                        <strong>Algoritmos para meta {{meta.id}} - mes de {{meta.mes}}</strong>
+                    <br><br>              
+                    <strong style="position: absolute; left: 10px;">
                         Regressão linear multipla {{regressao.id}} com precisão {{regressao.precisao}}%
-                    </label><br>
+                    </strong><br><br>
                     {% if genetico %}
                         <form action="/simular/selecionar/comparar" method="GET">
                             <input type="text" name="casa_id" value="{{casa.id}}" hidden>
@@ -19,7 +20,7 @@
                             <input type="text" name="mlr_id" value="{{regressao.id}}" hidden>
                             <select class="form-control" name="genetico_id">
                                 {% for item in genetico %}
-                                    <option value={{ item.id }}>Algoritmo genetico {{item.id}} - {{item.precisao}}%
+                                    <option value={{ item.id }}>Algoritmo genetico {{item.id}} com precisão {{item.precisao}}%
                                 {% endfor %}
                             </select><br><br>
                             <button type="submit" class="btn btn-secondary btn-lg btn-block">

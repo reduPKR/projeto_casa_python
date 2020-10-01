@@ -64,9 +64,7 @@ def GerarCategorias(request):
             )
             
             if meta.count() == 0:
-                gerarPadrao(energia_semana, energia_final, agua_semana, agua_final)
-
-                MetaTreino.objects.create(
+                meta = MetaTreino.objects.create(
                     casa = casa,
                     mes = mes.mes,
                     reduzir_agua_semana = agua_semana,
@@ -74,6 +72,10 @@ def GerarCategorias(request):
                     reduzir_energia_semana = energia_semana,
                     reduzir_energia_feriado = energia_final
                 )
+
+                gerarPadrao(meta, energia_semana, energia_final, agua_semana, agua_final)
+
+                
 
         return redirect('/simular/gerar/categoria?casa_id={}&mes_id={}'.format(casa.id,mes.id))
     return redirect('/simular/casas/')
@@ -134,7 +136,7 @@ def gerarPesos():
                 item['percent_energia'] = round((item['energia']*100)/energia_total,2)
     return dados
 
-def gerarPadrao(energia_semana, energia_final, agua_semana, agua_final):
+def gerarPadrao(meta, energia_semana, energia_final, agua_semana, agua_final):
     global casa
     #global mes
     
@@ -170,6 +172,7 @@ def gerarPadrao(energia_semana, energia_final, agua_semana, agua_final):
     
         meses = ConsumoMes.objects.all()
         for mes in meses:
+            print(mes.mes)
             for comodo in comodos:              
                 for terminal in comodo.terminais:
                     terminal.consumos = ConsumoHora.objects.filter(comodo_saida = terminal, mes = mes)                
@@ -184,9 +187,9 @@ def gerarPadrao(energia_semana, energia_final, agua_semana, agua_final):
                     for comodo in comodos:
                         energia = agua = 0
                         for terminal in comodo.terminais:
-                            teste = filter(lambda consumo: data == consumo.data and hora == consumo.hora, terminal.consumos)
-                            if teste != None:
-                                for item in teste:
+                            consumos = filter(lambda consumo: data == consumo.data and hora == consumo.hora, terminal.consumos)
+                            if consumos != None:
+                                for item in consumos:
                                     agua = agua + calcularConsumo(terminal.comodo_equipamento.equipamento.consumo_agua, item.tempo)
                                     energia = energia + calcularConsumo(terminal.comodo_equipamento.equipamento.consumo_energia, item.tempo)                              
                         
@@ -207,6 +210,7 @@ def gerarPadrao(energia_semana, energia_final, agua_semana, agua_final):
                                 comodo = comodo,
                                 data = data,
                                 hora = hora,
+                                meta = meta, 
                                 meta_agua = agua,
                                 meta_energia = energia
                             )

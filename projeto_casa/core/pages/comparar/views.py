@@ -73,13 +73,19 @@ def Comparar(request):
     gen = GrupoCoeficiente.objects.get(id=genetico_id)
     analise(casa,meta, gen,gen_precisao, gen_tempo)
 
-    regressao = []
-    genetico = []
+    lista_mlr = []
+    lista_gen = []
     i = 0
     while i < 12:
         mes = getMes(i)
-        regressao.append({"mes": mes, "precisao": mlr_precisao[i], "tempo": mlr_tempo[i]})
-        genetico.append({"mes": mes, "precisao": gen_precisao[i], "tempo": gen_tempo[i]})
+        lista_mlr.append({"mes": mes, "precisao": mlr_precisao[i], "tempo": mlr_tempo[i]})
+        lista_gen.append({"mes": mes, "precisao": gen_precisao[i], "tempo": gen_tempo[i]})
+        i += 1
+    lista_mlr.append({"mes": "Media", "precisao": mlr_precisao[i], "tempo": mlr_tempo[i]})
+    lista_gen.append({"mes": "Media", "precisao": gen_precisao[i], "tempo": gen_tempo[i]})
+
+    regressao = {"treino": converter(reg.tempo_treino), "lista": lista_mlr}
+    genetico = {"treino": converter(gen.tempo_treino), "lista": lista_gen}
     
     dados = {
         'titulo':'Comparações', 
@@ -88,7 +94,7 @@ def Comparar(request):
         'regressao': regressao,
         'genetico': genetico
     }
-    return render(request, 'simulacao/comparar/resultados.html', dados)
+    return render(request, 'simulacao/comparar/resultado.html', dados)
 
 def analise(casa,meta,grupo,precisao,tempo):
 
@@ -101,42 +107,62 @@ def analise(casa,meta,grupo,precisao,tempo):
             comodo.energia_fim_semana = Coeficiente.objects.filter(grupo=grupo,comodo=comodo,energia=True, semana=False).first()
             comodo.agua_fim_semana = Coeficiente.objects.filter(grupo=grupo,comodo=comodo,energia=False, semana=False).first()
 
+        media_tempo = 0
+        media_precisao = 0
         while month < 12:
-            clima = Clima.objects.filter(data__month=(month+1))
+            climas = Clima.objects.filter(data__month=(month+1))
             for comodo in comodos:
-                comodo.resultados = ComodoValorY.objects.filter(comodo=comodo,data__month=month)
-                print(comodo.resultados)
+                comodo.resultados = ComodoValorY.objects.filter(comodo=comodo,meta=meta,data__month=(month+1))
             total = 0
             acerto = 0
             ini = time.time()
-            print("\n\n\n")
             for comodo in comodos:
-                print(comodo)
-                for resultado in comodo.resultados:    
-                    print(resultado)            
+                for resultado in comodo.resultados: 
+                    clima = filter(lambda clima: resultado.data == clima.data and resultado.hora == clima.hora, climas)                 
                     for item in clima:
-                        print(item) 
-                        if resultado.data == item.data and resultado.hora == item.hora:
-                            if resultado.data.weekday() < 5:
-                                energia = (item.temperatura * comodo.energia_semana.temperatura) + (item.umidade * comodo.energia_semana.umidade) + (item.vento * comodo.energia_semana.vento) + (item.pressao * comodo.energia_semana.pressao) + (item.chuva * comodo.energia_semana.chuva)
-                                agua = (item.temperatura * comodo.agua_semana.temperatura) + (item.umidade * comodo.agua_semana.umidade) + (item.vento * comodo.agua_semana.vento) + (item.pressao * comodo.agua_semana.pressao) + (item.chuva * comodo.agua_semana.chuva)                                
-                            else:
-                                energia = (item.temperatura * comodo.energia_fim_semana.temperatura) + (item.umidade * comodo.energia_fim_semana.umidade) + (item.vento * comodo.energia_fim_semana.vento) + (item.pressao * comodo.energia_fim_semana.pressao) + (item.chuva * comodo.energia_fim_semana.chuva)
-                                agua = (item.temperatura * comodo.agua_fim_semana.temperatura) + (item.umidade * comodo.agua_fim_semana.umidade) + (item.vento * comodo.agua_fim_semana.vento) + (item.pressao * comodo.agua_fim_semana.pressao) + (item.chuva * comodo.agua_fim_semana.chuva)
+                        if resultado.data.weekday() < 5:
+                            energia = (item.temperatura * comodo.energia_semana.temperatura) + (item.umidade * comodo.energia_semana.umidade) + (item.vento * comodo.energia_semana.vento) + (item.pressao * comodo.energia_semana.pressao) + (item.chuva * comodo.energia_semana.chuva)
+                            agua = (item.temperatura * comodo.agua_semana.temperatura) + (item.umidade * comodo.agua_semana.umidade) + (item.vento * comodo.agua_semana.vento) + (item.pressao * comodo.agua_semana.pressao) + (item.chuva * comodo.agua_semana.chuva)                                
+                        else:
+                            energia = (item.temperatura * comodo.energia_fim_semana.temperatura) + (item.umidade * comodo.energia_fim_semana.umidade) + (item.vento * comodo.energia_fim_semana.vento) + (item.pressao * comodo.energia_fim_semana.pressao) + (item.chuva * comodo.energia_fim_semana.chuva)
+                            agua = (item.temperatura * comodo.agua_fim_semana.temperatura) + (item.umidade * comodo.agua_fim_semana.umidade) + (item.vento * comodo.agua_fim_semana.vento) + (item.pressao * comodo.agua_fim_semana.pressao) + (item.chuva * comodo.agua_fim_semana.chuva)
 
-                            total += 2
-                            if resultado.meta_energia == round(energia):
-                                acerto += 1
-                            if resultado.meta_agua == round(agua):
-                                acerto += 1
-                            print(total) 
-                            print(acerto) 
+                        total += 2
+                        if resultado.meta_energia == round(energia):
+                            acerto += 1
+                        if resultado.meta_agua == round(agua):
+                            acerto += 1 
             
             fim = time.time()
-            precisao.append((acerto*100)/total)
-            tempo.append(fim-ini)
+            precisao.append(round((acerto*100)/total,2))
+            tempo.append(round(fim-ini,2))
+            media_precisao += ((acerto*100)/total)
+            media_tempo += fim-ini
+
             month += 1
+        precisao.append(round(media_precisao/12,2)) 
+        tempo.append(round(media_tempo/12,2))
 
 def getMes(mes):
     meses = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro']
     return meses[mes]
+
+def converter(tempo):
+    if tempo < 1:
+        return "00:00:00:{}".format(round(tempo,2))
+    elif tempo < 60:
+        seg = int(tempo)
+        ms = int(tempo*100%100)
+        return "00:00:{}:{}".format(seg,ms)
+    elif tempo < 3600:
+        tempo /= 60
+        minutos = int(tempo)
+
+        tempo *= 100
+        seg = int(tempo%100)
+        
+        tempo -= seg
+        ms = int(tempo*100%100)
+        return "00:{}:{}:{}".format(minutos,seg,ms)
+  
+    

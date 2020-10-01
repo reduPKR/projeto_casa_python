@@ -15,6 +15,7 @@
                                     <th colspan="5">Metas cadastradas</th>
                                 </tr>
                                 <tr align="center">
+                                    <th>ID</th>
                                     <th>Semana</th>
                                     <th>Fim semana</th>
                                     <th>Semana</th>
@@ -23,6 +24,9 @@
                              </thead>
                             {% for item in metas %}
                                 <tr>
+                                    <td>
+                                        {{item.id}} 
+                                    </td>
                                     <td>
                                         {{item.reduzir_energia_semana}} KwH
                                     </td>

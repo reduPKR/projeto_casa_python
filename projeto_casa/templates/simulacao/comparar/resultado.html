@@ -6,12 +6,15 @@
         <h3><i class="fas fa-home"></i> Resultados</h3><br>
         <div class="container">
             <div class="row">
-                <div class="col col-6 col-sm-6 col-md-4 col-lg-8 col-xs-4 container box-gray">
+                <div class="col col-6 col-sm-6 col-md-4 col-lg-6 col-xs-4 container box-gray">
                    <br>
                         <table class="table table-striped table-dark">
                             <thead>
                                 <tr align="center">
-                                    <th colspan="5">Dados Regressão linear multipla</th>
+                                    <th colspan="3">Dados Regressão linear multipla</th>
+                                </tr>
+                                <tr align="center">
+                                    <th colspan="3">Tempo de treino {{regressao.treino}}</th>
                                 </tr>
                                 <tr align="center">
                                     <th>Mes</th>
@@ -19,13 +22,13 @@
                                     <th>Tempo</th>
                                 </tr>
                              </thead>
-                            {% for item in regressao %}
+                            {% for item in regressao.lista %}
                                 <tr>
                                     <td>
                                         {{item.mes}} 
                                     </td>
                                     <td>
-                                        {{item.precisao}} 
+                                        {{item.precisao}} %
                                     </td>
                                     <td>
                                         {{item.tempo}} 
@@ -38,7 +41,7 @@
                         <i class='fas fa-arrow-alt-circle-left'></i> Voltar
                     </a><br><br>
                 </div>
-                <div class="col col-6 col-sm-6 col-md-4 col-lg-8 col-xs-4 container box-gray">
+                <div class="col col-6 col-sm-6 col-md-4 col-lg-6 col-xs-4 container box-gray">
                     <br>
                         <table class="table table-striped table-dark">
                             <thead>
@@ -46,18 +49,21 @@
                                     <th colspan="5">Dados Algoritmo genetico</th>
                                 </tr>
                                 <tr align="center">
+                                    <th colspan="3">Tempo de treino {{genetico.treino}}</th>
+                                </tr>
+                                <tr align="center">
                                     <th>Mes</th>
                                     <th>precisão</th>
                                     <th>Tempo</th>
                                 </tr>
                              </thead>
-                            {% for item in genetico %}
+                            {% for item in genetico.lista %}
                                 <tr>
                                     <td>
                                         {{item.mes}} 
                                     </td>
                                     <td>
-                                        {{item.precisao}} 
+                                        {{item.precisao}} %
                                     </td>
                                     <td>
                                         {{item.tempo}} 

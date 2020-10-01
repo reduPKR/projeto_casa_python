@@ -4,7 +4,7 @@ from datetime import date
 import random
 import time
 
-genes = 15000
+genes = 10000
 percParada = 95
 casa = None
 mes = None
@@ -244,7 +244,7 @@ def executarGenetico():
     while pos < len(listaComodos):
         calcularAptidao(listaComodos[pos],listaSemana[pos],listaFinalSemana[pos])
         pos += 1
-    while perc < percParada and geracao < 200:
+    while perc < percParada and geracao < 100:
         if geracao % 20 != 0:
             x = .1 #mantem 20% da populacao
         else:
