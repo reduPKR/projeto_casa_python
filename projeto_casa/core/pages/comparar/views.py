@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from core.models import *
+import json
 from datetime import date
 import random
 import time
@@ -92,7 +93,10 @@ def Comparar(request):
         'casa': casa,
         'meta': meta,
         'regressao': regressao,
-        'genetico': genetico
+        'genetico': genetico,
+        'grafico_regressao': json.dumps(mlr_precisao),
+        'grafico_generico': json.dumps(gen_precisao),
+        'meses': json.dumps(['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'])
     }
     return render(request, 'simulacao/comparar/resultado.html', dados)
 
