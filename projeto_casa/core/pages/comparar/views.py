@@ -64,15 +64,19 @@ def Comparar(request):
     casa = Casa.objects.get(id=casa_id)
     meta = MetaTreino.objects.get(id = meta_id)
     
+
     mlr_precisao = []
     mlr_tempo = []
     reg = GrupoCoeficiente.objects.get(id=mlr_id)
-    analise(casa,meta, reg,mlr_precisao, mlr_tempo)
+    comodos = getComodos(casa,reg)
+    analise(meta,mlr_precisao, mlr_tempo, comodos)
+    #analisarConsumo(comodos)
 
     gen_precisao = []
     gen_tempo = []
     gen = GrupoCoeficiente.objects.get(id=genetico_id)
-    analise(casa,meta, gen,gen_precisao, gen_tempo)
+    comodos = getComodos(casa,gen)
+    analise(meta,gen_precisao, gen_tempo, comodos)
 
     lista_mlr = []
     lista_gen = []
@@ -94,23 +98,26 @@ def Comparar(request):
         'meta': meta,
         'regressao': regressao,
         'genetico': genetico,
-        'grafico_regressao': json.dumps(mlr_precisao),
-        'grafico_generico': json.dumps(gen_precisao),
+        'grafico_comp_regressao': json.dumps(mlr_precisao),
+        'grafico_comp_generico': json.dumps(gen_precisao),
         'meses': json.dumps(['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'])
     }
     return render(request, 'simulacao/comparar/resultado.html', dados)
 
-def analise(casa,meta,grupo,precisao,tempo):
+def getComodos(casa, grupo):
+    comodos = Comodo.objects.filter(casa=casa)
+    for comodo in comodos:
+        comodo.energia_semana = Coeficiente.objects.filter(grupo=grupo,comodo=comodo,energia=True, semana=True).first()
+        comodo.agua_semana = Coeficiente.objects.filter(grupo=grupo,comodo=comodo,energia=False, semana=True).first()
+        comodo.energia_fim_semana = Coeficiente.objects.filter(grupo=grupo,comodo=comodo,energia=True, semana=False).first()
+        comodo.agua_fim_semana = Coeficiente.objects.filter(grupo=grupo,comodo=comodo,energia=False, semana=False).first()
+    
+    return comodos
 
-    if casa:
+def analise(meta,precisao,tempo, comodos):
+    if comodos:
         month = 0
-        comodos = Comodo.objects.filter(casa=casa)
-        for comodo in comodos:
-            comodo.energia_semana = Coeficiente.objects.filter(grupo=grupo,comodo=comodo,energia=True, semana=True).first()
-            comodo.agua_semana = Coeficiente.objects.filter(grupo=grupo,comodo=comodo,energia=False, semana=True).first()
-            comodo.energia_fim_semana = Coeficiente.objects.filter(grupo=grupo,comodo=comodo,energia=True, semana=False).first()
-            comodo.agua_fim_semana = Coeficiente.objects.filter(grupo=grupo,comodo=comodo,energia=False, semana=False).first()
-
+        
         media_tempo = 0
         media_precisao = 0
         while month < 12:
@@ -169,4 +176,3 @@ def converter(tempo):
         ms = int(tempo*100%100)
         return "00:{}:{}:{}".format(minutos,seg,ms)
   
-    
