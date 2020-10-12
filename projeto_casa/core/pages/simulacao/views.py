@@ -79,3 +79,46 @@ def ListaCoeficientes(request):
     }
 
     return render(request, 'simulacao/testar.html',dados)
+
+def Executar(request):
+    casa_id = request.GET.get('casa_id')
+    meta_id = request.GET.get('meta_id')
+
+    if casa_id:
+        casa = Casa.objects.get(id=casa_id)
+
+        estrutura = MontarEstrutura(casa)
+
+    return redirect('/simular/selecionar/meta?casa_id=1')
+    
+def MontarEstrutura(casa):
+    comodos = Comodo.objects.filter(casa=casa)
+    
+    listaHorarios = []
+    for comodo in comodos: 
+        terminais = ComodoSaida.objects.filter(comodo=comodo).exclude(comodo_equipamento__isnull=True)
+        comodo.terminais = terminais
+
+        for terminal in terminais:
+            horarios = ConsumoHora.objects.filter(comodo_saida=terminal)
+
+            for hora in horarios:
+                #Preferi fazer meu proprio filtro
+                if verificarLista(listaHorarios, hora):
+                    listaHorarios.append(hora)
+    
+    listaHorarios.sort(key=lambda item: (item.data, item.hora))
+    for item in listaHorarios:
+        print("{} {}".format(item.data, item.hora))
+    
+def verificarLista(lista, hora):
+    flag = True
+
+    i = 0
+    while i < len(lista) and flag:
+        if lista[i].hora == hora.hora and lista[i].data == hora.data:
+            flag = False
+        i += 1
+    return flag
+
+
