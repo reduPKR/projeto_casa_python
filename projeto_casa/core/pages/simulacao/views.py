@@ -86,8 +86,14 @@ def Executar(request):
 
     if casa_id:
         casa = Casa.objects.get(id=casa_id)
-
         estrutura = MontarEstrutura(casa)
+
+        for horario in estrutura:
+            print("Data {} {}".format(horario.data, horario.hora))
+            print("{} {} {} {} {}".format(horario.clima.temperatura, horario.clima.umidade, horario.clima.vento, horario.clima.pressao, horario.clima.chuva))
+            for comodo in horario.comodos:
+                print(comodo.nome)
+            print("*"*40)
 
     return redirect('/simular/selecionar/meta?casa_id=1')
     
@@ -101,6 +107,7 @@ def MontarEstrutura(casa):
 
         for terminal in terminais:
             horarios = ConsumoHora.objects.filter(comodo_saida=terminal)
+            terminal.horarios = horarios
 
             for hora in horarios:
                 #Preferi fazer meu proprio filtro
@@ -108,8 +115,25 @@ def MontarEstrutura(casa):
                     listaHorarios.append(hora)
     
     listaHorarios.sort(key=lambda item: (item.data, item.hora))
-    for item in listaHorarios:
-        print("{} {}".format(item.data, item.hora))
+    listaClimas = []
+    climas = Clima.objects.all()
+    for horario in listaHorarios:
+        for clima in climas:
+            if clima.data == horario.data and clima.hora == horario.hora:
+                horario.clima = clima 
+
+                itens = []
+                for comodo in comodos:
+                    for terminal in comodo.terminais:
+                        for hora in terminal.horarios:
+                            if hora.data == horario.data and hora.hora == horario.hora:
+                                itens.append(comodo)
+                
+                horario.comodos = itens
+
+    return listaHorarios
+
+
     
 def verificarLista(lista, hora):
     flag = True
