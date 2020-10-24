@@ -20,7 +20,7 @@
                                     <th>Fim semana</th>
                                     <th>Semana</th>
                                     <th>Fim semana</th>
-                                    <th colspan="2">Opções</th>
+                                    <th colspan="3">Opções</th>
                                 </tr>
                              </thead>
                             {% for item in metas %}
@@ -49,6 +49,16 @@
                                                 Comparar
                                             </button>
                                         </form>                           
+                                    </td>
+                                    <td>
+                                        <form action="/simular/excecucao/selecionar/coeficientes" method="GET">
+                                            <input type="text" name="casa_id" value="{{casa.id}}" hidden>
+                                            <input type="text" name="meta_id" value="{{item.id}}" hidden>
+                                            <button type="submit" class="btn btn-secondary">
+                                                <i class="fas fa-check-circle"></i>
+                                                Simular em execução
+                                            </button>
+                                        </form>
                                     </td>
                                     <td>
                                         <form action="/simular/selecionar/executar" method="GET">

@@ -55,6 +55,25 @@ def Selecionar(request):
 
     return render(request, 'simulacao/comparar/selecionar.html',dados)
 
+def SelecionarExecucao(request):
+    casa_id = request.GET.get('casa_id')
+    meta_id = request.GET.get('meta_id')
+
+    if casa_id:
+        casa = Casa.objects.get(id=casa_id)
+        meta = MetaTreino.objects.get(id = meta_id)
+
+        lista = GrupoCoeficiente.objects.filter(meta_treino=meta)
+
+    dados = {
+        'titulo':'Simular em execução',
+        'casa': casa,
+        'meta': meta,
+        'lista': lista
+    }
+
+    return render(request, 'simulacao/execucao/selecionar.html',dados)
+
 def Comparar(request):
     casa_id = request.GET.get('casa_id')
     meta_id = request.GET.get('meta_id')

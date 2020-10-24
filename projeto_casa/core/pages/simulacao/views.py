@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from core.models import *
 import math
 from datetime import date
+import time
 
 def ListarCasas(request):
     casas = Casa.objects.all().order_by('nome')
@@ -107,7 +108,7 @@ def MontarEstrutura(casa):
 
         for terminal in terminais:
             horarios = ConsumoHora.objects.filter(comodo_saida=terminal)
-            terminal.horarios = horarios
+            # terminal.horarios = horarios
 
             for hora in horarios:
                 #Preferi fazer meu proprio filtro
@@ -125,16 +126,20 @@ def MontarEstrutura(casa):
                 itens = []
                 for comodo in comodos:
                     for terminal in comodo.terminais:
-                        for hora in terminal.horarios:
-                            if hora.data == horario.data and hora.hora == horario.hora:
+                        hora = ConsumoHora.objects.filter(
+                            comodo_saida=terminal,
+                            data = horario.data,
+                            hora = horario.hora
+                        ).first()
+
+                        if hora != None:
+                            if comodo not in itens:
                                 itens.append(comodo)
                 
                 horario.comodos = itens
 
     return listaHorarios
 
-
-    
 def verificarLista(lista, hora):
     flag = True
 
@@ -144,5 +149,3 @@ def verificarLista(lista, hora):
             flag = False
         i += 1
     return flag
-
-

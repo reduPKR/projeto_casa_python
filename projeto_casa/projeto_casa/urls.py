@@ -21,6 +21,7 @@ from core.pages.configuracoes import views as configurar
 from core.pages.casa import views as cadastro
 from core.pages.gerador_testes import views as gerarTeste
 from core.pages.simulacao import views as simular
+from core.pages.simulacao.execucao import views as tempo_exec
 from core.pages.regressao_linear import views as regressao
 from core.pages.genetico import views as genetico
 from core.pages.categoria import views as categoria
@@ -87,6 +88,7 @@ urlpatterns = [
     path('simular/algoritmos/', simular.Algoritmos),
     path('simular/testar/', simular.ListaCoeficientes),
     path('simular/selecionar/executar', simular.Executar),
+    path('simular/selecionar/executar/tempo', tempo_exec.Executar),
 
     #categorias
     path('simular/gerar/categoria', categoria.Exibir),
@@ -95,6 +97,7 @@ urlpatterns = [
     #comparacoes
     path('simular/selecionar/meta', comparar.Exibir),
     path('simular/selecionar/coeficientes', comparar.Selecionar),
+    path('simular/excecucao/selecionar/coeficientes', comparar.SelecionarExecucao),
     path('simular/selecionar/comparar', comparar.Comparar),
 
     #regressao linear
