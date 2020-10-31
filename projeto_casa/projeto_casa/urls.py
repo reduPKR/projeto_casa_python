@@ -89,6 +89,7 @@ urlpatterns = [
     path('simular/testar/', simular.ListaCoeficientes),
     path('simular/selecionar/executar', simular.Executar),
     path('simular/selecionar/executar/tempo', tempo_exec.Executar),
+    path('simular/selecionar/leitura', tempo_exec.ler_dados),
 
     #categorias
     path('simular/gerar/categoria', categoria.Exibir),

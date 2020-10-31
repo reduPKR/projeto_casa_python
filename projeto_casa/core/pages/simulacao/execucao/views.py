@@ -1,8 +1,6 @@
 from django.shortcuts import render, redirect
 from core.models import *
-import math
-from datetime import date
-import time
+from django.http import JsonResponse
 
 casa = None
 meta = None
@@ -18,8 +16,8 @@ def Executar(request):
         global meta
         global tempo
 
-        casa = casa_id
-        meta = meta_id
+        casa = Casa.objects.filter(id=casa_id).first()
+        meta = MetaTreino.objects.filter(id=meta_id).first()
         tempo = minutos
 
         dados = {
@@ -28,6 +26,14 @@ def Executar(request):
             'tempo': tempo
         }
 
-        return render(request, 'simulacao/execucao/temporizador.html', dados)
+        return render(request, 'simulacao/execucao/temporizador.html', dados)   
 
     return redirect("/simular/casas/")
+
+def ler_dados(request):
+    hora = request.GET.get("hora")
+    dia = request.GET.get("dia")
+
+    print("Dia {} Hora {}".format(dia, hora))
+
+    return JsonResponse({"lista": 5}, status=200)

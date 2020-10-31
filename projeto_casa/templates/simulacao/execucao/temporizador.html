@@ -8,9 +8,9 @@
             <div class="row">
                 <div class="col col-6 col-sm-6 col-md-4 col-lg-6 col-xs-4 container box-gray">
                     <br>
-                    <label>Tempo para proxima leitura  <span id="time">{{tempo}}</span> minutos!</label>
+                    <label>Tempo para proxima leitura  <span id="time"></span> minutos!</label>
                     <br>
-                    <a type="button" class="btn btn-warning" style="position: absolute; left: 10px;" href="/simular/selecionar/meta?casa_id={{casa}}">
+                    <a type="button" class="btn btn-warning" style="position: absolute; left: 10px;" href="/simular/selecionar/meta?casa_id={{casa.id}}">
                         <i class='fas fa-arrow-alt-circle-left'></i> Voltar
                     </a><br><br>
                 </div>
@@ -18,7 +18,11 @@
         </div>
     </div>
 
+<script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <script>
+    let dia = 1;
+    let hora = 0;
+
     function Timer(duracao, display) {
         var timer = duracao, minutos, segundos;
         setInterval(function () {
@@ -32,7 +36,25 @@
 
             if (--timer < 0) {
                 timer = duracao;
-                //Chamar leitura
+
+                $.ajax({
+                    type: "get",
+                    url: "/simular/selecionar/leitura",
+                    data: {
+                        dia: dia,
+                        hora: hora
+                    },
+                    dataType: "json",
+                    success: function(result){
+                        console.log(result)
+                    }
+                });
+
+                hora++;
+                if(hora == 24){
+                    hora = 0;
+                    dia++;
+                }
             }
         }, 1000);
     }

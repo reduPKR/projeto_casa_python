@@ -148,7 +148,7 @@ def analise(meta,precisao,tempo, comodos):
             ini = time.time()
             for comodo in comodos:
                 for resultado in comodo.resultados: 
-                    clima = filter(lambda clima: resultado.data == clima.data and resultado.hora == clima.hora, climas)                 
+                    clima = filter(lambda clima: resultado.data == clima.data and resultado.hora == clima.hora, climas)
                     for item in clima:
                         if resultado.data.weekday() < 5:
                             energia = (item.temperatura * comodo.energia_semana.temperatura) + (item.umidade * comodo.energia_semana.umidade) + (item.vento * comodo.energia_semana.vento) + (item.pressao * comodo.energia_semana.pressao) + (item.chuva * comodo.energia_semana.chuva)
@@ -194,4 +194,3 @@ def converter(tempo):
         tempo -= seg
         ms = int(tempo*100%100)
         return "00:{}:{}:{}".format(minutos,seg,ms)
-  
