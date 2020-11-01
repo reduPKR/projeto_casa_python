@@ -23,6 +23,15 @@
     let dia = 1;
     let hora = 0;
 
+    window.onload = function () {
+        var tempo = JSON.parse('{{ tempo|safe }}');
+        var minutos = 60 * tempo,
+            display = document.querySelector('#time');
+
+        ler_dados();
+        Timer(minutos, display);
+    };
+
     function Timer(duracao, display) {
         var timer = duracao, minutos, segundos;
         setInterval(function () {
@@ -37,20 +46,7 @@
             if (--timer < 0) {
                 timer = duracao;
 
-                $.ajax({
-                    type: "get",
-                    url: "/simular/selecionar/leitura",
-                    data: {
-                        dia: dia,
-                        hora: hora
-                    },
-                    dataType: "json",
-                    success: function(result){
-                        console.log(result)
-                    }
-                });
-
-                hora++;
+                ler_dados();
                 if(hora == 24){
                     hora = 0;
                     dia++;
@@ -59,11 +55,21 @@
         }, 1000);
     }
 
-    window.onload = function () {
-        var tempo = JSON.parse('{{ tempo|safe }}');
-        var minutos = 60 * tempo,
-            display = document.querySelector('#time');
-        Timer(minutos, display);
-    };
+    function ler_dados() {
+        $.ajax({
+            type: "get",
+            url: "/simular/selecionar/leitura",
+            data: {
+                dia: dia,
+                hora: hora
+            },
+            dataType: "json",
+            success: function(result){
+                console.log(result)
+            }
+        });
+        hora++;
+    }
+
 </script>
 {% endblock %}

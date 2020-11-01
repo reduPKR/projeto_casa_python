@@ -2,23 +2,24 @@ from django.shortcuts import render, redirect
 from core.models import *
 from django.http import JsonResponse
 
-casa = None
-meta = None
 tempo = None
+comodos = None
 
 def Executar(request):
     casa_id = request.GET.get('casa_id')
-    meta_id = request.GET.get('meta_id')
+    grupo_id = request.GET.get('grupo_id')
     minutos = request.GET.get('tempo')
 
-    if casa_id and meta_id and minutos:
-        global casa
-        global meta
+    if casa_id and minutos and grupo_id:
         global tempo
+        global comodos
 
         casa = Casa.objects.filter(id=casa_id).first()
-        meta = MetaTreino.objects.filter(id=meta_id).first()
+        grupo = GrupoCoeficiente.objects.filter(id=grupo_id).first()
         tempo = minutos
+
+        comodos = Comodo.objects.filter(casa=casa)
+        getComodos(comodos, grupo)
 
         dados = {
             'titulo': 'Simular com teporizador',
@@ -30,10 +31,18 @@ def Executar(request):
 
     return redirect("/simular/casas/")
 
+def getComodos(comodos, grupo):
+    for comodo in comodos:
+        comodo.energia_semana = Coeficiente.objects.filter(grupo=grupo,comodo=comodo,energia=True, semana=True).first()
+        comodo.agua_semana = Coeficiente.objects.filter(grupo=grupo,comodo=comodo,energia=False, semana=True).first()
+        comodo.energia_fim_semana = Coeficiente.objects.filter(grupo=grupo,comodo=comodo,energia=True, semana=False).first()
+        comodo.agua_fim_semana = Coeficiente.objects.filter(grupo=grupo,comodo=comodo,energia=False, semana=False).first()
+
 def ler_dados(request):
     hora = request.GET.get("hora")
     dia = request.GET.get("dia")
 
-    print("Dia {} Hora {}".format(dia, hora))
+    
+
 
     return JsonResponse({"lista": 5}, status=200)

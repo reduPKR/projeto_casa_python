@@ -20,7 +20,7 @@
                             <label>Tempo de cada leitura:</label>
                             <input type="number" name="tempo" value="1" min="1" max="60"> Min.
                             <br>
-                            <select class="form-control" name="item_id">
+                            <select class="form-control" name="grupo_id">
                                 {% for item in lista %}
                                     <option value={{ item.id }}>{{item.gerador}} {{item.id}} com precisão {{item.precisao}}%
                                 {% endfor %}
