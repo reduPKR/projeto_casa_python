@@ -10,6 +10,29 @@
                     <br>
                     <label>Tempo para proxima leitura  <span id="time"></span> minutos!</label>
                     <br>
+                    {% if consumos.gastos %}
+                        <table class="table table-striped table-dark">
+                             <thead>
+                                <tr align="center">
+                                    {% for titulo in consumos.titulos %}
+                                        <th>
+                                            {{titulo}}
+                                        </th>
+                                    {% endfor %}
+                                </tr>
+                             </thead>
+                            {% for gastos in consumos.gastos %}
+                                <tr>
+                                    {% for gasto in gastos %}
+                                        <td>
+                                            {{gasto}}
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    {% endif %}
+                    <br>
                     <a type="button" class="btn btn-warning" style="position: absolute; left: 10px;" href="/simular/selecionar/meta?casa_id={{casa.id}}">
                         <i class='fas fa-arrow-alt-circle-left'></i> Voltar
                     </a><br><br>
@@ -43,6 +66,7 @@
 
             display.textContent = minutos + ":" + segundos;
 
+            timer = timer-29
             if (--timer < 0) {
                 timer = duracao;
 
