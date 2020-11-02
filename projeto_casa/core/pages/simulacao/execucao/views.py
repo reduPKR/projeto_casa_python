@@ -14,6 +14,10 @@ dia = 1
 hora = 0
 
 def voltar(request):
+    global historico
+    global dia
+    global hora
+
     historico.clear()
     dia = 1
     hora = 0
@@ -41,8 +45,26 @@ def iniciarDados(request):
 
         historico.append(gerarConsumo())
 
+def reload(request):
+    global casa
+    global tempo
+    global meta
+
+    if casa is None or tempo is None or grupo is None or meta is None:
+        return True
+
+    print("casa {} {}".format(casa.id, request.GET.get('casa_id')))
+    print("meta {} {}".format(meta.id,  request.GET.get('meta_id')))
+    print("tempo {} {}".format(tempo, request.GET.get('tempo')))
+
+    return casa.id == request.GET.get('casa_id') and meta.id == request.GET.get('meta_id') and tempo == request.GET.get('tempo')
+
 def Executar(request):
-    if len(historico) == 0:
+    global historico
+
+    print("reload {}".format(reload(request)))
+    if len(historico) == 0 or reload(request):
+        print("Entrou errado")
         iniciarDados(request)
 
     consumos = {
@@ -99,6 +121,7 @@ def subTitulos(comodos):
     return lista
 
 def convert_data():
+    global dia
     #nao achei nada pronto, fiz da maneira raiz
     data = date(2019,1,1)
 
@@ -113,6 +136,10 @@ def ler_dados(request):
     # dia = request.GET.get("dia")
 
     #Fiz essa gambiarra que retornar no Json tava dando erro
+    global historico
+    global comodos
+    global tempo
+
     getHora()
     historico.insert(0,gerarConsumo())
 
@@ -130,7 +157,6 @@ def ler_dados(request):
     }
 
     return redirect("/simular/selecionar/executar/tempo?casa_id=1&meta_id=8&tempo=1&grupo_id=18")
-
 
 def getHora():
     global hora
@@ -159,52 +185,64 @@ def gerarConsumo():
         consumoAgua = consumoEnergia = 0
         for terminal in comodo.comodoSaidas:
             if terminal.comodo_equipamento and terminal.comodo_equipamento.equipamento:
-                if terminal.comodo_equipamento not in registradas:
-                    if semana < 5:
-                        min = math.ceil(terminal.tempo_min_semana / 5)
-                        max = math.ceil(terminal.tempo_max_semana / 5)
-                    else:
-                        min = math.ceil(terminal.tempo_min_feriado / 2)
-                        max = math.ceil(terminal.tempo_max_feriado / 2)
-
-                    qtde = math.ceil(((min + max) / 2) / 60)
-                    if qtde == 0:
-                        qtde = 1
-                    min = math.ceil(min / qtde)
-                    max = math.ceil(max / qtde)
-
-                    x = random.randint(0, 100)
-                    if terminal.comodo_equipamento.equipamento.tipo_equipamento.id == 4:  # Valor direto (Iluminação)
-                        # luz acessa ate 0 horas depois as 6 da manha
-                        if hora > 0 and hora < 6:
-                            probabilidade = 5
-                        elif hora > 6 and hora < 19:
-                            probabilidade = 2
+                if terminal.status:
+                    if terminal.comodo_equipamento not in registradas:
+                        if semana < 5:
+                            min = math.ceil(terminal.tempo_min_semana / 5)
+                            max = math.ceil(terminal.tempo_max_semana / 5)
                         else:
-                            probabilidade = 93
-                    else:
-                        probabilidade = ((qtde * 100) / 24)
-                        if probabilidade < 100:
+                            min = math.ceil(terminal.tempo_min_feriado / 2)
+                            max = math.ceil(terminal.tempo_max_feriado / 2)
+
+                        qtde = math.ceil(((min + max) / 2) / 60)
+                        if qtde == 0:
+                            qtde = 1
+                        min = math.ceil(min / qtde)
+                        max = math.ceil(max / qtde)
+
+                        x = random.randint(0, 100)
+                        if terminal.comodo_equipamento.equipamento.tipo_equipamento.id == 4:  # Valor direto (Iluminação)
+                            # luz acessa ate 0 horas depois as 6 da manha
                             if hora > 0 and hora < 6:
-                                probabilidade = probabilidade / 2
+                                probabilidade = 5
+                            elif hora > 6 and hora < 19:
+                                probabilidade = 2
                             else:
-                                probabilidade = probabilidade * 2
-
-                    if x <= probabilidade:
-                        tempo = abs(random.randint(min, max))
-
-                        qtde = qtde - 1
-
-                        if terminal.comodo_equipamento.equipamento.tipo_consumo.id == 1:
-                            consumoAgua += calcularConsumo(terminal.comodo_equipamento.equipamento.consumo_agua, tempo)
-                        elif terminal.comodo_equipamento.equipamento.tipo_consumo.id == 2:
-                            consumoEnergia += calcularConsumo(terminal.comodo_equipamento.equipamento.consumo_energia, tempo)
+                                probabilidade = 93
                         else:
-                            consumoAgua += calcularConsumo(terminal.comodo_equipamento.equipamento.consumo_agua, tempo)
-                            consumoEnergia += calcularConsumo(terminal.comodo_equipamento.equipamento.consumo_energia, tempo)
+                            probabilidade = ((qtde * 100) / 24)
+                            if probabilidade < 100:
+                                if hora > 0 and hora < 6:
+                                    probabilidade = probabilidade / 2
+                                else:
+                                    probabilidade = probabilidade * 2
 
-        consumos.append(index(consumoEnergia,semana,True))
-        consumos.append(index(consumoAgua, semana, False))
+                        if x <= probabilidade:
+                            tempo = abs(random.randint(min, max))
+
+                            qtde = qtde - 1
+
+                            if terminal.comodo_equipamento.equipamento.tipo_consumo.id == 1:
+                                consumoAgua += calcularConsumo(terminal.comodo_equipamento.equipamento.consumo_agua, tempo)
+                            elif terminal.comodo_equipamento.equipamento.tipo_consumo.id == 2:
+                                consumoEnergia += calcularConsumo(terminal.comodo_equipamento.equipamento.consumo_energia, tempo)
+                            else:
+                                consumoAgua += calcularConsumo(terminal.comodo_equipamento.equipamento.consumo_agua, tempo)
+                                consumoEnergia += calcularConsumo(terminal.comodo_equipamento.equipamento.consumo_energia, tempo)
+                else:
+                    terminal.status = True
+
+        energia = index(consumoEnergia,semana,True)
+        agua = index(consumoAgua, semana, False)
+
+        if energia > 3 or agua > 3:
+            for terminal in comodo.comodoSaidas:
+                if terminal.comodo_equipamento and terminal.comodo_equipamento.equipamento:
+                    if terminal.essencial == False:
+                        terminal.status = False
+
+        consumos.append(energia)
+        consumos.append(agua)
 
     return consumos
 
@@ -216,18 +254,16 @@ def index(consumo, semana, energia):
 
     if energia:
         if semana:
-            energia = meta.reduzir_energia_semana/1000
+            energia = (meta.reduzir_energia_semana/1000) / 4.3
         else:
-            energia = meta.reduzir_energia_feriado/1000
+            energia = (meta.reduzir_energia_feriado/1000) / 4.3
 
-        print("consumoEnergia {}".format(consumo))
-        print("meta {}".format(energia))
         return categorias((consumo*100)/energia)
     else:
         if semana:
-            agua = meta.reduzir_agua_semana
+            agua = (meta.reduzir_agua_semana) / 4.3
         else:
-            agua = meta.reduzir_agua_feriado
+            agua = (meta.reduzir_agua_feriado) / 4.3
         return categorias((consumo * 100) / agua)
 
 def categorias(valor):
