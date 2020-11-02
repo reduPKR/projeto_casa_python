@@ -13,6 +13,12 @@ historico = []
 dia = 1
 hora = 0
 
+def voltar(request):
+    historico.clear()
+    dia = 1
+    hora = 0
+    return redirect("/simular/selecionar/meta?casa_id={}".format(casa.id))
+
 def iniciarDados(request):
     casa_id = request.GET.get('casa_id')
     grupo_id = request.GET.get('grupo_id')
@@ -41,6 +47,7 @@ def Executar(request):
 
     consumos = {
         'titulos': tituloComodos(comodos),
+        'subtitulo': subTitulos(comodos),
         'gastos': historico
     }
 
@@ -78,10 +85,17 @@ def getSemana():
 
 def tituloComodos(comodos):
     lista = []
-    lista.append("Data")
-    lista.append("Hora")
     for item in comodos:
         lista.append(item.nome)
+    return lista
+
+def subTitulos(comodos):
+    lista = []
+    lista.append("-")
+    lista.append("-")
+    for item in comodos:
+        lista.append("Energia")
+        lista.append("Agua")
     return lista
 
 def convert_data():
@@ -100,10 +114,11 @@ def ler_dados(request):
 
     #Fiz essa gambiarra que retornar no Json tava dando erro
     getHora()
-    historico.append(gerarConsumo())
+    historico.insert(0,gerarConsumo())
 
     consumos = {
         'titulos': tituloComodos(comodos),
+        'subtitulo': subTitulos(comodos),
         'gastos': historico
     }
 
@@ -121,7 +136,7 @@ def getHora():
     global hora
     global dia
 
-    if hora == None:
+    if len(historico) == 0:
         hora = 0
         dia = 1
     else:
@@ -169,10 +184,11 @@ def gerarConsumo():
                             probabilidade = 93
                     else:
                         probabilidade = ((qtde * 100) / 24)
-                        if hora > 0 and hora < 6:
-                            probabilidade = probabilidade / 2
-                        else:
-                            probabilidade = probabilidade * 2
+                        if probabilidade < 100:
+                            if hora > 0 and hora < 6:
+                                probabilidade = probabilidade / 2
+                            else:
+                                probabilidade = probabilidade * 2
 
                     if x <= probabilidade:
                         tempo = abs(random.randint(min, max))
@@ -187,9 +203,8 @@ def gerarConsumo():
                             consumoAgua += calcularConsumo(terminal.comodo_equipamento.equipamento.consumo_agua, tempo)
                             consumoEnergia += calcularConsumo(terminal.comodo_equipamento.equipamento.consumo_energia, tempo)
 
-
         consumos.append(index(consumoEnergia,semana,True))
-        # consumos.append(index(consumoAgua, semana, False))
+        consumos.append(index(consumoAgua, semana, False))
 
     return consumos
 
@@ -201,10 +216,12 @@ def index(consumo, semana, energia):
 
     if energia:
         if semana:
-            energia = meta.reduzir_energia_semana
+            energia = meta.reduzir_energia_semana/1000
         else:
-            energia = meta.reduzir_energia_feriado
+            energia = meta.reduzir_energia_feriado/1000
 
+        print("consumoEnergia {}".format(consumo))
+        print("meta {}".format(energia))
         return categorias((consumo*100)/energia)
     else:
         if semana:

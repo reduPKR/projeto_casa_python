@@ -6,7 +6,7 @@
         <h3><i class="fas fa-stopwatch-20"></i> Temporizador </h3><br>
         <div class="container">
             <div class="row">
-                <div class="col col-7 col-sm-7 col-md-45col-lg-7 col-xs-5 container box-gray">
+                <div class="col container box-gray">
                     <br>
                     <label>Tempo para proxima leitura  <span id="time"></span> minutos!</label>
                     <br>
@@ -14,7 +14,20 @@
                         <table class="table table-striped table-dark">
                              <thead>
                                 <tr align="center">
+                                    <th>
+                                        Data
+                                    </th>
+                                    <th>
+                                        Hora
+                                    </th>
                                     {% for titulo in consumos.titulos %}
+                                        <th colspan="2">
+                                            {{titulo}}
+                                        </th>
+                                    {% endfor %}
+                                </tr>
+                              <tr align="center">
+                                    {% for titulo in consumos.subtitulo %}
                                         <th>
                                             {{titulo}}
                                         </th>
@@ -33,7 +46,7 @@
                         </table>
                     {% endif %}
                     <br>
-                    <a type="button" class="btn btn-warning" style="position: absolute; left: 10px;" href="/simular/selecionar/meta?casa_id={{casa.id}}">
+                    <a type="button" class="btn btn-warning" style="position: absolute; left: 10px;" href="/simular/selecionar/voltar">
                         <i class='fas fa-arrow-alt-circle-left'></i> Voltar
                     </a><br><br>
                 </div>
