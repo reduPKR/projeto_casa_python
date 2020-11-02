@@ -43,15 +43,11 @@
 
 <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <script>
-    let dia = 1;
-    let hora = 0;
-
     window.onload = function () {
         var tempo = JSON.parse('{{ tempo|safe }}');
         var minutos = 60 * tempo,
             display = document.querySelector('#time');
 
-        ler_dados();
         Timer(minutos, display);
     };
 
@@ -66,15 +62,12 @@
 
             display.textContent = minutos + ":" + segundos;
 
-            timer = timer-29
+            timer = timer-9
             if (--timer < 0) {
                 timer = duracao;
 
                 ler_dados();
-                if(hora == 24){
-                    hora = 0;
-                    dia++;
-                }
+                window.location.reload(true);
             }
         }, 1000);
     }
@@ -83,16 +76,8 @@
         $.ajax({
             type: "get",
             url: "/simular/selecionar/leitura",
-            data: {
-                dia: dia,
-                hora: hora
-            },
-            dataType: "json",
-            success: function(result){
-                console.log(result)
-            }
+            dataType: "json"
         });
-        hora++;
     }
 
 </script>

@@ -1,51 +1,59 @@
 from django.shortcuts import render, redirect
 from core.models import *
-from django.http import JsonResponse
 from datetime import date, timedelta
 import math
 import random
 
+casa = None
 tempo = None
 comodos = None
+grupo = None
 meta = None
+historico = []
+dia = 1
+hora = 0
 
-def Executar(request):
+def iniciarDados(request):
     casa_id = request.GET.get('casa_id')
     grupo_id = request.GET.get('grupo_id')
     meta_id = request.GET.get('meta_id')
     minutos = request.GET.get('tempo')
 
-    if casa_id and minutos and grupo_id:
+    if casa_id and minutos and grupo_id and meta_id:
+        global casa
         global tempo
+        global grupo
         global comodos
         global meta
+        global historico
 
         casa = Casa.objects.filter(id=casa_id).first()
-        comodos = preencherComodos(casa, grupo_id)
+        grupo = GrupoCoeficiente.objects.filter(id=grupo_id).first()
+        comodos = preencherComodos(casa, grupo)
         meta = MetaTreino.objects.filter(id=meta_id).first()
         tempo = minutos
 
-        lista = []
-        lista.append(gerarConsumo(1, 0))
-        consumos = {
-            'titulos': tituloComodos(comodos),
-            'gastos': lista
-        }
+        historico.append(gerarConsumo())
 
-        dados = {
-            'titulo': 'Simular com teporizador',
-            'casa': casa,
-            'tempo': tempo,
-            'consumos': consumos
-        }
+def Executar(request):
+    if len(historico) == 0:
+        iniciarDados(request)
 
-        return render(request, 'simulacao/execucao/temporizador.html', dados)   
+    consumos = {
+        'titulos': tituloComodos(comodos),
+        'gastos': historico
+    }
 
-    return redirect("/simular/casas/")
+    dados = {
+        'titulo': 'Simular com teporizador',
+        'casa': casa,
+        'tempo': tempo,
+        'consumos': consumos
+    }
 
-def preencherComodos(casa, grupo_id):
-    grupo = GrupoCoeficiente.objects.filter(id=grupo_id).first()
+    return render(request, 'simulacao/execucao/temporizador.html', dados)
 
+def preencherComodos(casa, grupo):
     comodos = Comodo.objects.filter(casa=casa)
     getComodos(comodos, grupo)
     getTerminais(comodos)
@@ -62,9 +70,8 @@ def getTerminais(comodos):
     for comodo in comodos:
         comodo.comodoSaidas = ComodoSaida.objects.filter(comodo=comodo)
 
-
-def getSemana(dia):
-    data = convert_data(int(dia))
+def getSemana():
+    data = convert_data()
     semana = data.weekday()
 
     return semana < 5
@@ -77,28 +84,56 @@ def tituloComodos(comodos):
         lista.append(item.nome)
     return lista
 
-def convert_data(dia):
+def convert_data():
     #nao achei nada pronto, fiz da maneira raiz
     data = date(2019,1,1)
 
-    dia = dia - 1
-    while dia > 0:
+    aux = dia-1
+    while aux > 0:
         data = data + timedelta(days=1)
-        dia = dia - 1
+        aux = aux - 1
     return data
 
 def ler_dados(request):
-    hora = request.GET.get("hora")
-    dia = request.GET.get("dia")
+    # hora = request.GET.get("hora")
+    # dia = request.GET.get("dia")
 
-    consumo = gerarConsumo(dia, hora)
+    #Fiz essa gambiarra que retornar no Json tava dando erro
+    getHora()
+    historico.append(gerarConsumo())
 
-    return JsonResponse({"consumo": 5}, status=200)
+    consumos = {
+        'titulos': tituloComodos(comodos),
+        'gastos': historico
+    }
 
-def gerarConsumo(dia, hora):
-    global comodos
-    semana = getSemana(dia)
-    data = convert_data(int(dia))
+    dados = {
+        'titulo': 'Simular com teporizador',
+        'casa': casa,
+        'tempo': tempo,
+        'consumos': consumos
+    }
+
+    return redirect("/simular/selecionar/executar/tempo?casa_id=1&meta_id=8&tempo=1&grupo_id=18")
+
+
+def getHora():
+    global hora
+    global dia
+
+    if hora == None:
+        hora = 0
+        dia = 1
+    else:
+        hora = hora + 1
+
+        if hora == 24:
+            hora = 0
+            dia = dia + 1
+
+def gerarConsumo():
+    semana = getSemana()
+    data = convert_data()
 
     consumos = []
     consumos.append(data)
