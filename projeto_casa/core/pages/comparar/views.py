@@ -1,8 +1,6 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from core.models import *
 import json
-from datetime import date
-import random
 import time
 
 def Exibir(request):

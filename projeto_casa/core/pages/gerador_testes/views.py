@@ -3,9 +3,6 @@ from core.models import *
 from datetime import date, timedelta 
 import random 
 import math
-import time
-import requests
-import json
 
 def ListarCasas(request):
     casas = Casa.objects.all().order_by('nome')
