@@ -37,9 +37,9 @@
                              </thead>
                             {% for gastos in consumos.gastos %}
                                 <tr>
-                                    {% for gasto in gastos %}
-                                        <td >
-                                            {{gasto}}
+                                    {% for item in gastos %}
+                                        <td style="color: {{item.cor}};">
+                                            {{item.gasto}}
                                         </td>
                                     {% endfor %}
                                 </tr>

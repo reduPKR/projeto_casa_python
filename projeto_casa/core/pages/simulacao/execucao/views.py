@@ -173,8 +173,9 @@ def gerarConsumo():
     data = convert_data()
 
     consumos = []
-    consumos.append(data)
-    consumos.append("{}:00".format(hora))
+    consumos.append({"gasto":data, "cor": "#FFFFFF"})
+    consumos.append({ "gasto": "{}:00".format(hora), "cor": "#FFFFFF"})
+
     for comodo in comodos:
         registradas = []
 
@@ -237,8 +238,8 @@ def gerarConsumo():
                     if terminal.essencial == False:
                         terminal.status = False
 
-        consumos.append(energia)
-        consumos.append(agua)
+        consumos.append({"gasto":energia, "cor": pegarCor(energia)})
+        consumos.append({"gasto":agua, "cor": pegarCor(agua)})
 
     return consumos
 
@@ -279,3 +280,16 @@ def categorias(valor):
 def validarCategoria(dado):
     return dado == "A" or dado == "MA"
 
+def pegarCor(consumo):
+    if consumo == "N/A":
+        return "#DDDDDD"
+    if consumo == "MB":
+        return "#00FF00"
+    elif consumo == "B":
+        return "#00DD00"
+    elif consumo == "M":
+        return "#FFA500"
+    elif consumo == "A":
+        return "#FF4500"
+    else:
+        return "#FF0000"
