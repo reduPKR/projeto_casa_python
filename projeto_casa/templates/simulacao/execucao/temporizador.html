@@ -10,6 +10,7 @@
                     <br>
                     <label>Tempo para proxima leitura  <span id="time"></span> minutos!</label>
                     <br>
+                    <br>
                     {% if consumos.gastos %}
                         <table class="table table-striped table-dark">
                              <thead>
@@ -37,7 +38,7 @@
                             {% for gastos in consumos.gastos %}
                                 <tr>
                                     {% for gasto in gastos %}
-                                        <td>
+                                        <td >
                                             {{gasto}}
                                         </td>
                                     {% endfor %}

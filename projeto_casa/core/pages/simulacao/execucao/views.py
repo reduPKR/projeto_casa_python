@@ -53,10 +53,6 @@ def reload(request):
     if casa is None or tempo is None or grupo is None or meta is None:
         return True
 
-    print("casa {} {}".format(casa.id, request.GET.get('casa_id')))
-    print("meta {} {}".format(meta.id,  request.GET.get('meta_id')))
-    print("tempo {} {}".format(tempo, request.GET.get('tempo')))
-
     return casa.id == request.GET.get('casa_id') and meta.id == request.GET.get('meta_id') and tempo == request.GET.get('tempo')
 
 def Executar(request):
@@ -235,7 +231,7 @@ def gerarConsumo():
         energia = index(consumoEnergia,semana,True)
         agua = index(consumoAgua, semana, False)
 
-        if energia > 3 or agua > 3:
+        if validarCategoria(energia) or validarCategoria(agua):
             for terminal in comodo.comodoSaidas:
                 if terminal.comodo_equipamento and terminal.comodo_equipamento.equipamento:
                     if terminal.essencial == False:
@@ -254,29 +250,32 @@ def index(consumo, semana, energia):
 
     if energia:
         if semana:
-            energia = (meta.reduzir_energia_semana/1000) / 4.3
+            energia = (meta.reduzir_energia_semana/(24*5*4.3))
         else:
-            energia = (meta.reduzir_energia_feriado/1000) / 4.3
+            energia = (meta.reduzir_energia_feriado/(24*2*4.3))
 
         return categorias((consumo*100)/energia)
     else:
         if semana:
-            agua = (meta.reduzir_agua_semana) / 4.3
+            agua = (meta.reduzir_agua_semana / (24*5*4.3))
         else:
-            agua = (meta.reduzir_agua_feriado) / 4.3
+            agua = (meta.reduzir_agua_feriado / (24*2*4.3))
         return categorias((consumo * 100) / agua)
 
 def categorias(valor):
     if valor == 0:
-        return 0
+        return "N/A"
     if valor < 35:
-        return 1
+        return "MB"
     elif valor < 70:
-        return 2
+        return "B"
     elif valor < 105:
-        return 3
+        return "M"
     elif valor < 140:
-        return 4
+        return "A"
     else:
-        return 5
+        return "MA"
+
+def validarCategoria(dado):
+    return dado == "A" or dado == "MA"
 
