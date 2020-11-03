@@ -10,6 +10,28 @@
                     <br>
                     <label>Tempo para proxima leitura  <span id="time"></span> minutos!</label>
                     <br>
+                    <div class="form-row">
+                        <div class="form-group col-md-4">
+                            <label style="color: #DDDDDD;">-N/A: Não foi consumido nada</label>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label style="color: #00DD00;">-B: Consumo baixo</label><br>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label style="color: #FF4500;">-A: Consumo alto</label>
+                        </div>
+                    </div>
+                     <div class="form-row">
+                        <div class="form-group col-md-4">
+                            <label style="color: #00FF00;">-MB: Consumo muito baixo</label>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label style="color: #FFA500;">-M: Consumo esperado</label>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label style="color: #FF0000;">-MA: Consumo muito alto</label>
+                        </div>
+                    </div>
                     <br>
                     {% if consumos.gastos %}
                         <table class="table table-striped table-dark">

@@ -82,6 +82,7 @@ def preencherComodos(casa, grupo):
     comodos = Comodo.objects.filter(casa=casa)
     getComodos(comodos, grupo)
     getTerminais(comodos)
+    getCoeficientes(comodos, grupo)
     return comodos
 
 def getComodos(comodos, grupo):
@@ -100,6 +101,13 @@ def getSemana():
     semana = data.weekday()
 
     return semana < 5
+
+def getCoeficientes(comodos, grupo):
+    for comodo in comodos:
+        comodo.coeficientes = Coeficiente.objects.filter(
+            comodo=comodo,
+            grupo=grupo
+        ).first()
 
 def tituloComodos(comodos):
     lista = []
@@ -128,9 +136,6 @@ def convert_data():
     return data
 
 def ler_dados(request):
-    # hora = request.GET.get("hora")
-    # dia = request.GET.get("dia")
-
     #Fiz essa gambiarra que retornar no Json tava dando erro
     global historico
     global comodos
@@ -175,6 +180,8 @@ def gerarConsumo():
     consumos = []
     consumos.append({"gasto":data, "cor": "#FFFFFF"})
     consumos.append({ "gasto": "{}:00".format(hora), "cor": "#FFFFFF"})
+
+
 
     for comodo in comodos:
         registradas = []
@@ -231,6 +238,9 @@ def gerarConsumo():
 
         energia = index(consumoEnergia,semana,True)
         agua = index(consumoAgua, semana, False)
+
+        #tenho que pegar o quanto consumiu, comparar com o previsto
+        previsto = calcularPrevisao(comodo, data)
 
         if validarCategoria(energia) or validarCategoria(agua):
             for terminal in comodo.comodoSaidas:
@@ -293,3 +303,11 @@ def pegarCor(consumo):
         return "#FF4500"
     else:
         return "#FF0000"
+
+def calcularPrevisao(comodo, data):
+    clima = Clima.objects.filter(
+        data=data,
+        hora=hora
+    ).first()
+
+    return comodo.coeficientes.temperatura * clima.temperatura + comodo.coeficientes.umidade * clima.umidade + comodo.coeficientes.vento * clima.vento + comodo.coeficientes.pressao * clima.pressao + comodo.coeficientes.chuva * clima.chuva
