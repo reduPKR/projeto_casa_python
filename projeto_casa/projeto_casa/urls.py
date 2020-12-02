@@ -36,6 +36,8 @@ urlpatterns = [
     path('login/', views.Login),
     path('login/submit',views.SubmitLogin),
     path('logout/',views.Logout),
+    path('listar/', views.ListarCasas),
+    path('menu/', views.Menu),
 
     #Configurar
     path('configurar/menu', configurar.MenuConfigurar),
@@ -52,7 +54,7 @@ urlpatterns = [
     path('equipamentos/excluir/<int:id>/', configurar.DeleteEquipamentos),
 
     #Casa
-    path('listar/', cadastro.ListarCasas),  
+    #path('listar/', cadastro.ListarCasas),
     path('cadastrar/', cadastro.Cadastrar),
     path('cadastrar/add/casa', cadastro.AdicionarCasa),
     path('cadastrar/excluir/casa/<int:id>/', cadastro.DeleteCasa),

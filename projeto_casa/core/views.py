@@ -4,6 +4,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
 # Create your views here.
+from core.models import Casa
+
 
 def Login(request):
     return render(request, 'login.html', {'titulo':'Login'})
@@ -29,3 +31,26 @@ def Logout(request):
 @login_required(login_url = '/login/')
 def Home(request):
     return render(request, 'home.html', {'titulo':'Home'})
+
+
+def ListarCasas(request):
+    casas = Casa.objects.all().order_by('nome')
+    dados = {
+        'titulo':'Lista de casas',
+        'casas':casas
+        }
+    return render(request, 'listar.html', dados)
+
+
+def Menu(request):
+    id = request.GET.get('id')
+    casa = None
+    if id:
+        casa = Casa.objects.get(id=id)
+
+    dados = {
+        'titulo': 'Visualizar casa',
+        'casa': casa,
+    }
+
+    return render(request, 'menu.html', dados)
