@@ -183,7 +183,7 @@ def GerarAnoManual(request):
     id = request.POST.get('id')
     if id:
         casa = Casa.objects.get(id=id)
-        #ConsumoMes.objects.filter(casa=casa).delete()
+        ConsumoMes.objects.filter(casa=casa).delete()
         for i in range(12):
             GerarTestesManual(casa, date(2019,i+1,1))
             print("Finalizado {}".format(getMes(i)))
@@ -197,7 +197,7 @@ def GerarAutomatico(request):
     id = request.GET.get('id')
     if id:
         casa = Casa.objects.get(id=id)
-        #ConsumoMes.objects.filter(casa=casa).delete()
+        ConsumoMes.objects.filter(casa=casa).delete()
         for i in range(12):
             GerarTestesAutomatico(casa, date(2019,i+1,1))
                   
@@ -256,20 +256,21 @@ def GerarTestesAutomatico(casa, inicio):
                         hora = 0
                         while hora < 24 and qtde > 0:
                             x = random.randint(0, 100)
-                            if terminal.comodo_equipamento.equipamento.tipo_equipamento.id == 4: #Valor direto (Iluminação)
-                                #luz acessa ate 0 horas depois as 6 da manha
-                                if hora > 0 and hora < 6:
-                                    probabilidade = 5
-                                elif hora > 6 and hora < 19:
-                                    probabilidade = 2
+                            if probabilidade < 100:
+                                if terminal.comodo_equipamento.equipamento.tipo_equipamento.id == 4: #Valor direto (Iluminação)
+                                    #luz acessa ate 0 horas depois as 6 da manha
+                                    if hora > 0 and hora < 6:
+                                        probabilidade = 5
+                                    elif hora > 6 and hora < 19:
+                                        probabilidade = 2
+                                    else:
+                                        probabilidade = 93
                                 else:
-                                    probabilidade = 93
-                            else:
-                                #Restante
-                                if hora > 0 and hora < 6:
-                                    probabilidade = probabilidade / 2
-                                else:
-                                    probabilidade = probabilidade * 2
+                                    #Restante
+                                    if hora > 0 and hora < 6:
+                                        probabilidade = probabilidade / 2
+                                    else:
+                                        probabilidade = probabilidade * 2
                            
                             if x <= probabilidade:
                                 tempo = abs(random.randint(min, max))
@@ -414,10 +415,11 @@ def calcularConsumo(consumoHora, tempo):
     return (consumoHora / 60) * tempo 
 
 def excluirCoeficientes(casa):
-    grupos = GrupoCoeficiente.objects.filter(casa = casa)     
-    for grupo in grupos:
-        Coeficiente.objects.filter(grupo=grupo).delete()
-    GrupoCoeficiente.objects.filter(casa = casa).delete()
-    comodos = Comodo.objects.filter(casa=casa)
-    for comodo in comodos:
-        ComodoValorY.objects.filter(comodo=comodo).delete()
+    grupos = GrupoCoeficiente.objects.filter(casa = casa)
+    if len(grupos) > 0:
+        for grupo in grupos:
+            Coeficiente.objects.filter(grupo=grupo).delete()
+        GrupoCoeficiente.objects.filter(casa = casa).delete()
+        comodos = Comodo.objects.filter(casa=casa)
+        for comodo in comodos:
+            ComodoValorY.objects.filter(comodo=comodo).delete()

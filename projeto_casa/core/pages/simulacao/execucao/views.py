@@ -43,7 +43,7 @@ def iniciarDados(request):
         meta = MetaTreino.objects.filter(id=meta_id).first()
         tempo = minutos
 
-        historico.append(gerarConsumo())
+        # historico.append(gerarConsumo())
 
 def reload(request):
     global casa
@@ -58,10 +58,8 @@ def reload(request):
 def Executar(request):
     global historico
 
-    print("reload {}".format(reload(request)))
-    if len(historico) == 0 or reload(request):
-        print("Entrou errado")
-        iniciarDados(request)
+    # if len(historico) == 0 or reload(request):
+    iniciarDados(request)
 
     consumos = {
         'titulos': tituloComodos(comodos),
