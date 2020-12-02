@@ -74,7 +74,7 @@ urlpatterns = [
     path('cadastrar/vincular/equipamento/comodo/alterar', cadastro.ComodoEquipamentoAlterar),
 
     #Gerar testes
-    path('gerar-testes/casas/', gerarTeste.ListarCasas),
+    #path('gerar-testes/casas/', gerarTeste.ListarCasas),
     path('gerar-testes/gerar/', gerarTeste.Gerar),    
     path('gerar-testes/gerar/automatico/', gerarTeste.GerarAutomatico),
     path('gerar-testes/gerar/manual/', gerarTeste.GerarManual),
@@ -83,7 +83,7 @@ urlpatterns = [
     path('gerar-testes/gerar/manual/selecionar/finalizar', gerarTeste.GerarAnoManual),
 
     #Simulacao
-    path('simular/casas/', simular.ListarCasas),
+    #path('simular/casas/', simular.ListarCasas),
     path('simular/meses/', simular.ListarMeses),
     path('simular/algoritmos/', simular.Algoritmos),
     path('simular/testar/', simular.ListaCoeficientes),
