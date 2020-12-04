@@ -115,7 +115,12 @@ def gerar1():
         agua_semana = []
         agua_feriado = []
 
-        for i in range(genes):
+        energia_semana.append({'acerto': 0, 'temperatura': 0, 'umidade': 0, 'vento': 0, 'pressao': 0, 'chuva': 0})
+        agua_semana.append({'acerto': 0, 'temperatura': 0, 'umidade': 0, 'vento': 0, 'pressao': 0, 'chuva': 0})
+        energia_feriado.append({'acerto': 0, 'temperatura': 0, 'umidade': 0, 'vento': 0, 'pressao': 0, 'chuva': 0})
+        agua_feriado.append({'acerto': 0, 'temperatura': 0, 'umidade': 0, 'vento': 0, 'pressao': 0, 'chuva': 0})
+
+        for i in range(genes-1):
             valores = sortearValor()
 
             energia_semana.append(valores)
@@ -140,12 +145,18 @@ def gerar2(qtde):
     if casa:
         comodos = Comodo.objects.filter(casa=casa)
         pos = 0
+        qtde = qtde + 1
         while pos < comodos.count():
             lista = []
             energia_semana = []
             energia_feriado = []
             agua_semana = []
             agua_feriado = []
+
+            energia_semana.append({'acerto': 0, 'temperatura': 0, 'umidade': 0, 'vento': 0, 'pressao': 0, 'chuva': 0})
+            agua_semana.append({'acerto': 0, 'temperatura': 0, 'umidade': 0, 'vento': 0, 'pressao': 0, 'chuva': 0})
+            energia_feriado.append({'acerto': 0, 'temperatura': 0, 'umidade': 0, 'vento': 0, 'pressao': 0, 'chuva': 0})
+            agua_feriado.append({'acerto': 0, 'temperatura': 0, 'umidade': 0, 'vento': 0, 'pressao': 0, 'chuva': 0})
 
             comodo = comodos[pos]
 
@@ -175,6 +186,7 @@ def gerar2(qtde):
                 agua_feriado.pop()
                 
             dados = genes - len(energia_semana)
+
             for i in range(dados):
                 valores = sortearValor()
 
@@ -260,9 +272,7 @@ def executarGenetico():
             calcularAptidao(listaComodos[pos],listaSemana[pos],listaFinalSemana[pos]) 
             pos += 1
 
-        #perc = percentualGeral(listaComodos)
         perc = percentualMelhorGene(listaComodos)
-
         geracao += 1
         print("Geraçao {} Tx. acerto {}".format(geracao,perc))
     fim = time.time()
@@ -324,7 +334,6 @@ def ordenar(comodo):
 def selecao(comodo,perc):
     global genes 
 
-    ordenar(comodo)
     if comodo['energia_semana'][0]['acerto'] < 99 and comodo['agua_semana'][0]['acerto'] < 99 and comodo['energia_feriado'][0]['acerto'] < 99 and comodo['agua_feriado'][0]['acerto'] < 99:
         while len(comodo['energia_semana']) > genes * perc:
             comodo['energia_semana'].pop()
@@ -518,21 +527,11 @@ def completarPopulacao(comodo):
         comodo['agua_feriado'].append(valores)
 
 def percentualMelhorGene(listaComodos):
-    ordenar(listaComodos)
-
-    total = 0
-    total += float(listaComodos[0]['energia_semana'][0]['acerto'])
-    total += float(listaComodos[0]['agua_semana'][0]['acerto'])
-    total += float(listaComodos[0]['energia_feriado'][0]['acerto'])
-    total += float(listaComodos[0]['agua_feriado'][0]['acerto'])
-
-    return total / 4
-
-def percentualGeral(listaComodos):
     total = 0
     pos = 0
     while pos < len(listaComodos):
         comodo = listaComodos[pos]
+        ordenar(comodo)
 
         total += float(comodo['energia_semana'][0]['acerto'])
         total += float(comodo['agua_semana'][0]['acerto'])
