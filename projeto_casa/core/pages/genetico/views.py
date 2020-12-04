@@ -5,7 +5,7 @@ import random
 import time
 
 genes = 10000
-percParada = 95
+percParada = 99
 casa = None
 mes = None
 meta = None
@@ -71,7 +71,8 @@ def genetico(request):
         
         gerarAnalise()
         executarGenetico()
-        
+
+    #return redirect('/genetico/?casa_id=1&mes_id=6')
     return redirect('/simular/meses/?id={}'.format(casa.id))
 
 def sortearValor():
@@ -244,9 +245,11 @@ def executarGenetico():
     while pos < len(listaComodos):
         calcularAptidao(listaComodos[pos],listaSemana[pos],listaFinalSemana[pos])
         pos += 1
+
+    perc = percentualMelhorGene(listaComodos)
     while perc < percParada and geracao < 100:
         if geracao % 20 != 0:
-            x = .1 #mantem 20% da populacao
+            x = .4 #mantem 40% da populacao
         else:
             x = .01 #mantem 1%
 
@@ -256,10 +259,15 @@ def executarGenetico():
             cruzamento(listaComodos[pos])
             calcularAptidao(listaComodos[pos],listaSemana[pos],listaFinalSemana[pos]) 
             pos += 1
-        perc = percentualGeral(listaComodos)
+
+        #perc = percentualGeral(listaComodos)
+        perc = percentualMelhorGene(listaComodos)
+
         geracao += 1
         print("Geraçao {} Tx. acerto {}".format(geracao,perc))
     fim = time.time()
+    print("Tempo {}".format((fim-ini)))
+
     salvarResultados(listaComodos,perc, (fim-ini))
 
 def calcularAptidao(comodo,listaSemana,listaFinalSemana):
@@ -307,19 +315,16 @@ def calcularAptidao(comodo,listaSemana,listaFinalSemana):
             perc = acerto * 100 / total
             item['acerto'] = perc
 
-    # comodo['energia_semana'] = sorted(comodo['energia_semana'], key=lambda row:row['acerto'], reverse=True)
-    # comodo['agua_semana'] = sorted(comodo['agua_semana'], key=lambda row:row['acerto'], reverse=True)
-    # comodo['energia_feriado'] = sorted(comodo['energia_feriado'], key=lambda row:row['acerto'], reverse=True)
-    # comodo['agua_feriado'] = sorted(comodo['agua_feriado'], key=lambda row:row['acerto'], reverse=True)
+def ordenar(comodo):
+    comodo['energia_semana'] = sorted(comodo['energia_semana'], key=lambda row: row['acerto'], reverse=True)
+    comodo['agua_semana'] = sorted(comodo['agua_semana'], key=lambda row: row['acerto'], reverse=True)
+    comodo['energia_feriado'] = sorted(comodo['energia_feriado'], key=lambda row: row['acerto'], reverse=True)
+    comodo['agua_feriado'] = sorted(comodo['agua_feriado'], key=lambda row: row['acerto'], reverse=True)
 
 def selecao(comodo,perc):
     global genes 
 
-    comodo['energia_semana'] = sorted(comodo['energia_semana'], key=lambda row:row['acerto'], reverse=True)
-    comodo['agua_semana'] = sorted(comodo['agua_semana'], key=lambda row:row['acerto'], reverse=True)
-    comodo['energia_feriado'] = sorted(comodo['energia_feriado'], key=lambda row:row['acerto'], reverse=True)
-    comodo['agua_feriado'] = sorted(comodo['agua_feriado'], key=lambda row:row['acerto'], reverse=True)
-
+    ordenar(comodo)
     if comodo['energia_semana'][0]['acerto'] < 99 and comodo['agua_semana'][0]['acerto'] < 99 and comodo['energia_feriado'][0]['acerto'] < 99 and comodo['agua_feriado'][0]['acerto'] < 99:
         while len(comodo['energia_semana']) > genes * perc:
             comodo['energia_semana'].pop()
@@ -511,6 +516,17 @@ def completarPopulacao(comodo):
     while len(comodo['agua_feriado']) < genes and comodo['agua_feriado'] [0]['acerto'] < 99:
         valores = sortearValor()
         comodo['agua_feriado'].append(valores)
+
+def percentualMelhorGene(listaComodos):
+    ordenar(listaComodos)
+
+    total = 0
+    total += float(listaComodos[0]['energia_semana'][0]['acerto'])
+    total += float(listaComodos[0]['agua_semana'][0]['acerto'])
+    total += float(listaComodos[0]['energia_feriado'][0]['acerto'])
+    total += float(listaComodos[0]['agua_feriado'][0]['acerto'])
+
+    return total / 4
 
 def percentualGeral(listaComodos):
     total = 0

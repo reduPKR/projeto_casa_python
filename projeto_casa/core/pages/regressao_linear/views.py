@@ -66,7 +66,6 @@ def Treinar(request):
 
         return redirect('/regressao-linear-multipla/coeficiente?casa_id={}&mes_id={}'.format(casa.id,mes.id))
     return redirect('/simular/casas/')
-       
 
 def gerarConstantes(meta):
     #teste()
